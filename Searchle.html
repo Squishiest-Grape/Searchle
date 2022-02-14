@@ -1,0 +1,113 @@
+<div align="center">
+    <table>
+        <tr>
+            <td rowspan="4">
+                <input
+                    type="button"
+                    id="SearchleButton"
+                    value="Searchle"
+                />
+            </td>
+            <td>
+                Patern
+            </td>
+            <td>
+                <input
+                    type="text"
+                    id = 'SearchlePatern'
+                />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Requires
+            </td>
+            <td>
+                <input
+                    type="text"
+                    id = 'SearchleRequires'
+                />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Avoids
+            </td>
+            <td>
+                <input
+                    type="text"
+                    id = 'SearchleAvoids'
+                />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Allows
+            </td>
+            <td>
+                <input
+                    type="text"
+                    id = 'SearchleAllows'
+                />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <textarea
+                    id="SearchleResult"
+                    disabled
+                />
+                    Results
+                </textarea>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<script type="text/javascript">
+(async () => {
+    
+    
+    // search function
+    function searchle() {
+        // get html values
+        let patern = document.getElementById("SearchlePatern").value
+        let requires = document.getElementById("SearchleRequires").value
+        let avoids = document.getElementById("SearchleAvoids").value
+        let allows = document.getElementById("SearchleAllows").value
+        let result = document.getElementById("SearchleResult")
+        // solve
+        
+        // let [values,counts] = cleanText(patern)
+        for (const c of '?#*_'){ patern = patern.replaceAll(c,'.') }
+
+        let re = new RegExp('^'+patern+'$','i')
+        
+        // search words
+        let ans = []
+        for (const word in wordlist) {
+            if (re.test(word)) {
+                ans.push(word)
+            }
+        }
+        
+        // order by popularity
+        ans.sort((a,b)=>wordlist[b]-wordlist[a])
+        
+        // set result
+        result.innerHTML = ans.join(' ')
+        
+    } 
+    
+    
+    // get wordlist
+    const url = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle                     /200c010c0324e6d158650a59d67418f75c3b0820/wordlist.json';
+    const wordlist = await fetch(url).then(response => response.json())
+    
+    // attach listeners
+    document.getElementById("SearchleButton").onclick = searchle
+    document.getElementById("SearchleResult")
+        
+})()
+</script>
