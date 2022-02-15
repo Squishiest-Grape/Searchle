@@ -1,26 +1,30 @@
-You can enter partial words into the pattern box. ?#*_. can be used as generic wildcard characters.
+You can seach for words using wildcard characters ?#*_. (they all do the same thing)
     Pattern:  fish_ng 
     Result:   fishing
+    Pattern:  ??ion 
+    Result:   onion Orion
 
-You can also use numbers as either values or ranges.  (broken?)
-    Pattern:  5? 
-    Result:   All 5 letter words 
+You can also use numbers as either values or ranges
+    Pattern:  5-6?
+    Result:   All 5 to 6 letter words 
+    Pattern:  5+
+    Result:   All words with 5 or more letters (the trailing wildcard can be omitted)
   
 You can place global windcard limits through the requires, avoids, and allows
-    Pattern:  5?
-    Requires: a
-    Avoids:   2b
-    Result:   5 letter words with at least 1 'a' and at most 2 'b's
+    Pattern:  10
+    Requires: aa3-4c
+    Avoids:   b
+    Result:   10 letter words with at least 2 'a's, 3 to 4 'c's and no 'b's
       
-You can place local windcard limits with groupings [] or ()
+You can place local windcard limits with groupings [] or () (they all do the same thing)
     Pattern:  ??(aeiou)??  
     Result:   5 letter words with a vowel in the middle
     
-You can also negate letters or groupings with !~^
+You can also negate letters or groupings with characters !~^ in front (they all do the same thing)
     Pattern:  HE_!(L)O
     Result:   Words that fit the pattern without L in the second wildcard
     
 You can add substrings with '' or ""
     Pattern:  5
     Requires: 'ion'
-    Result:   5 letter words that have 'ion' inside it
+    Result:   5 letter words that has 'ion' inside it
