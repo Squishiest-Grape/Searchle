@@ -19,13 +19,6 @@
 		while (i_str < n_str) {
 			// get character
 			let cha = str[i_str] 
-			// new part
-			if (mode == 'done') {
-				mode = null
-				val = null
-				num = null
-				inv = false
-			}
 			// handle strings
 			if ('"\''.includes(mode)) {
 				if (cha == mode) { mode = 'done' }
@@ -50,8 +43,8 @@
 					mode = 'num'
 					if ('1234567890'.includes(cha)) {
 						if (num == null) { num = cha }
-						else if (typeof num === 'string') { num += cha }
-						else if (Array.isArray(num)) { num[num.length-1] += cha }
+						else if (typeof num == 'string') { num += cha }
+						else if (Array.isArray(num)) { num[num.length-1] = num[num.length-1] + cha }
 					} else if ('-+'.includes(cha)) { 
 						num = [num,'']
 					}
@@ -64,15 +57,24 @@
 					if (!'#*_?.'.includes(cha)) { val = cha }		
 				}
 			}
+			// handle saving new value
 			if (mode == 'done') {
-				if (Array.isArray(num)) { num = num.map(parseInt) }
+				if (Array.isArray(num)) { num = num.map(i => parseInt(i)) }
 				else if (num != null) { num = parseInt(num) }
 				ANS.push([num,val,inv])
+				mode = null
+				val = null
+				num = null
+				inv = false
 			}
 			i_str += 1
 		}
-		if (num != null) { ANS.push([num,null,inv]) }
-		
+		// handle partial completion for numbers
+		if (num != null) {
+			if (Array.isArray(num)) { num = num.map(i => parseInt(i)) }
+			else if (num != null) { num = parseInt(num) }
+			ANS.push([num,null,inv])
+		}
 		return ANS
 	}
 	
@@ -93,12 +95,12 @@
 			if (num != null) {
 				if (Array.isArray(num)) {
 					if (num[1] == NaN) {
-						ans += `{${num[0]},}`
+						ans += '{'+String(num[0])+',}'
 					} else {
-						ans += `{${num[0]},${num[1]}}`
+						ans += '{'+String(num[0])+','+String(num[1])+'}'
 					}					
 				} else {
-					ans += `{${num}}`
+					ans += '{'+String(num)+'}'
 				}
 			}
 		}
@@ -109,16 +111,18 @@
     
     // search function
     function searchle() {
-        // get html values
-        let pattern = document.getElementById("SearchlePattern").value
-        let requires = document.getElementById("SearchleRequires").value
-        let avoids = document.getElementById("SearchleAvoids").value
-        let allows = document.getElementById("SearchleAllows").value
-        let result = document.getElementById("SearchleResult")
-        
+	    
+    	try {
+		// get html values
+		let pattern = document.getElementById("SearchlePattern").value
+		let requires = document.getElementById("SearchleRequires").value
+		let avoids = document.getElementById("SearchleAvoids").value
+		let allows = document.getElementById("SearchleAllows").value
+		let result = document.getElementById("SearchleResult")
+
 		let limits = {}
-		
-		
+
+
 		allows = parse(allows.toLowerCase())
 		for (let i=0; i<allows.length; i++) {
 			let [num,val,inv] = allows[i]
@@ -133,9 +137,9 @@
 			for (const c of 'abcdefghijklmnopqrstuvwxyz') {
 				if (!(c in limits)) { limits[c] = [0,0] }
 			}
-			
+
 		}
-		
+
 		avoids = parse(avoids.toLowerCase())
 		for (let i=0; i<avoids.length; i++) {
 			let [num,val,inv] = avoids[i]
@@ -154,7 +158,7 @@
 			}
 			limits[val] = num
 		}
-		
+
 		requires = parse(requires.toLowerCase())
 		for (let i=0; i<requires.length; i++) {
 			let [num,val,inv] = requires[i]
@@ -170,31 +174,39 @@
 			}
 		}
 		
-		pattern = pattern2regex(parse(pattern))
+		console.log(limits)
+		
+		pattern = parse(pattern)
+		pattern = pattern2regex(pattern)
+		console.log(pattern)
 		
 		// solve  
-        let re = new RegExp('^'+pattern+'$','i')
-        
-        let ans = []
-        for (const word in wordlist) {
-            if (re.test(word)) {
-				let good = true
-				for (const part in limits) {
-					let c = (word.match(new RegExp(part,'gi')) || []).length
-					if (c < limits[part][0] || c > limits[part][1]) {
-						good = false
-						break
-					}
+		let re = new RegExp('^'+pattern+'$','i')
+
+		let ans = []
+		for (const word in wordlist) {
+		    if (re.test(word)) {
+			let good = true
+			for (const part in limits) {
+				let c = (word.match(new RegExp(part,'gi')) || []).length
+				if (c < limits[part][0] || c > limits[part][1]) {
+					good = false
+					break
 				}
-				if (good) { ans.push(word) } 
-            }
-        }
-        
-        // order by popularity
-        ans.sort((a,b)=>wordlist[b]-wordlist[a])
-        
-        // set result
-        result.innerHTML = ans.join(' ')
+			}
+			if (good) { ans.push(word) } 
+		    }
+		}
+
+		// order by popularity
+		ans.sort((a,b)=>wordlist[b]-wordlist[a])
+
+		// set result
+		result.innerHTML = ans.join(' ')
+		
+	} catch (error) {
+		result.innerHTML = error		
+	}
 		
         
     } 
