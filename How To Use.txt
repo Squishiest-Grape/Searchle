@@ -2,17 +2,17 @@ You can enter partial words into the pattern box. ?#*_. can be used as generic w
     Pattern:  fish_ng 
     Result:   fishing
 
-You can also use numbers as either values or ranges.
+You can also use numbers as either values or ranges.  (broken?)
     Pattern:  5? 
     Result:   All 5 letter words 
   
 You can place global windcard limits through the requires, avoids, and allows
     Pattern:  5?
     Requires: a
-    Avoids:   b2
+    Avoids:   2b
     Result:   5 letter words with at least 1 'a' and at most 2 'b's
       
-You can place global windcard limits with groupings [] or ()
+You can place local windcard limits with groupings [] or ()
     Pattern:  ??(aeiou)??  
     Result:   5 letter words with a vowel in the middle
     
