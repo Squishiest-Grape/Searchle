@@ -31,6 +31,7 @@
 			let cha = str[i_str] 
 			// new part
 			if (mode == 'done') {
+				mode = null
 				val = null
 				num = null
 				inv = false
@@ -80,7 +81,7 @@
 			}
 			i_str += 1
 		}
-		if (num != null) { ANS.push([null,num,inv]) }
+		if (num != null) { ANS.push([num,null,inv]) }
 		
 		return ANS
 	}
@@ -88,7 +89,17 @@
 	// parse to string
 	function pattern2regex(pattern) {
 		let ans = ''
-		for (const [num,val,inv] of pattern) {
+		for (let [num,val,inv] of pattern) {
+			if (Array.isArray(val)) {
+				ans += '['
+				if (inv) { ans += '^' }
+				ans += val.map(v=>pattern2regex([v])).join('|')
+				ans += ']'		
+			} else {
+				if (val == null) { val = '.' }
+				if (inv) { ans += '[^' + val + ']' }
+				else { ans += val }				
+			}
 			if (num != null) {
 				if (Array.isArray(num)) {
 					if (num[1] == NaN) {
@@ -99,16 +110,6 @@
 				} else {
 					ans += `{${num}}`
 				}
-			}
-			if (Array.isArray(val)) {
-				ans += '['
-				if (inv) { ans += '^' }
-				ans += val.map(v=>pattern2regex([v])).join('|')
-				ans += ']'		
-			} else {
-				if (val is null) { val = '.' }
-				if (inv) { ans += '[^' + val + ']' }
-				else { and += val }				
 			}
 		}
 		return ans
@@ -175,35 +176,35 @@
 				limits[val] = num
 			} else {
 				if (val in limits) { limits[val] = [limits[val][0]+num,limits[val][1]+num] }
-				else { limits[val] = [num,num] }
+				else { limits[val] = [num,NaN] }
 			}
 		}
 		
-		//pattern = pattern2regex(parseFull(pattern))
+		pattern = pattern2regex(parseFull(pattern))
 		
-		
-		
-		console.log(pattern)
-		
-		
-		
-		// // solve  
-        // for (const c of '?#*_'){ patern = patern.replaceAll(c,'.') }
-        // let re = new RegExp('^'+patern+'$','i')
+		// solve  
+        let re = new RegExp('^'+pattern+'$','i')
         
-        // // search words
-        // let ans = []
-        // for (const word in wordlist) {
-            // if (re.test(word)) {
-                // ans.push(word)
-            // }
-        // }
+        let ans = []
+        for (const word in wordlist) {
+            if (re.test(word)) {
+				let good = true
+				for (const part in limits) {
+					let c = (word.match(new RegExp(part,'gi')) || []).length
+					if (c < limits[part][0] || c > limits[part][1]) {
+						good = false
+						break
+					}
+				}
+				if (good) { ans.push(word) } 
+            }
+        }
         
-        // // order by popularity
-        // ans.sort((a,b)=>wordlist[b]-wordlist[a])
+        // order by popularity
+        ans.sort((a,b)=>wordlist[b]-wordlist[a])
         
-        // // set result
-        // result.innerHTML = ans.join(' ')
+        // set result
+        result.innerHTML = ans.join(' ')
 		
         
     } 
