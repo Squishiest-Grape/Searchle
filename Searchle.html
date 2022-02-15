@@ -94,13 +94,6 @@
 		while (i_str < n_str) {
 			// get character
 			let cha = str[i_str] 
-			// new part
-			if (mode == 'done') {
-				mode = null
-				val = null
-				num = null
-				inv = false
-			}
 			// handle strings
 			if ('"\''.includes(mode)) {
 				if (cha == mode) { mode = 'done' }
@@ -139,19 +132,24 @@
 					if (!'#*_?.'.includes(cha)) { val = cha }		
 				}
 			}
+			// handle saving new value
 			if (mode == 'done') {
-				if (Array.isArray(num)) { num = num.map(parseInt) }
+				if (Array.isArray(num)) { num = num.map(i => parseInt(i)) }
 				else if (num != null) { num = parseInt(num) }
 				ANS.push([num,val,inv])
+				mode = null
+				val = null
+				num = null
+				inv = false
 			}
 			i_str += 1
 		}
+		// handle partial completion for numbers
 		if (num != null) {
-			if (Array.isArray(num)) { num = num.map(parseInt) }
+			if (Array.isArray(num)) { num = num.map(i => parseInt(i)) }
 			else if (num != null) { num = parseInt(num) }
 			ANS.push([num,null,inv])
 		}
-		
 		return ANS
 	}
 	
@@ -254,7 +252,6 @@
 		console.log(limits)
 		
 		pattern = parse(pattern)
-		console.log(pattern)
 		pattern = pattern2regex(pattern)
 		console.log(pattern)
 		
