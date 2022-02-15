@@ -5,16 +5,6 @@
 		for (const c of old_chars) { str = str.replaceAll(c,new_cha) }
 		return str
 	}
-
-	// parser wrapper
-	function parseFull(str) {
-		str = str.toLowerCase()
-		str = replace(str,'(','[')
-		str = replace(str,')',']')
-		str = replace(str,'#*_?.','.')
-		str = replace(str,'!~^','^')
-		return parse(str)
-	}
 	
 	// main parser
 	function parse(str) {
@@ -41,9 +31,9 @@
 				if (cha == mode) { mode = 'done' }
 				else { val += cha }
 			// handle groups
-			} else if (mode == '[') {
-				if (cha == '[') { depth -= 1 }
-				if (cha == ']') { depth += 1 }
+			} else if ('(['.includes(mode)) {
+				if (cha == mode ) { depth -= 1 }
+				if ((mode=='[' && cha==']')||(mode=='(' && cha==')')) { depth += 1 }
 				if (depth != 0) { val += cha }
 				else { 
 					val = parse(val)
@@ -51,10 +41,10 @@
 				}				
 			} else {
 				// starting strings and groups
-				if ('"\'['.includes(cha)) {
+				if ('"\'[('.includes(cha)) {
 					val = ''
 					mode = cha		
-					if (cha == '[') { depth = -1 }
+					if ('(['.includes(cha)){ depth = -1 }
 				// handle numbers
 				} else if ('1234567890-+'.includes(cha)) {
 					mode = 'num'
@@ -66,12 +56,12 @@
 						num = [num,'']
 					}
 				// handle inverse
-				} else if ( cha == '^') {
+				} else if ('!~^'.includes(cha)) {
 					inv = !inv
 				// handle other chcarters
 				} else {
 					mode = 'done'
-					if (cha != '.') { val = cha }		
+					if (!'#*_?.'.includes(cha)) { val = cha }		
 				}
 			}
 			if (mode == 'done') {
@@ -129,7 +119,7 @@
 		let limits = {}
 		
 		
-		allows = parseFull(allows)
+		allows = parse(allows.toLowerCase())
 		for (let i=0; i<allows.length; i++) {
 			let [num,val,inv] = allows[i]
 			if (Array.isArray(val)) { throw 'Groupings not implimented in allows' }
@@ -146,7 +136,7 @@
 			
 		}
 		
-		avoids = parseFull(avoids)
+		avoids = parse(avoids.toLowerCase())
 		for (let i=0; i<avoids.length; i++) {
 			let [num,val,inv] = avoids[i]
 			if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
@@ -165,7 +155,7 @@
 			limits[val] = num
 		}
 		
-		requires = parseFull(requires)
+		requires = parse(requires.toLowerCase())
 		for (let i=0; i<requires.length; i++) {
 			let [num,val,inv] = requires[i]
 			if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
@@ -180,7 +170,7 @@
 			}
 		}
 		
-		pattern = pattern2regex(parseFull(pattern))
+		pattern = pattern2regex(parse(pattern))
 		
 		// solve  
         let re = new RegExp('^'+pattern+'$','i')
