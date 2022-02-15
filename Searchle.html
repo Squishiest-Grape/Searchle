@@ -169,7 +169,7 @@
 			}
 			if (num != null) {
 				if (Array.isArray(num)) {
-					if (num[1] == NaN) {
+					if (isNaN(num[1])) {
 						ans += '{'+String(num[0])+',}'
 					} else {
 						ans += '{'+String(num[0])+','+String(num[1])+'}'
@@ -223,7 +223,7 @@
 			if (val == null) { throw 'Wildcards not implimented in avoids' }
 			if (num == null) { num = [0,0] }
 			else if (Array.isArray(num)) {
-				if (num[1] != NaN) { throw 'Multi-range not implimented' }
+				if (!isNaN(num[1])) { throw 'Multi-range not implimented' }
 				num = [0,num[0]]
 			}
 			else { num = [0,num] }
@@ -252,6 +252,7 @@
 		console.log(limits)
 		
 		pattern = parse(pattern)
+		console.log(pattern)
 		pattern = pattern2regex(pattern)
 		console.log(pattern)
 		
