@@ -187,18 +187,17 @@
     // search function
     function searchle() {
 	    
+    	// get html values
+	let pattern = document.getElementById("SearchlePattern").value
+	let requires = document.getElementById("SearchleRequires").value
+	let avoids = document.getElementById("SearchleAvoids").value
+	let allows = document.getElementById("SearchleAllows").value
+	let result = document.getElementById("SearchleResult")
+
     	try {
-		// get html values
-		let pattern = document.getElementById("SearchlePattern").value
-		let requires = document.getElementById("SearchleRequires").value
-		let avoids = document.getElementById("SearchleAvoids").value
-		let allows = document.getElementById("SearchleAllows").value
-		let result = document.getElementById("SearchleResult")
-
 		let limits = {}
-
-
-		allows = parse(allows.toLowerCase())
+		
+		allows = parse(replace(allows.toLowerCase(),' ,',''))
 		for (let i=0; i<allows.length; i++) {
 			let [num,val,inv] = allows[i]
 			if (Array.isArray(val)) { throw 'Groupings not implimented in allows' }
@@ -215,7 +214,7 @@
 
 		}
 
-		avoids = parse(avoids.toLowerCase())
+		avoids = parse(replace(avoids.toLowerCase(),' ,',''))
 		for (let i=0; i<avoids.length; i++) {
 			let [num,val,inv] = avoids[i]
 			if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
@@ -234,7 +233,7 @@
 			limits[val] = num
 		}
 
-		requires = parse(requires.toLowerCase())
+		requires = parse(replace(requires.toLowerCase(),' ,',''))
 		for (let i=0; i<requires.length; i++) {
 			let [num,val,inv] = requires[i]
 			if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
@@ -249,12 +248,8 @@
 			}
 		}
 		
-		console.log(limits)
-		
-		pattern = parse(pattern)
-		console.log(pattern)
+		pattern = parse(replace(pattern.toLowerCase(),' ,',''))
 		pattern = pattern2regex(pattern)
-		console.log(pattern)
 		
 		// solve  
 		let re = new RegExp('^'+pattern+'$','i')
