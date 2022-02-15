@@ -1,4 +1,4 @@
-(async () => {
+async function searchleMain(document) {
     
 	// replacement helper function
 	function replace(str,old_chars,new_cha) {
@@ -218,4 +218,4 @@
     // attach listeners
     document.getElementById("SearchleButton").onclick = searchle
 
-})()
+}
