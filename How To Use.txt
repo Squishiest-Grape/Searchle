@@ -10,21 +10,26 @@ You can also use numbers as either values or ranges
     Pattern:  5+
     Result:   All words with 5 or more letters (the trailing wildcard can be omitted)
   
-You can place global windcard limits through the requires, avoids, and allows
+You can place global wildcard limits through the requires, avoids, and allows
     Pattern:  10
-    Requires: aa3-4c
+    Requires: aa3-4c1d
     Avoids:   b
-    Result:   10 letter words with at least 2 'a's, 3 to 4 'c's and no 'b's
+    Result:   10 letter words with at least 2 'a's, 3 to 4 'c's, at least 1 'd', and no 'b's
       
-You can place local windcard limits with groupings [] or () (they all do the same thing)
+You can place local wildcard limits with groupings [] or () (they both do the same thing)
     Pattern:  ??(aeiou)??  
     Result:   5 letter words with a vowel in the middle
     
 You can also negate letters or groupings with characters !~^ in front (they all do the same thing)
-    Pattern:  HE_!(L)O
-    Result:   Words that fit the pattern without L in the second wildcard
+    Pattern:  HE_!LO
+    Result:   helio
     
 You can add substrings with '' or ""
     Pattern:  5
     Requires: 'ion'
-    Result:   5 letter words that has 'ion' inside it
+    Result:   5 letter words that have 'ion' inside them
+    
+You can use regexp using substrings and .* to disconnect the bound edges
+    Pattern:  '.*cat.*'
+    Result:   Any word with cat anywhere in it
+    
