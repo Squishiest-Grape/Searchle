@@ -17,8 +17,8 @@ You can place local wildcard limits with groupings. Use '[]' or '()'
     Result:   5 letter words with a vowel in the middle
     
 You can use negate opperators in front. Use '!' or '~' or '^'
-    Pattern:  HE!2LO
-    Result:   Word with pattern he??o, but no 'L' in the 3rd or 4th spot -> hermo
+    Pattern:  HE!L!LO
+    Result:   Word with pattern HE??O, but no 'L' in the 3rd or 4th spot -> hermo
     
 You can search/require substrings with '' or ""
     Pattern:  5
