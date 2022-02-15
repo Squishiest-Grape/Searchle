@@ -1,14 +1,10 @@
 You can seach for words using wildcard characters ?#*_. (they all do the same thing)
-    Pattern:  fish_ng 
-    Result:   fishing
-    Pattern:  ??ion 
+    Pattern:  **ion 
     Result:   onion Orion
 
 You can also use numbers as either values or ranges
-    Pattern:  5-6?
-    Result:   All 5 to 6 letter words 
-    Pattern:  5+
-    Result:   All words with 5 or more letters (the trailing wildcard can be omitted)
+    Pattern:  5-6
+    Result:   All 5 to 6 letter words (the trailing wildcard can be omitted)
   
 You can place global wildcard limits through the requires, avoids, and allows
     Pattern:  10
@@ -22,14 +18,9 @@ You can place local wildcard limits with groupings [] or () (they both do the sa
     
 You can also negate letters or groupings with characters !~^ in front (they all do the same thing)
     Pattern:  HE_!LO
-    Result:   helio
+    Result:   Word with pattern he??o, but no 'L' in the 4th spot -> helio
     
-You can add substrings with '' or ""
+You can search/require substrings with '' or ""
     Pattern:  5
     Requires: 'ion'
     Result:   5 letter words that have 'ion' inside them
-    
-You can use regexp using substrings and .* to disconnect the bound edges
-    Pattern:  '.*cat.*'
-    Result:   Any word with cat anywhere in it
-    
