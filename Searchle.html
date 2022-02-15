@@ -125,8 +125,8 @@
 					mode = 'num'
 					if ('1234567890'.includes(cha)) {
 						if (num == null) { num = cha }
-						else if (typeof num === 'string') { num += cha }
-						else if (Array.isArray(num)) { num[num.length-1] += cha }
+						else if (typeof num == 'string') { num += cha }
+						else if (Array.isArray(num)) { num[num.length-1] = num[num.length-1] + cha }
 					} else if ('-+'.includes(cha)) { 
 						num = [num,'']
 					}
