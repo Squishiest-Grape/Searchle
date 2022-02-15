@@ -25,7 +25,7 @@ You can search/require substrings with '' or ""
     Requires: 'ion'
     Result:   5 letter words that have 'ion' inside them
 
-
+Spaces and commas are ignored
 
 Requires, Avoids, and Allows are just different ways of specifying the allowable ranges for each letter's counts (excluding those specified)
     Requires:
