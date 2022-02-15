@@ -179,7 +179,7 @@
 			}
 		}
 		
-		pattern = pattern2regex(parseFull(pattern))
+		//pattern = pattern2regex(parseFull(pattern))
 		
 		
 		
