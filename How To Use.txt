@@ -1,14 +1,14 @@
-You can seach for words using wildcard characters ?#*_. (they all do the same thing)
+You can seach for words using wildcard characters. Use '?' or '#' or '*' or '_' or '.'
     Pattern:  **ion 
     Result:   onion Orion
 
-You can also use numbers as either values or ranges
-    Pattern:  5-6
-    Result:   All 5 to 6 letter words (the trailing wildcard can be omitted)
+You can also use numbers in front to indicate ranges of acceptable values. Use #, #-#, #+
+    Pattern:  5-6  (the trailing wildcard can be omitted)
+    Result:   All 5 to 6 letter words
   
-You can place global wildcard limits through the requires, avoids, and allows
+You can place global wildcard limits through the requires, avoids, and allows. 
     Pattern:  10
-    Requires: aa3-4c1d
+    Requires: aa3-4c1d    
     Avoids:   b
     Result:   10 letter words with at least 2 'a's, 3 to 4 'c's, at least 1 'd', and no 'b's
       
@@ -24,3 +24,20 @@ You can search/require substrings with '' or ""
     Pattern:  5
     Requires: 'ion'
     Result:   5 letter words that have 'ion' inside them
+
+
+
+Requires, Avoids, and Allows are just different ways of specifying the allowable ranges for each letter's counts (excluding those specified)
+    Requires:
+    - Providing no number forces that value's count to be in the range [1,inf]
+    - Providing a singular number forces that value's count to be in the range [#,inf]
+    - Multiple singular number inputs of the same letter sum their bounds, while ranges inputs overide
+    - A letter's range must satisfy both Avoids and Allows unless overwriten by a Requires
+    Avoids:
+    - Providing no number forces that value's count to be in the range [0,0]
+    - Providing a singular number forces that value's count to be in the range [0,#]
+    Allows:
+    - If Allows is empty, all letter's count are set to the range [0,inf]
+    - If Allows in not empty, all unlisted letters are assumed to have the range [0,0]
+    - Providing no number forces that value's count to be in the range [0,inf] 
+    - Providing a singular number forces that values count to be in the range [0,#]
