@@ -1,8 +1,8 @@
 You can seach for words using wildcard characters. Use '?' or '#' or '*' or '_' or '.'
     Pattern:  **ion 
-    Result:   onion Orion
+    Result:   union onion Orion scion anion prion Arion axion Ixion inion adion stion
 
-You can also use numbers in front to indicate ranges of acceptable values. Use #, #-#, #+
+You can use numbers in front to indicate ranges of acceptable values. Use #, #-#, #+
     Pattern:  5-6  (the trailing wildcard can be omitted)
     Result:   All 5 to 6 letter words
   
@@ -12,13 +12,13 @@ You can place global wildcard limits through the requires, avoids, and allows.
     Avoids:   b
     Result:   10 letter words with at least 2 'a's, 3 to 4 'c's, at least 1 'd', and no 'b's
       
-You can place local wildcard limits with groupings [] or () (they both do the same thing)
+You can place local wildcard limits with groupings. Use '[]' or '()'
     Pattern:  ??(aeiou)??  
     Result:   5 letter words with a vowel in the middle
     
-You can also negate letters or groupings with characters !~^ in front (they all do the same thing)
-    Pattern:  HE_!LO
-    Result:   Word with pattern he??o, but no 'L' in the 4th spot -> helio
+You can use negate opperators in front. Use '!' or '~' or '^'
+    Pattern:  HE!2LO
+    Result:   Word with pattern he??o, but no 'L' in the 3rd or 4th spot -> hermo
     
 You can search/require substrings with '' or ""
     Pattern:  5
