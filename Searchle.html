@@ -1,12 +1,32 @@
-<div align="center">
+<div align="center"
+     style="display: flex"
+     style="justify-content: space-around"
+     style="align-items: flex-start"
+     >
     <table>
         <tr>
-            <td rowspan="4">
+	    <th>
+		    How to Use
+	    </th>
+	    <th colspan="2">
                 <input
                     type="button"
                     id="SearchleButton"
                     value="Searchle"
+		    style="width:100%"
                 />
+            </th>
+	 </tr>
+	 <tr>
+	    <td rowspan="4" id=HowToText style="right-padding:10vw">
+The main box is the pattern box <br>
+Use '?' or '#' or '*' or '_' or '.' as wildcard <br>
+Use #, #-#, #+ in front to specify the allowable count <br>
+Use the requires, avoids, and allows to limit wildcards <br>
+Use '[]' or '()' to specify in-place wildcard limits <br>
+Use '!' or '~' or '^' to disallow values <br>
+Use '' or "" to make substring values <br>
+Spaces, commas, and capitalization is ignored <br>
             </td>
             <td>
                 Pattern
@@ -52,22 +72,24 @@
             </td>
         </tr>
         <tr>
-            <td colspan="3">
+	    <td>
+                <form action="https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/Examples.txt">
+			<input type="submit"
+			       value="Examples"
+			       style="width:100%"
+			       />
+		</form>
+            </td>
+            <td colspan="2">
                 <textarea
                     id="SearchleResult"
+		    style="width:100%"
                     disabled
                 />
                     Results
                 </textarea>
             </td>
         </tr>
-	<tr>
-            <td colspan="3">
-                <form action="https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/How%20To%20Use.txt">
-			<input type="submit" value="How To Use" />
-		</form>
-            </td>
-	</tr>
     </table>
 </div>
 
@@ -288,6 +310,7 @@
     
     // attach listeners
     document.getElementById("SearchleButton").onclick = searchle
+    // document.getElementById('HowToText')
 
 })()
 </script>
