@@ -18,6 +18,10 @@ Examples:
       
     Pattern:  ??(aeiou)??  
     Result:   5 letter words with a vowel in the middle
+    
+    Pattern:  !i _ !a !t _
+    Requires: iat
+    Results:  5 leter words with at least 1 'i', 'a', and 't' where those leters are not in positions 1, 3, and 4 respectively
   
 
 Requires, Avoids, and Allows are just different ways of specifying the allowable ranges for each letter's counts (excluding those specified in the pattern)
