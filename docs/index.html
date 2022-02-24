@@ -13,18 +13,6 @@
     font-size: x-large;
     font-family: Arial, Verdana, Helvetica;
   }
-  #pull-tab {
-    height: 0px;
-    width: 0px;
-    border-top: 5vw solid gray;
-    border-left: 5vw solid transparent;
-    border-right: 5vw solid transparent;
-    -webkit-transform: rotate(-45deg);
-    position: absolute;
-    bottom: 0px;
-    right: -3vw;
-    z-index: 2;
-  }
 </Style>
 
 <body>
@@ -66,9 +54,8 @@
     </tr>
     <tr>
       <td colspan=2>
-        <div class=pull-tab></div>
         <textarea id=SearchleResult
-                  style=width:100%
+                  style='width:100%; height:100%'
                   disabled
                   />
           Results
