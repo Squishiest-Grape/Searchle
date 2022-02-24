@@ -7,18 +7,16 @@
 <Style>
   #main {
     font-size: x-large;
-    font-family: Arial, Verdana, Helvetica;
+    font-family: sans-serif;
   }
   #main *{
     font-size: x-large;
-    font-family: Arial, Verdana, Helvetica;
+    font-family: sans-serif;
   }
 </Style>
 
 <body style=height:100%>
-  <table id=main
-         style=height:100%
-         >
+  <table id=main style=height:100%>
     <tr>
       <td colspan=2>
         <input type=button
@@ -54,10 +52,11 @@
                />
       </td>
     </tr>
-    <tr>
-      <td colspan=2>
+    <tr style=height:100%>
+      <td colspan=2
+          style=height:100%>
         <textarea id=SearchleResult
-                  style='width:100%; height:100%'
+                  style='width:100%; height:100%; font-family: monospace'
                   disabled
                   />
           Results
