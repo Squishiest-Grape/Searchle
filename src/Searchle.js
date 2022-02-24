@@ -213,7 +213,8 @@ async function searchleMain(document) {
     
     // get wordlist
     const url = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/200c010c0324e6d158650a59d67418f75c3b0820/wordlist.json';
-    const wordlist = await fetch(url).then(response => response.json())
+    let wordlist = await fetch(url).then(response => response.json())
+    wordlist = wordlist['words']
     
     // attach listeners
     document.getElementById("SearchleButton").onclick = searchle
