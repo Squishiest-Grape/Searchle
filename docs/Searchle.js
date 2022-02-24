@@ -8,6 +8,8 @@ async function searchleMain(document) {
 	
 	// main parser
 	function parse(str) {
+		str = str.toLowerCase()
+		str = replace(str,' ,','')
 		let ANS = []
 		let val = null
 		let num = null
@@ -122,7 +124,7 @@ async function searchleMain(document) {
 		// get limits
 		let limits = {}
 
-		avoids = parse(avoids.toLowerCase())
+		avoids = parse(avoids)
 		for (let i=0; i<avoids.length; i++) {
 			let [num,val,inv] = avoids[i]
 			if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
@@ -141,7 +143,7 @@ async function searchleMain(document) {
 			limits[val] = num
 		}
 
-		requires = parse(requires.toLowerCase())
+		requires = parse(requires)
 		for (let i=0; i<requires.length; i++) {
 			let [num,val,inv] = requires[i]
 			if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
