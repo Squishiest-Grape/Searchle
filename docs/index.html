@@ -1,57 +1,60 @@
 <head>
-  <title> Searchle </title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Searchle</title>
+  <meta name=viewport content='width=device-width, initial-scale=1.0'>
 </head>
 
+<Style>
+  #main{
+    font:16pt
+  }
+</Style>
+
 <body>
-  <div>
+  <div id=main>
     <table>
       <tr>
-        <td colspan="2">
-          <input type="button"
-                 id="SearchleButton"
-                 value="Searchle"
-                 style="width:100%"
+        <td colspan=2>
+          <input type=button
+                 id=SearchleButton
+                 value=Searchle
+                 style=width:100%
                  />
         </td>
       </tr>
       <tr>
-        <td colspan="2">
-          <input type="text"
-                 id = 'SearchlePattern'
-                 style="width:100%"
+        <td colspan=2>
+          <input type=text
+                 id=SearchlePattern
+                 style='width:100%'
                  />
         </td>
       </tr>
       <tr>
-        <td> Requires </td>
+        <td>Requires</td>
         <td>
-          <input type="text"
-                 id = 'SearchleRequires'
-                 style="width:100%"
+          <input type=text
+                 id=SearchleRequires
+                 style=width:100%
                  />
         </td>
       </tr>
       <tr>
-        <td> Avoids </td>
+        <td>Avoids</td>
         <td>
-          <input type="text"
-                 id = 'SearchleAvoids'
-                 style="width:100%"
+          <input type=text
+                 id=SearchleAvoids
+                 style=width:100%
                  />
         </td>
       </tr>
       <tr>
-        <td colspan="2">
-          <textarea id="SearchleResult"
-                    style="width:100%"
+        <td colspan=2>
+          <textarea id=SearchleResult
+                    style=width:100%
                     disabled
                     />
             Results
           </textarea>
-          <div class="grippie"
-               style="margin-right: 0px;">
-          </div>
         </td>
       </tr>
     </table>
