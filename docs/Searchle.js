@@ -190,11 +190,13 @@ async function searchleMain(document) {
     } 
     
     function printHelp() {
-        document.getElementById("SearchleResult").innerHTM = helptext
+        let e = document.getElementById("SearchleResult")
+	e.innerHTM = helptext
     }
     
     function openOptions() {
-        document.getElementById("SearchleResult").innerHTM = 'Options Not Availible'
+        let e = document.getElementById("SearchleResult")
+	e.innerHTM = 'Options Not Availible'
     }
     
     // get wordlist
