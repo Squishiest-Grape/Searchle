@@ -1,16 +1,31 @@
 <head>
   <title>Searchle</title>
-  <meta name=viewport content='width=device-width, initial-scale=1.0'>
+  <meta name=viewport content='width:device-width, initial-scale:1.0'>
 </head>
 
 <Style>
-  #main{
-    font-size: large;
+  #main {
+    font-size: x-large;
     font-family: Arial, Verdana, Helvetica;
+    z-index: 1;
   }
   #main *{
-    font-size: large;
+    font-size: x-large;
     font-family: Arial, Verdana, Helvetica;
+    z-index: 1;
+  }
+  #pull-tab {
+    height: 0px;
+    width: 0px;
+    border-top: 5vw solid gray;
+    border-left: 5vw solid transparent;
+    border-right: 5vw solid transparent;
+    -webkit-transform: rotate(-45deg);
+    position: absolute;
+    bottom: 0px;
+    right: -3vw;
+    pointer-events: none;
+    z-index: 2;
   }
 </Style>
 
@@ -27,6 +42,7 @@
     </tr>
     <tr>
       <td colspan=2>
+        <div class="pull-tab"></div>
         <input type=text
                id=SearchlePattern
                style='width:100%'
