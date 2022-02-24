@@ -189,15 +189,26 @@ async function searchleMain(document) {
         
     } 
     
+    function printHelp() {
+        document.getElementById("SearchleResult").innerHTM = helptext
+    }
+    
+    function openOptions() {
+        document.getElementById("SearchleResult").innerHTM = 'Options Not Availible'
+    }
+    
     // get wordlist
-    const url = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/Wordlist.json'
-    let wordlist = await fetch(url).then(response => response.json())
+    let wordlist = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/Wordlist.json').then(response => response.json())
     wordlist = wordlist['words']
     
     if (wordlist) { console.log('Searchle: loaded wordlist') }
     else { console.log('Searchle: failed to load wordlist') }
 	
+    let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/Help.txt').then(response => response.json())
+    printHelp()
+	
     // attach listeners
     document.getElementById("SearchleButton").onclick = searchle
-
+    document.getElementById("Help").onclick = printHelp
+    document.getElementById("Options").onclick = openOptions
 }
