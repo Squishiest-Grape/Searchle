@@ -210,13 +210,14 @@ async function searchleMain(document) {
         
     } 
     
-    console.log('starting searchle')
-	
     // get wordlist
-    const url = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/200c010c0324e6d158650a59d67418f75c3b0820/wordlist.json';
+    const url = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/Wordlist.json'
     let wordlist = await fetch(url).then(response => response.json())
     wordlist = wordlist['words']
     
+    if (wordlist) { console.log('Searchle: loaded wordlist') }
+    else { console.log('Searchle: failed to load wordlist') }
+	
     // attach listeners
     document.getElementById("SearchleButton").onclick = searchle
 
