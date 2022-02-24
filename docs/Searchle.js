@@ -210,5 +210,5 @@ async function searchleMain(document) {
     // attach listeners
     document.getElementById("SearchleButton").onclick = searchle
     document.getElementById("Help").onclick = printHelp
-    document.getElementById("Options").onclick = openOptions
+    document.getElementById("Settings").onclick = openOptions
 }
