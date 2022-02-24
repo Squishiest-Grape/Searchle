@@ -19,11 +19,29 @@
   <table id=main style=height:100%>
     <tr>
       <td colspan=2>
-        <input type=button
-               id=SearchleButton
-               value=Searchle
-               style=width:100%
-               />
+        <b>
+          <input type=button
+                 id=SearchleButton
+                 value=Searchle
+                 style=width:100%
+                 />
+        </b>
+      </td>
+      <td>
+        <b>
+          <input type=button
+                 id=Settings
+                 value=⚙
+                 />
+        </b>
+      </td> 
+      <td>
+        <b>
+          <input type=button
+                 id=Help
+                 value=?
+                 />
+        </b>
       </td>
     </tr>
     <tr>
@@ -36,7 +54,7 @@
     </tr>
     <tr>
       <td>Requires</td>
-      <td>
+      <td colspan=3>
         <input type=text
                id=SearchleRequires
                style=width:100%
@@ -45,7 +63,7 @@
     </tr>
     <tr>
       <td>Avoids</td>
-      <td>
+      <td colspan=3>
         <input type=text
                id=SearchleAvoids
                style=width:100%
@@ -53,7 +71,7 @@
       </td>
     </tr>
     <tr style=height:100%>
-      <td colspan=2
+      <td colspan=4
           style=height:100%>
         <textarea id=SearchleResult
                   style='width:100%; height:100%; font-family: monospace'
