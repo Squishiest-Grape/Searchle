@@ -173,9 +173,7 @@ async function searchleMain(document) {
 				else { limits[val] = [num,NaN] }
 			}
 		}
-		
-		console.log(wordlist)
-		
+	
 		pattern = parse(pattern)
 		pattern = pattern2regex(pattern)
 		
@@ -183,7 +181,7 @@ async function searchleMain(document) {
 		let re = new RegExp('^'+pattern+'$','i')
 
 		let ans = []
-		for (const word in wordlist) {
+		for (const word of wordlist) {
 		    if (re.test(word)) {
 			let good = true
 			for (const part in limits) {
@@ -196,10 +194,7 @@ async function searchleMain(document) {
 			if (good) { ans.push(word) } 
 		    }
 		}
-
-		// order by popularity
-		ans.sort((a,b)=>wordlist[b]-wordlist[a])
-
+		
 		// set result
 		result.innerHTML = ans.join(' ')
 		
