@@ -210,6 +210,8 @@ async function searchleMain(document) {
         
     } 
     
+    console.log('starting searchle')
+	
     // get wordlist
     const url = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/200c010c0324e6d158650a59d67418f75c3b0820/wordlist.json';
     let wordlist = await fetch(url).then(response => response.json())
