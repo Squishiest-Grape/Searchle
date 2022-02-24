@@ -174,11 +174,10 @@ async function searchleMain(document) {
 			}
 		}
 		
-		console.log(limits)
+		console.log(wordlist)
 		
 		pattern = parse(pattern)
 		pattern = pattern2regex(pattern)
-		console.log(pattern)
 		
 		// solve  
 		let re = new RegExp('^'+pattern+'$','i')
