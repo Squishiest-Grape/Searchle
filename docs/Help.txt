@@ -1,0 +1,13 @@
+
+   Welcome to Searchle!
+
+The top box is for patterns
+-Use ? # * _ . as wildcards
+-Use () or [] for groupings
+-Use ! ~ ^ to negate groups
+-Use # #-# or #+ for count
+-Use '' "" for substrings
+-Use require or avoids to
+ specify allowable letters
+-Spaces, commas, and 
+ capitalization is ignored
