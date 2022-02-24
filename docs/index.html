@@ -11,7 +11,6 @@
        >
     <table>
       <tr>
-        <td> How to Use </td>
         <td colspan="2">
           <input type="button"
                  id="SearchleButton"
@@ -21,18 +20,7 @@
         </td>
       </tr>
       <tr>
-        <td rowspan="4" id=HowToText style="right-padding:10vw">
-The main box is the pattern box <br>
-Use '?' or '#' or '*' or '_' or '.' as wildcard <br>
-Use #, #-#, #+ in front to specify the allowable count <br>
-Use the requires, avoids, and allows to limit wildcards <br>
-Use '[]' or '()' to specify in-place wildcard limits <br>
-Use '!' or '~' or '^' to disallow values <br>
-Use '' or "" to make substring values <br>
-Spaces, commas, and capitalization is ignored <br>
-        </td>
-        <td> Pattern </td>
-        <td>
+        <td colspan="2">
           <input type="text"
                  id = 'SearchlePattern'
                  />
@@ -55,22 +43,6 @@ Spaces, commas, and capitalization is ignored <br>
         </td>
       </tr>
       <tr>
-        <td> Allows </td>
-        <td>
-          <input type="text"
-                 id = 'SearchleAllows'
-                 />
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <form action="https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/Examples.txt">
-            <input type="submit"
-                   value="Examples"
-                   style="width:100%"
-                   />
-          </form>
-        </td>
         <td colspan="2">
           <textarea id="SearchleResult"
                     style="width:100%"
