@@ -204,7 +204,7 @@ async function searchleMain(document) {
     if (wordlist) { console.log('Searchle: loaded wordlist') }
     else { console.log('Searchle: failed to load wordlist') }
 	
-    let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/Help.txt').then(response => response.json())
+    let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/Help.txt').then(response => response.text())
     printHelp()
 	
     // attach listeners
