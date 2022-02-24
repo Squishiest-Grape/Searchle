@@ -117,28 +117,10 @@ async function searchleMain(document) {
 		let pattern = document.getElementById("SearchlePattern").value
 		let requires = document.getElementById("SearchleRequires").value
 		let avoids = document.getElementById("SearchleAvoids").value
-		let allows = document.getElementById("SearchleAllows").value
 		let result = document.getElementById("SearchleResult")
 
+		// get limits
 		let limits = {}
-
-
-		allows = parse(allows.toLowerCase())
-		for (let i=0; i<allows.length; i++) {
-			let [num,val,inv] = allows[i]
-			if (Array.isArray(val)) { throw 'Groupings not implimented in allows' }
-			if (inv) { throw 'Inverse not implimented in allows' }
-			if (val == null) { throw 'Wildcards not implimented in allows' }
-			if (num == null) { num = [0,NaN] }
-			else if (!Array.isArray(num)) { num = [0,num] }
-			limits[val] = num
-		}
-		if (allows.length != 0) {
-			for (const c of 'abcdefghijklmnopqrstuvwxyz') {
-				if (!(c in limits)) { limits[c] = [0,0] }
-			}
-
-		}
 
 		avoids = parse(avoids.toLowerCase())
 		for (let i=0; i<avoids.length; i++) {
