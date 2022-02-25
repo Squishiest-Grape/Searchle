@@ -165,7 +165,7 @@ async function searchleMain(document) {
             // solve  
             let re = new RegExp('^'+pattern+'$','i')
 
-            let ans = []
+            ans = []
             for (const word of wordlist) {
                 if (re.test(word)) {
                 let good = true
@@ -208,10 +208,7 @@ async function searchleMain(document) {
     // attach button events
     document.getElementById("searchleBtn").onclick = searchle
     const tabs = document.getElementsByClassName('tabBtn')
-    for (const e of tabs) {
-        e.onclick = tabClick 
-        // e.style.width = `${(100-1)/tabs.length}%`
-    }
+    for (const e of tabs) { e.onclick = tabClick }
     
     activeTab('Info')
  
