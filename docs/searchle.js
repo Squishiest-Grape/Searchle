@@ -1,7 +1,7 @@
-const version = 'v0.1.1'
+const version = 'v0.1.2'
 
 async function searchleMain(document) {
-    
+
     // replacement helper function
     function replace(str,old_chars,new_cha) {
         for (const c of old_chars) { str = str.replaceAll(c,new_cha) }
@@ -111,107 +111,102 @@ async function searchleMain(document) {
         return ans
     }
     
-    
-    
     // search function
     function searchle() {
         
-        try {
-        // get html values
-        let pattern = document.getElementById("searchlePattern").value
-        let requires = document.getElementById("searchleRequires").value
-        let avoids = document.getElementById("searchleAvoids").value
-        let result = document.getElementById("searchleResult")
-
-        // get limits
-        let limits = {}
-
-        avoids = parse(avoids)
-        for (let i=0; i<avoids.length; i++) {
-            let [num,val,inv] = avoids[i]
-            if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
-            if (inv) { throw 'Inverse not implimented in avoids' }
-            if (val == null) { throw 'Wildcards not implimented in avoids' }
-            if (num == null) { num = [0,0] }
-            else if (Array.isArray(num)) {
-                if (num[1] != NaN) { throw 'Multi-range not implimented' }
-                num = [0,num[0]]
-            }
-            else { num = [0,num] }
-            if (val in limits) {
-                if (limits[val][0] > num[0]) { num[0] = limits[val][0] }
-                if ((num[1] == NaN) || (limits[val][1] < num[1])) { num[1] = limits[val][1] } 
-            }
-            limits[val] = num
-        }
-
-        requires = parse(requires)
-        for (let i=0; i<requires.length; i++) {
-            let [num,val,inv] = requires[i]
-            if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
-            if (inv) { throw 'Inverse not implimented in requires' }
-            if (val == null) { throw 'Wildcards not implimented in requires' }
-            if (num == null) { num = 1 }
-            if (Array.isArray(num)) {
-                limits[val] = num
-            } else {
-                if (val in limits) { limits[val] = [limits[val][0]+num,limits[val][1]+num] }
-                else { limits[val] = [num,NaN] }
-            }
-        }
-    
-        pattern = parse(pattern)
-        pattern = pattern2regex(pattern)
+        let ans = ''
         
-        // solve  
-        let re = new RegExp('^'+pattern+'$','i')
+        try {
+            // get html values
+            let pattern = document.getElementById("searchlePattern").value
+            let requires = document.getElementById("searchleRequires").value
+            let avoids = document.getElementById("searchleAvoids").value
 
-        let ans = []
-        for (const word of wordlist) {
-            if (re.test(word)) {
-            let good = true
-            for (const part in limits) {
-                let c = (word.match(new RegExp(part,'gi')) || []).length
-                if (c < limits[part][0] || c > limits[part][1]) {
-                    good = false
-                    break
+            // get limits
+            let limits = {}
+
+            avoids = parse(avoids)
+            for (let i=0; i<avoids.length; i++) {
+                let [num,val,inv] = avoids[i]
+                if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
+                if (inv) { throw 'Inverse not implimented in avoids' }
+                if (val == null) { throw 'Wildcards not implimented in avoids' }
+                if (num == null) { num = [0,0] }
+                else if (Array.isArray(num)) {
+                    if (num[1] != NaN) { throw 'Multi-range not implimented' }
+                    num = [0,num[0]]
+                }
+                else { num = [0,num] }
+                if (val in limits) {
+                    if (limits[val][0] > num[0]) { num[0] = limits[val][0] }
+                    if ((num[1] == NaN) || (limits[val][1] < num[1])) { num[1] = limits[val][1] } 
+                }
+                limits[val] = num
+            }
+
+            requires = parse(requires)
+            for (let i=0; i<requires.length; i++) {
+                let [num,val,inv] = requires[i]
+                if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
+                if (inv) { throw 'Inverse not implimented in requires' }
+                if (val == null) { throw 'Wildcards not implimented in requires' }
+                if (num == null) { num = 1 }
+                if (Array.isArray(num)) {
+                    limits[val] = num
+                } else {
+                    if (val in limits) { limits[val] = [limits[val][0]+num,limits[val][1]+num] }
+                    else { limits[val] = [num,NaN] }
                 }
             }
-            if (good) { ans.push(word) } 
+
+            pattern = parse(pattern)
+            pattern = pattern2regex(pattern)
+
+            // solve  
+            let re = new RegExp('^'+pattern+'$','i')
+
+            let ans = []
+            for (const word of wordlist) {
+                if (re.test(word)) {
+                let good = true
+                for (const part in limits) {
+                    let c = (word.match(new RegExp(part,'gi')) || []).length
+                    if (c < limits[part][0] || c > limits[part][1]) {
+                        good = false
+                        break
+                    }
+                }
+                if (good) { ans.push(word) } 
+                }
             }
+            ans  = ans.join(' ')
+        } catch (error) {
+            ans = error       
         }
         
-        // set result
-        result.innerHTML = ans.join(' ')
-        
-    } catch (error) {
-        result.innerHTML = error        
-    }
-        
+        document.getElementById("searchleResult").innerHTML = ans
         
     } 
     
-    function printHelp() {
-        let e = document.getElementById("searchleResult")
-        e.innerHTML = helptext
+    function tabClick(event) {
+        let name = event.innerHTML
+        console.log(name)        
     }
     
-    function openOptions() {
-        let popup = document.getElementById('settingsTxt')
-        popup.classList.toggle('show')
-    }
+    
     
     // get wordlist
     let wordlist = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json').then(response => response.json())
     wordlist = wordlist['words']
     
     let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt').then(response => response.text())
-    printHelp()
     
     // attach listeners
     document.getElementById("searchleBtn").onclick = searchle
-    document.getElementById("helpBtn").onclick = printHelp
-    document.getElementById("settingsBtn").onclick = openOptions
+    
+    for (const e of document.getElementsByClassName('tabBtn')) { e.onlick = tabClick }
+    
     
     console.log(`Loaded Serachle ${version}`)
+    
 }
