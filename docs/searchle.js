@@ -179,7 +179,7 @@ async function searchleMain(document) {
                 if (good) { ans.push(word) } 
                 }
             }
-            ans  = ans.join(' ')
+            ans  = ans.join('\n')
         } catch (error) {
             ans = error       
         }
