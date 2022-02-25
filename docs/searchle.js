@@ -1,4 +1,4 @@
-const version = 'v0.1.2'
+const version = 'v0.1.3'
 
 async function searchleMain(document) {
 
@@ -190,26 +190,18 @@ async function searchleMain(document) {
     
     function tabClick(event) {
         let name = event.innerHTML
-        console.log(name)       
-        console.log('hit')
+        console.log(name)
     }
     
     
-    
-    // get wordlist
+    // get data
     let wordlist = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json').then(response => response.json())
     wordlist = wordlist['words']
-    
     let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt').then(response => response.text())
     
-    // attach listeners
+    // attach button events
     document.getElementById("searchleBtn").onclick = searchle
-    
-    for (const e of document.getElementsByClassName('tabBtn')) {
-        e.onlick = tabClick
-        console.log(e)
-    }
-    
+    for (const e of document.getElementsByClassName('tabBtn')) { e.onclick = tabClick }
     
     console.log(`Loaded Serachle ${version}`)
     
