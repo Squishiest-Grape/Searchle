@@ -199,7 +199,6 @@ async function searchleMain(document) {
     function openOptions() {
         let popup = document.getElementById('settingsTxt')
 		popup.classList.toggle('show')
-	e.innerHTML = 'Options Not Availible'
     }
     
     // get wordlist
