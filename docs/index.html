@@ -14,7 +14,8 @@
   html, body table tbody {
     width: 100%;
     height: 100%;
-    margin: 0;   
+    margin: 0;
+    display: flex;
   }
   th * {
     font-weight: bold;
@@ -23,6 +24,9 @@
   }
   input, textarea {
     width: 100%;
+  }
+  textarea {
+    resize: none;
   }
   .tab {
     border: 1px solid #ccc;
@@ -87,7 +91,7 @@
     <tr style=height:100%>
       <td colspan=2 style=height:100%>
         <div class=box id=boxResults>        
-          <textarea id=searchleResult resize=none disabled>
+          <textarea id=searchleResult disabled>
             Results
           </textarea>
         </div>
