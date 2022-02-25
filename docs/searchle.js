@@ -1,5 +1,31 @@
 const version = 'v0.1.3'
 
+let options = {
+    listOptions: {
+        'All': 'Include',
+        'Proper Nouns': 'Avoid',
+    },
+    sortOption: 'Frequency',
+    wordleOption: 'Supper Hard Mode',
+    wordleAnswerOption: false,
+    frequencyOption: 'F>0',
+}
+
+const listsOptions = {
+    'Require': 'green',
+    'Include': 'yellow',
+    'Nothing': 'gray',
+    'Avoid': 'red',
+}
+
+const sortOptions = ['Frequency','Alphabetically','Power','Wordle']
+const wordleOptions = ['Normal','Hard Mode','Supper Hard Mode']    
+    
+}
+
+
+
+
 async function searchleMain(document) {
 
     // replacement helper function
