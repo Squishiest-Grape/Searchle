@@ -184,16 +184,21 @@ async function searchleMain(document) {
             ans = error       
         }
         
-        document.getElementById("searchleResult").innerHTML = ans
+        document.getElementById('searchleResult').innerHTML = ans
         
     } 
     
-    function tabClick(event) {
-        let name = event.srcElement.innerHTML
-        console.log(event)
-        console.log(name)
+    function activeTab(name) {
+        for (let e of document.getElementsByClassName('box')){ e.style.display = 'none' }
+        for (let e of document.getElementsByClassName('tabBtn')){ e.className.replace(' active','') }
+        document.getElementById('box'+name).style.display = 'block';
+        for (let e of document.getElementsByClassName('tabBtn')) { if (e.innerHTML == name) { e.className += ' active' }
     }
     
+    function tabClick(event) {
+        const name = event.srcElement.innerHTML
+        activeTab(name)
+    }
     
     // get data
     let wordlist = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json').then(response => response.json())
@@ -208,6 +213,9 @@ async function searchleMain(document) {
         // e.style.width = `${(100-1)/tabs.length}%`
     }
     
+    activeTab('Info')
+        
+        
     console.log(`Loaded Serachle ${version}`)
     
 }
