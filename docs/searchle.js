@@ -1,3 +1,5 @@
+const ver = 'v0.1.1'
+
 async function searchleMain(document) {
     
 	// replacement helper function
@@ -116,10 +118,10 @@ async function searchleMain(document) {
 	    
     	try {
 		// get html values
-		let pattern = document.getElementById("SearchlePattern").value
-		let requires = document.getElementById("SearchleRequires").value
-		let avoids = document.getElementById("SearchleAvoids").value
-		let result = document.getElementById("SearchleResult")
+		let pattern = document.getElementById("searchlePattern").value
+		let requires = document.getElementById("searchleRequires").value
+		let avoids = document.getElementById("searchleAvoids").value
+		let result = document.getElementById("searchleResult")
 
 		// get limits
 		let limits = {}
@@ -190,27 +192,27 @@ async function searchleMain(document) {
     } 
     
     function printHelp() {
-        let e = document.getElementById("SearchleResult")
+        let e = document.getElementById("searchleResult")
 	e.innerHTML = helptext
     }
     
     function openOptions() {
-        let e = document.getElementById("SearchleResult")
+        let popup = document.getElementById('settingsTxt')
+		popup.classList.toggle('show')
 	e.innerHTML = 'Options Not Availible'
     }
     
     // get wordlist
     let wordlist = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json').then(response => response.json())
     wordlist = wordlist['words']
-    
-    if (wordlist) { console.log('Searchle: loaded wordlist') }
-    else { console.log('Searchle: failed to load wordlist') }
 	
     let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt').then(response => response.text())
     printHelp()
 	
     // attach listeners
-    document.getElementById("SearchleButton").onclick = searchle
-    document.getElementById("Help").onclick = printHelp
-    document.getElementById("Settings").onclick = openOptions
+    document.getElementById("searchleBtn").onclick = searchle
+    document.getElementById("helpBtn").onclick = printHelp
+    document.getElementById("settingsBtn").onclick = openOptions
+	
+	console.log(`Loaded Serachle ${version}`)
 }
