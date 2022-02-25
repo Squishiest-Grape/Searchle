@@ -29,7 +29,7 @@
     border: 1px solid #ccc;
     background-color: #f1f1f1;
   }
-  .tab button {
+  .tab * button {
     background-color: inherit;
     float: left;
     border: none;
@@ -38,10 +38,10 @@
     transition: 0.3s;
     width:100%;
   }
-  .tab button:hover {
+  .tab * button:hover {
     background-color: #ddd;
   }
-  .tab button.active {
+  .tab * button.active {
     background-color: #ccc;
   }
   .box {
@@ -71,12 +71,10 @@
       <td><input type=text id=searchleAvoids></td>
     </tr>
     <tr>
-      <td colspan=2>
-        <div class=tab>
-          <button class=tabBtn>Results</button>
-          <button class=tabBtn>Help/Info</button>
-          <button class=tabBtn>Options</button>
-        </div>
+      <td colspan=2 class=tab>
+        <button class=tabBtn>Results</button>
+        <button class=tabBtn>Help & Info</button>
+        <button class=tabBtn>Options</button>
       </td>
     </tr>
     <tr style=height:100%>
