@@ -1,0 +1,43 @@
+* {
+  font-size: x-large;
+  font-family: sans-serif;
+}
+
+.widefield {
+  width:100%;
+  font-family: monospace; 
+}
+
+.widebox {
+  width:100%;
+}
+
+.tallbox {
+  height:100%;
+}
+
+/* Popup container */
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* The actual popup (appears on top) */
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 3;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+/* Toggle this class when clicking on the popup container (hide and show the popup) */
+.popup .show {
+  visibility: visible;
+}
