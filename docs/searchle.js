@@ -190,7 +190,7 @@ async function searchleMain(document) {
     
     function activeTab(name) {
         for (let e of document.getElementsByClassName('box')) { e.style.display = 'none' }
-        for (let e of document.getElementsByClassName('tabBtn')) { e.className.replace(' active','') }
+        for (let e of document.getElementsByClassName('tabBtn')) { e.className = e.className.replace(' active','') }
         document.getElementById('box'+name).style.display = 'block';
         for (let e of document.getElementsByClassName('tabBtn')) { if (e.innerHTML == name) { e.className += ' active' } }
     }
