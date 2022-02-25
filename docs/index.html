@@ -4,54 +4,47 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta name=viewport content='width=device-width, initial-scale=1.0'>
   <meta name="google-site-verification" content="f5bd9U2oFAs07cmYm-JiKIEBs4IqhlA7he984YM16Gc">
+  <link rel="stylesheet" href="styles.css">
 </head>
 
-<Style>
-  #main {
-    font-size: x-large;
-    font-family: sans-serif;
-  }
-  #main *{
-    font-size: x-large;
-    font-family: sans-serif;
-  }
-</Style>
-
-<body style=height:100%>
-  <table id=main style=height:100%>
+<body class=tallbox>
+  <table class=tallbox>
     <col>
-    <col style=width:100%>
+    <col class=widebox>
     <col>
     <col>
     <tbody>
       <tr>
         <td colspan=2>
           <input type=button
-                 id=SearchleButton
+                 id=searchleBtn
                  value=Searchle
-                 style='width:100%; font-weight:bold'
+                 class=widbox
+                 style=font-weight:bold
                  />
         </td>
         <td>
           <input type=button
-                 id=Help
+                 id=helpBtn
                  value=?
+                 class=tallbox
                  style='font-weight:bold'
                  />
         </td>
         <td>
           <input type=button
-                 id=Settings
+                 id=settingsBtn
                  value=⚙
-                 style='font-weight:bold; font-size:large; height:100%'
+                 class=tallbox
+                 style='font-weight:bold; font-size:large'
                  />
         </td> 
       </tr>
       <tr>
         <td colspan=4>
           <input type=text
-                 id=SearchlePattern
-                 style='width:100%; font-family: monospace'
+                 id=searchlePattern
+                 class=widefield
                  />
         </td>
       </tr>
@@ -59,8 +52,8 @@
         <td>Rquir:&nbsp</td>
         <td colspan=3>
           <input type=text
-                 id=SearchleRequires
-                 style='width:100%; font-family: monospace'
+                 id=searchleRequires
+                 class=widefield
                  />
         </td>
       </tr>
@@ -68,16 +61,17 @@
         <td>Avoid:</td>
         <td colspan=3>
           <input type=text
-                 id=SearchleAvoids
-                 style='width:100%; font-family: monospace'
+                 id=searchleAvoids
+                 class=widefield
                  />
         </td>
       </tr>
       <tr style=height:100%>
         <td colspan=4
             style=height:100%>
-          <textarea id=SearchleResult
-                    style='width:100%; height:100%; font-family: monospace'
+          <textarea id=searchleResult
+                    class=widefield
+                    style=height:100%
                     resize=horizontal
                     disabled
                     />
@@ -88,6 +82,11 @@
     </tbody>
   </table>
 </body>
+
+<div class=popup id=settings>
+  <span class=popuptext id=settingsTxt>Hello World!</span>
+</div>
+
 
 <script src=searchle.js></script>
 <script> searchleMain(document) </script>
