@@ -49,9 +49,10 @@
   }
   .box {
     display: none;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
     border-top: none;
+    height: 100%;
+  }
+  .box * {
     height: 100%;
   }
 </style>
@@ -74,10 +75,12 @@
       <td><input type=text id=searchleAvoids></td>
     </tr>
     <tr>
-      <td colspan=2 class=tab>
-        <button class=tabBtn>Results</button>
-        <button class=tabBtn>Info</button>
-        <button class=tabBtn>Options</button>
+      <td colspan=2>
+        <dir class=tab>
+          <button class=tabBtn>Results</button>
+          <button class=tabBtn>Info</button>
+          <button class=tabBtn>Options</button>
+        </dir>
       </td>
     </tr>
     <tr style=height:100%>
