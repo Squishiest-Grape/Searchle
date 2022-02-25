@@ -201,7 +201,11 @@ async function searchleMain(document) {
     
     // attach button events
     document.getElementById("searchleBtn").onclick = searchle
-    for (const e of document.getElementsByClassName('tabBtn')) { e.onclick = tabClick }
+    const tabs = document.getElementsByClassName('tabBtn')
+    for (const e of tabs) {
+        e.onclick = tabClick 
+        e.style.width = `${100/tabs.length}%`
+    }
     
     console.log(`Loaded Serachle ${version}`)
     
