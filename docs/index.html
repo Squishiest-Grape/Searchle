@@ -11,7 +11,7 @@
     font-size: x-large;
     font-family: monospace; 
   }
-  html, body table tbody {
+  html, body table {
     width: 100%;
     height: 100%;
     margin: 0;
@@ -62,7 +62,7 @@
 </style>
 
 <body>
-  <table><tbody>
+  <table>
     <tr>      
       <th colspan=2><input type=button id=searchleBtn value=Searchle></th>
     </tr>
@@ -89,12 +89,12 @@
     </tr>
     <tr style=height:100%>
       <td colspan=2 style=height:100%>
-        <div class=box id=boxResults style=height:100%>        
-          <textarea id=searchleResult disabled style=height:100%>
+        <div class=box id=boxResults>        
+          <textarea id=searchleResult>
             Results
           </textarea>
         </div>
-        <div class=box id=boxInfo markdown="1">
+        <div class=box id=boxInfo>
           Info
         </div>
         <div class=box id=boxOptions>        
@@ -102,7 +102,7 @@
         </div>
       </td>
     </tr>
-  </tbody></table>
+  </table>
 </body>
 
 <script src=searchle.js></script>
