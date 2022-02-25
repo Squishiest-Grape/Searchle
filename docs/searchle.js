@@ -205,7 +205,10 @@ async function searchleMain(document) {
     // attach listeners
     document.getElementById("searchleBtn").onclick = searchle
     
-    for (const e of document.getElementsByClassName('tabBtn')) { e.onlick = tabClick }
+    for (const e of document.getElementsByClassName('tabBtn')) {
+        e.onlick = tabClick
+        console.log(e)
+    }
     
     
     console.log(`Loaded Serachle ${version}`)
