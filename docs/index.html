@@ -6,126 +6,95 @@
   <meta name="google-site-verification" content="f5bd9U2oFAs07cmYm-JiKIEBs4IqhlA7he984YM16Gc">
 </head>
 
-
 <style>
   * {
     font-size: x-large;
-    font-family: sans-serif;
-  }
-  .widefield {
-    width:100%;
     font-family: monospace; 
   }
-  .widebox {
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;   
+  }
+  th {
+    font-weight: bold;
+  }
+  input, textarea{
     width:100%;
   }
-  .tallbox {
-    height:100%;
+  .tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
   }
-  .popup {
-    position: relative;
-    display: inline-block;
+  .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
     cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
   }
-  .popup .popuptext {
-    visibility: hidden;
-    width: 160px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 8px 0;
-    position: absolute;
-    z-index: 3;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -80px;
+  .tab button:hover {
+    background-color: #ddd;
   }
-  .popup .show {
-    visibility: visible;
+  .tab button.active {
+    background-color: #ccc;
+  }
+  .box {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 100%;
   }
 </style>
 
-<body class=tallbox>
-  <table class=tallbox>
-    <col>
-    <col class=widebox>
-    <col>
-    <col>
-    <tbody>
-      <tr>
-        <td colspan=2>
-          <input type=button
-                 id=searchleBtn
-                 value=Searchle
-                 class=widebox
-                 style=font-weight:bold
-                 />
-        </td>
-        <td>
-          <input type=button
-                 id=helpBtn
-                 value=?
-                 class=tallbox
-                 style='font-weight:bold'
-                 />
-        </td>
-        <td>
-          <input type=button
-                 id=settingsBtn
-                 value=⚙
-                 class=tallbox
-                 style='font-weight:bold; font-size:large'
-                 />
-        </td> 
-      </tr>
-      <tr>
-        <td colspan=4>
-          <input type=text
-                 id=searchlePattern
-                 class=widefield
-                 />
-        </td>
-      </tr>
-      <tr>
-        <td>Rquir:&nbsp</td>
-        <td colspan=3>
-          <input type=text
-                 id=searchleRequires
-                 class=widefield
-                 />
-        </td>
-      </tr>
-      <tr>
-        <td>Avoid:</td>
-        <td colspan=3>
-          <input type=text
-                 id=searchleAvoids
-                 class=widefield
-                 />
-        </td>
-      </tr>
-      <tr style=height:100%>
-        <td colspan=4
-            style=height:100%>
-          <textarea id=searchleResult
-                    class=widefield
-                    style=height:100%
-                    resize=horizontal
-                    disabled
-                    />
+<body>
+  <table><tbody>
+    <tr>      
+      <th colspan=2><input type=button id=searchleBtn value=Searchle/></th>
+    </tr>
+    <tr>  
+      <td>Pattern:&nbsp</td>
+      <td><input type=text id=searchlePattern/></td>
+    </tr>
+    <tr>
+      <td>Require:&nbsp</td>
+      <td><input type=text id=searchleRequires/></td>
+    </tr>
+    <tr>
+      <td>Avoid:&nbsp</td>
+      <td><input type=text id=searchleAvoids/></td>
+    </tr>
+    <tr>
+      <td colspan=2>
+        <div class=tab>
+          <button class=tabBtn>Results</button>
+          <button class=tabBtn>Help/Info</button>
+          <button class=tabBtn>Options</button>
+        </div>
+      </td>
+    </tr>
+    <tr style=height:100%>
+      <td colspan=2 style=height:100%>
+        <div class=box id=boxResult>        
+          <textarea id=searchleResult resize=none disabled/>
             Results
           </textarea>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        </div>
+        <div class=box id=boxInfo>        
+          Info
+        </div>
+        <div class=box id=boxOptions>        
+          Options
+        </div>
+      </td>
+    </tr>
+  </tbody></table>
 </body>
-
-<div class=popup id=settings>
-  <span class=popuptext id=settingsTxt>Hello World!</span>
-</div>
-
 
 <script src=searchle.js></script>
 <script> searchleMain(document) </script>
