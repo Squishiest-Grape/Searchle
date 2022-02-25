@@ -205,7 +205,7 @@ async function searchleMain(document) {
     const tabs = document.getElementsByClassName('tabBtn')
     for (const e of tabs) {
         e.onclick = tabClick 
-        e.style.width = `${(100-1)/tabs.length}%`
+        // e.style.width = `${(100-1)/tabs.length}%`
     }
     
     console.log(`Loaded Serachle ${version}`)
