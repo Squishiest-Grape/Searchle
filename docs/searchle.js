@@ -185,7 +185,7 @@ async function searchleMain(document) {
         }
         
         document.getElementById('searchleResult').innerHTML = ans
-        
+        activeTab('Results')
     } 
     
     function activeTab(name) {
