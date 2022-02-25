@@ -190,7 +190,8 @@ async function searchleMain(document) {
     
     function tabClick(event) {
         let name = event.innerHTML
-        console.log(name)        
+        console.log(name)       
+        console.log('hit')
     }
     
     
