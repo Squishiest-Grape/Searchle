@@ -205,6 +205,9 @@ async function searchleMain(document) {
     wordlist = wordlist['words']
     let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt').then(response => response.text())
     
+    document.getElementById("boxInfo").innerHTML = helptext
+    document.getElementById("boxOptions").innerHTML = 'Options not implmented'
+    
     // attach button events
     document.getElementById("searchleBtn").onclick = searchle
     const tabs = document.getElementsByClassName('tabBtn')
