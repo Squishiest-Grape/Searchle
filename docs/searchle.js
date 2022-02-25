@@ -192,7 +192,7 @@ async function searchleMain(document) {
         for (let e of document.getElementsByClassName('box')){ e.style.display = 'none' }
         for (let e of document.getElementsByClassName('tabBtn')){ e.className.replace(' active','') }
         document.getElementById('box'+name).style.display = 'block';
-        for (let e of document.getElementsByClassName('tabBtn')) { if (e.innerHTML == name) { e.className += ' active' }
+        for (let e of document.getElementsByClassName('tabBtn')) { if (e.innerHTML == name) { e.className += ' active' } }
     }
     
     function tabClick(event) {
@@ -214,8 +214,7 @@ async function searchleMain(document) {
     }
     
     activeTab('Info')
-        
-        
+ 
     console.log(`Loaded Serachle ${version}`)
     
 }
