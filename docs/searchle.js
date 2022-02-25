@@ -204,6 +204,7 @@ async function searchleMain(document) {
     let wordlist = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json').then(response => response.json())
     wordlist = wordlist['words']
     let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt').then(response => response.text())
+    helptext = helptext.replaceAll('\n','<br>')
     
     document.getElementById("boxInfo").innerHTML = helptext
     document.getElementById("boxOptions").innerHTML = 'Options not implmented'
