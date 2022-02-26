@@ -331,6 +331,8 @@ async function searchleMain(document) {
                 } else { console.log(`Unknown option of value ${option.value}`) }
             }
             frame.appendChild(subframe)
+        } else {
+            frame.appendChild(document.createTextNode(label))
         }
         if ('subops' in option) {
             let subframe = document.createElement('div')    
