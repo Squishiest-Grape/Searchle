@@ -229,7 +229,7 @@ async function searchleMain(document) {
         const rawCookies = document.cookie
         let cookies = {}
         for (const str of rawCookies.split(';')) {
-            console.lot(str)
+            console.log(str)
             const [key,val] = str.split('=')
             cookies[key.trim()] = JSON.parse(val.trim())     
         }
