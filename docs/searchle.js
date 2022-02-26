@@ -1,5 +1,9 @@
 const version = 'v0.1.4'
 
+const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json'
+const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
+
+
 let optionDef = {
     'Lists To Use': {
         initial: {'Proper Nouns': 'Avoid'},
@@ -23,7 +27,6 @@ let optionDef = {
         intial: '',
     }
 }  
-
 
 async function searchleMain(document) {
 
@@ -229,7 +232,7 @@ async function searchleMain(document) {
         let options = {}
         for (const [key, value] of Object.entries(optionDef)) {
             console.log([key,value])
-            options[key] = value.value   
+            options[key] = value.initial
         }
         return options    
     }
@@ -256,8 +259,8 @@ async function searchleMain(document) {
     
     
     // get data
-    let wordlist = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json').then(response => response.json())
-    let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt').then(response => response.text())
+    let wordlist = await fetch(wordlistUrl).then(response => response.json())
+    let helptext = await fetch(helptextUrl).then(response => response.text())
     let cookies = getCookies()
     console.log(cookies)
     
