@@ -21,12 +21,11 @@ let options = {
         subops: {
             order: {
                 label: 'Order',    
-                value: ['Frequency'],
+                value: 'Frequency',
                 type: ['Frequency','Alphabetically','Power','Wordle Score'],
                 subops: {
                     wordle: {
                         label: 'Wordle Sort Options',
-                        require: 'Wordle Score',
                         subops: {
                             mode: {
                                 label: 'Mode',
@@ -286,112 +285,55 @@ async function searchleMain(document) {
         }
     }
             
-
     function changeOption(keys,val) {
         const n = keys.length
         let opt = options
-        for (let i=0; i++; i<n-1) { opt = opt[keys[i]].value }
-        opt[keys[n-1]].value = val     
-        console.log(options)
+        for (let i=0; i++; i<n-1) { opt = opt[keys[i]].subops }
+        opt[keys[n-1]].value = val
     }
     
-//     function createOption(key,option,parent=null,keys=null) {
-//         if (parent == null) { parent = document.getElementById('boxOptions') }
-//         if (keys == null) { keys == [] }
-//         keys = keys.concat(key)
-//         if (typeof option.value === 'object' && !Array.isArray(option.value) && option.value !== null) {
-//             parent.appendChild(document.createTextNode(key+':'))
-//             const frame = document.createElement('div')
-//             frame.style.marginLeft = '5%'
-//             for (const [k,v] of Object.entries(option.value)) {
-//                 createOption(k,v
-                
-//                 newOptions[k] = {value: v, type: val.type.type}
-//             }
-//             createOptions(newOptions,frame)
-//             box.appendChild(frame)
-//         } else if (Array.isArray(val.type)) {
-//             const elem = document.createElement('select')
-//             for (const v of val.type) {
-//                 const e = document.createElement('option',{value:v})
-//                 e.appendChild(document.createTextNode(v))
-//                 elem.appendChild(e)
-//             }
-//             elem.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)     
-//             box.appendChild(elem)
-//         } else if (val.type === null || val.type === undefined) {
-//             if (typeof val.value === 'boolean') {
-//                 const e = document.createElement('input',{type:'checkbox', value:val.value})
-//                 e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
-//                 box.appendChild(e)
-//                 box.appendChild(document.createTextNode(key))
-//             } else if (typeof val.value === 'string') {
-//                 const e = document.createElement('input',{type:'text', value:val.value})
-//                 e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
-//                 box.appendChild(e)
-//                 box.appendChild(document.createTextNode(key))
-//             } else if (typeof val.value === 'number') {
-//                 const e = document.createElement('input',{type:'number', value:val.value})
-//                 e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
-//                 box.appendChild(e)
-//                 box.appendChild(document.createTextNode(key))                    
-//             } else { console.log('Option of uknown type') }
-//         } else { console.log('Option of uknown type') }
-//     }        
-
-        
-//     }
+    function createOption(option,keys,parent) {
+        const frame = document.createElement('div')
+        const id = '.'.join(keys)
+        if ('value' in option) {
+            if ('type' in option) {
+                if (Array.isArray(option.type)) {
+                    const element = document.createElement('select', {id: id})
+                    for (const val of option.type) { element.appendChild(document.createElement('option',{value:val})) }
+                    element.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)  
+                    frame.appendChild(element)
+                } else { console.log(`Unknown option of type ${option.type}`) }
+            } else {
+                let element
+                if (typeof option.value === 'boolean') {
+                    element = document.createElement('input', {type:'checkbox', id: id, value: option.value})
+                } else if (typeof option.value === 'string') {
+                    element = document.createElement('input', {type:'text', id: id, value: option.value})
+                } else if (typeof option.value === 'number') {
+                    element = document.createElement('input', {type:'number', id: id, value: option.value})
+                } else { console.log(`Unknown option of value ${option.value}`) }
+                element.onchange = (e) => changeOption(keys,e.srcElement.value)
+                frame.appendChild(element)
+            }
+        }
+        let label = keys[keys.length-1]
+        if ('label' in option) { label = option.label } 
+        frame.appendChild(document.createTextNode(label))
+        if ('subops' in option) {
+            let subframe = document.createElement('div')    
+            subframe.style.marginLeft = '5%'
+            createOptions(option.subops,keys,subframe)
+            frame.appendChild(subframe)
+        }
+    }
     
-    
-    
-    
-    
-    
-//     function createOptions(options,box=null,keys=null) {
-//         if (box == null) { box = document.getElementById('boxOptions') }
-//         if (keys == null) { keys == [] }
-//         for (let [key,val] of Object.entries(options)) {
-//             if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
-//                 box.appendChild(document.createTextNode(key+':'))
-//                 const frame = document.createElement('div')
-//                 frame.style.marginLeft = '5%'
-                
-                
-//                 let newOptions = {}
-//                 for (const [k,v] of Object.entries(val.value)) {
-//                     newOptions[k] = {value: v, type: val.type.type}
-//                 }
-//                 createOptions(newOptions,frame)
-//                 box.appendChild(frame)
-//             } else if (Array.isArray(val.type)) {
-//                 const elem = document.createElement('select')
-//                 for (const v of val.type) {
-//                     const e = document.createElement('option',{value:v})
-//                     e.appendChild(document.createTextNode(v))
-//                     elem.appendChild(e)
-//                 }
-//                 elem.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)     
-//                 box.appendChild(elem)
-//             } else if (val.type === null || val.type === undefined) {
-//                 if (typeof val.value === 'boolean') {
-//                     const e = document.createElement('input',{type:'checkbox', value:val.value})
-//                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
-//                     box.appendChild(e)
-//                     box.appendChild(document.createTextNode(key))
-//                 } else if (typeof val.value === 'string') {
-//                     const e = document.createElement('input',{type:'text', value:val.value})
-//                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
-//                     box.appendChild(e)
-//                     box.appendChild(document.createTextNode(key))
-//                 } else if (typeof val.value === 'number') {
-//                     const e = document.createElement('input',{type:'number', value:val.value})
-//                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
-//                     box.appendChild(e)
-//                     box.appendChild(document.createTextNode(key))                    
-//                 } else { console.log('Option of uknown type') }
-//             } else { console.log('Option of uknown type') }
-//         }        
-//     }
+    function createOptions(options,keys=null,parent=null) {
+        if (keys === null) { keys = [] }
+        if (parent === null) { parent = document.getElementById('boxOptions') }
+        for (const [key,option] of Object.entries(options)) {
+            createOption(option,keys.concat(key),parent)
+        }
+    }
     
     // get data
     let wordlist = await fetch(wordlistUrl).then(response => response.json())
@@ -400,8 +342,7 @@ async function searchleMain(document) {
     
     // add info
     document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n','<br>')
-    
-    console.log(options)
+
     // add list options options 
     for (const list in wordlist['lists']) {
         if (!(list in options.lists.subops)) {
@@ -411,8 +352,7 @@ async function searchleMain(document) {
     
     if ('options' in cookies) { applyOptions(options,cookies.options) }
     setCookie('options',options)
-    console.log('options')
-    // createOptions(options)
+    createOptions(options)
 
     // attach button events
     document.getElementById('searchleBtn').onclick = searchle
