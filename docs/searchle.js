@@ -258,6 +258,7 @@ async function searchleMain(document) {
     
     // add options 
     let options = optionDef2values(optionDef)
+    console.log(options)
     cookies['options'] = options
     setCookies(cookies)
     document.getElementById("boxOptions").innerHTML = 'Options not implmented'
