@@ -213,7 +213,6 @@ async function searchleMain(document) {
         } catch (error) {
             ans = error       
         }
-        
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
     } 
@@ -255,9 +254,11 @@ async function searchleMain(document) {
     }
     
     function combineOptions(oldOptions,newOptions) {
+        console.log('Comb Options')
         console.log(oldOptions)
         console.log(newOptions)
         for (let [key,val] of Object.entries(oldOptions)) {
+            console.log('kv op')
             console.log(key)
             console.log(newOptions)            
             if (key in newOptions && newOptions[key].value !== null) {
@@ -273,9 +274,7 @@ async function searchleMain(document) {
     function changeOption(keys,val) {
         const n = keys.length
         let opt = options
-        for (let i=0; i++; i<n-1) {
-            opt = opt[keys[i]].value            
-        }
+        for (let i=0; i++; i<n-1) { opt = opt[keys[i]].value  }
         opt[keys[n-1]].value = val     
         console.log(options)
     }
