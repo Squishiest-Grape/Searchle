@@ -1,7 +1,8 @@
 const version = 'v0.1.4'
 
 class Option {
-    constuctor(initial,option=null) {
+    constuctor(initial, option=null) {
+        console.log('Created option')
         this.value = initial
         this.option = option
     }
