@@ -1,29 +1,21 @@
 const version = 'v0.1.3'
 
+class Option {
+    constuctor(initial,option=null) {
+        this.initial = initial
+        this.option = option
+    }
+}
+
 let options = {
-    listOptions: {
-        'All': 'Include',
-        'Proper Nouns': 'Avoid',
-    },
-    sortOption: 'Frequency',
-    wordleOption: 'Supper Hard Mode',
-    wordleAnswerOption: false,
-    frequencyOption: 'F>0',
-}
-
-const listsOptions = {
-    'Require': 'green',
-    'Include': 'yellow',
-    'Nothing': 'gray',
-    'Avoid': 'red',
-}
-
-const sortOptions = ['Frequency','Alphabetically','Power','Wordle']
-const wordleOptions = ['Normal','Hard Mode','Supper Hard Mode']    
+    'Lists To Use': new Option({'Proper Nouns': 'Avoid'}, new Option('Include',['Require', 'Include', 'Nothing', 'Avoid']))
+    'Sort By': new Option('Frequency',['Frequency','Alphabetically','Power','Wordle Score'])
+    'Wordle Mode': new Option('Super Hard Mode',['Normal','Hard Mode','Super Hard Mode']),
+    'Use Wordle Answer List': new Option(false),
+    'Show Sort Value': new Option(false),
+    'Frequency Requirement': new Option(''),
+}  
     
-}
-
-
 
 
 async function searchleMain(document) {
