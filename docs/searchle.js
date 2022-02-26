@@ -254,18 +254,9 @@ async function searchleMain(document) {
     }
     
     function combineOptions(oldOptions,newOptions) {
-        console.log('Comb Options')
-        console.log(oldOptions)
-        console.log(newOptions)
-        for (let [key,val] of Object.entries(oldOptions)) {
-            console.log('op')
-            console.log(key)
-            console.log(newOptions)            
-            if ((key in newOptions) && (newOptions[key].value !== null)) {
+        for (let [key,val] of Object.entries(oldOptions)) {   
+            if (key in newOptions && 'value' in newOptions[key]) {
                 if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
-                    console.log('subop')
-                    console.log(val.value)
-                    console.log(newOptions[key].value)       
                     combineOptions(val.value,newOptions[key].value) 
                 } else {
                     oldOptions[key].value = newOptions[key].value
