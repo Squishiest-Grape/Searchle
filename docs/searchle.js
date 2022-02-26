@@ -286,6 +286,7 @@ async function searchleMain(document) {
                     newOptions[k] = {value: v, type: val.type.type}
                 }
                 createOptions(newOptions,frame)
+                box.appendChild(frame)
             } else if (Array.isArray(val.type)) {
                 console.log(`Creating List: ${key}`)
                 const elem = document.createElement('select')
@@ -294,7 +295,8 @@ async function searchleMain(document) {
                     e.appendChild(document.createTextNode(v))
                     elem.appendChild(e)
                 }
-                elem.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)                
+                elem.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)     
+                box.appendChild(elem)
             } else if (val.type === null || val.type === undefined) {
                 if (typeof val.value === 'boolean') {
                     console.log(`Creating Bool: ${key}`)
