@@ -325,6 +325,7 @@ async function searchleMain(document) {
             createOptions(option.subops,keys,subframe)
             frame.appendChild(subframe)
         }
+        parent.appendChild(frame)
     }
     
     function createOptions(options,keys=null,parent=null) {
