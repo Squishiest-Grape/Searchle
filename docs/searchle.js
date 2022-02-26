@@ -21,10 +21,10 @@ let optionDef = {
         initial: false,   
     },
     'Show Sort Value': {
-        inital: false,    
+        initial: false,    
     },
     'Frequency Requirement': {
-        intial: '',
+        initial: '',
     }
 }  
 
