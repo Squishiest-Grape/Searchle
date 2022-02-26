@@ -278,6 +278,7 @@ async function searchleMain(document) {
         if (keys == null) { keys == [] }
         for (let [key,val] of Object.entries(options)) {
             if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
+                console.log(`Creating Options: ${key}`)
                 const frame = document.createElement('div')
                 frame.appendChild(document.createTextNode(key))
                 let newOptions = {}
@@ -286,6 +287,7 @@ async function searchleMain(document) {
                 }
                 createOptions(newOptions,frame)
             } else if (Array.isArray(val.type)) {
+                console.log(`Creating List: ${key}`)
                 const elem = document.createElement('select')
                 for (const v of val.type) {
                     const e = document.createElement('option',{value:v})
@@ -295,16 +297,19 @@ async function searchleMain(document) {
                 elem.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)                
             } else if (val.type === null || val.type === undefined) {
                 if (typeof val.value === 'boolean') {
+                    console.log(`Creating Bool: ${key}`)
                     const e = document.createElement('input',{type:'checkbox', value:val.value})
                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
                     box.appendChild(e)
                     box.appendChild(document.createTextNode(key))
                 } else if (typeof val.value === 'string') {
+                    console.log(`Creating String: ${key}`)
                     const e = document.createElement('input',{type:'text', value:val.value})
                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
                     box.appendChild(e)
                     box.appendChild(document.createTextNode(key))
                 } else if (typeof val.value === 'number') {
+                    console.log(`Creating Number: ${key}`)
                     const e = document.createElement('input',{type:'number', value:val.value})
                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
                     box.appendChild(e)
