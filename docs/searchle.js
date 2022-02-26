@@ -293,7 +293,7 @@ async function searchleMain(document) {
                     elem.appendChild(e)
                 }
                 elem.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)                
-            } else if (val.type === null) {
+            } else if (val.type === null || val.type === undefined) {
                 if (typeof val.value === 'boolean') {
                     const e = document.createElement('input',{type:'checkbox', value:val.value})
                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
