@@ -218,7 +218,7 @@ async function searchleMain(document) {
     }
     
     function optionDef2values(optionDef) {
-        options = {}
+        let options = {}
         for (const [key, value] of Object.entries(optionDef)) {
             options[key] = value.value   
         }
@@ -259,14 +259,9 @@ async function searchleMain(document) {
     // add options 
     let options = optionDef2values(optionDef)
     cookies['options'] = options
-    
     setCookies(cookies)
-    cookies = getCookies()
-    console.log(cookies)
     document.getElementById("boxOptions").innerHTML = 'Options not implmented'
-    
-    
-    
+
     // attach button events
     document.getElementById("searchleBtn").onclick = searchle
     const tabs = document.getElementsByClassName('tabBtn')
