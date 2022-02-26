@@ -255,6 +255,8 @@ async function searchleMain(document) {
     }
     
     function combineOptions(oldOptions,newOptions) {
+        console.log(oldOptions)
+        console.log(newOptions)
         for (let [key,val] of Object.entries(oldOptions)) {
             if (key in newOptions && newOptions[key].value !== null) {
                 if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
