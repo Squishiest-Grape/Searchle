@@ -1,13 +1,6 @@
-const version = 'v0.1.3'
+const version = 'v0.1.4'
 
-class Option {
-    constuctor(initial,option=null) {
-        this.initial = initial
-        this.option = option
-    }
-}
-
-let options = {
+let optionDef = {
     'Lists To Use': new Option({'Proper Nouns': 'Avoid'}, new Option('Include',['Require', 'Include', 'Nothing', 'Avoid'])),
     'Sort By': new Option('Frequency',['Frequency','Alphabetically','Power','Wordle Score']),
     'Wordle Mode': new Option('Super Hard Mode',['Normal','Hard Mode','Super Hard Mode']),
@@ -16,7 +9,12 @@ let options = {
     'Frequency Requirement': new Option(''),
 }  
     
-
+class Option {
+    constuctor(initial,option=null) {
+        this.value = initial
+        this.option = option
+    }
+}
 
 async function searchleMain(document) {
 
@@ -184,7 +182,7 @@ async function searchleMain(document) {
             let re = new RegExp('^'+pattern+'$','i')
 
             ans = []
-            for (const word of wordlist) {
+            for (const word of wordlist['words']) {
                 if (re.test(word)) {
                 let good = true
                 for (const part in limits) {
@@ -218,14 +216,53 @@ async function searchleMain(document) {
         activeTab(name)
     }
     
+    function optionDef2values(optionDef) {
+        options = {}
+        for (const [key, value] of Object.entries(optionDef)) {
+            options[key] = value.value   
+        }
+        return options    
+    }
+    
+    function getCookies() {
+        const rawCookies = document.cookie
+        let cookies = {}
+        for (const str of rawCookies.split(';')) {
+            const key,val = str.split('=')
+            cookies[key.trim()] = val.trim()     
+        }
+        return cookies
+    }
+
+    function setCookies(cookies,days=30) {
+        for (const [key,val] of Object.entries(cookies)) {
+            const d = new Date()
+            d.setTime(d.getTime() + (days*24*60*60*1000))
+            document.cookie = key + '=' + JSON.stringify(val) + '; expires=' + d.toUTCString()    
+        }
+    }
+    
+    
+    
     // get data
     let wordlist = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json').then(response => response.json())
-    wordlist = wordlist['words']
     let helptext = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt').then(response => response.text())
-    helptext = helptext.replaceAll('\n','<br>')
+    let cookies = getCookies()
+    console.log(cookies)
     
-    document.getElementById("boxInfo").innerHTML = helptext
+    // add info
+    document.getElementById("boxInfo").innerHTML = helptext.replaceAll('\n','<br>')
+    
+    // add options 
+    let options = optionDef2values(optionDef)
+    cookies['options'] = options
+    
+    setCookies(cookies)
+    cookies = getCookies()
+    console.log(cookies)
     document.getElementById("boxOptions").innerHTML = 'Options not implmented'
+    
+    
     
     // attach button events
     document.getElementById("searchleBtn").onclick = searchle
@@ -233,7 +270,6 @@ async function searchleMain(document) {
     for (const e of tabs) { e.onclick = tabClick }
     
     activeTab('Info')
- 
     console.log(`Loaded Serachle ${version}`)
     
 }
