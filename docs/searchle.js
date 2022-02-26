@@ -275,7 +275,7 @@ async function searchleMain(document) {
         for (let [key,obj0] of Object.entries(oldOptions)) { 
             if (key in newOptions) {
                 const obj1 = newOptions[key]
-                if (typeof obj1 === 'object' && !Array.isArray(obj1) && obj !== null) {
+                if (typeof obj1 === 'object' && !Array.isArray(obj1) && obj1 !== null) {
                     if ('value' in obj0 && 'value' in obj1) {
                         if (JSON.stringify(obj0.type) === JSON.stringify(obj1.type)) { obj0.value = obj1.value }
                     }
