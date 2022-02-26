@@ -4,29 +4,48 @@ const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle
 const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
 
 let options = {
-    'Lists To Use': {
-        value: {'Proper Nouns': 'Avoid'},
-        type: {
-            value: 'Include', 
-            type: ['Require', 'Include', 'Nothing', 'Avoid'], 
+    lists: {
+        label: 'Word Lists',
+        subop: {
+            'Proper Nouns': {
+                value: 'Avoid',
+                type: ['Require', 'Include', 'Nothing', 'Avoid'],  
+            },
+            'Frequency Requirement': {
+                value: ''        
+            },
+        }
+    },
+    sort: {
+        label: 'Sorting Options',
+        subop: {
+            order: {
+                label: 'Order',    
+                value: ['Frequency'],
+                type: ['Frequency','Alphabetically','Power','Wordle Score'],
+                subop: {
+                    wordle: {
+                        label: 'Wordle Sort Options',
+                        require: 'Wordle Score',
+                        subop: {
+                            mode: {
+                                label: 'Mode',
+                                value: 'Super Hard Mode',
+                                type: ['Normal','Hard Mode','Super Hard Mode'],
+                            },
+                            useAns: {
+                                label: 'Use Wordle Answers',    
+                                value: false,  
+                            },
+                        },
+                    },
+                },
+            },
+            show: {
+                label: 'Show Value',
+                value: false,
+            },
         },
-    },
-    'Frequency Requirement': {
-        value: '',
-    },
-    'Sort By': {
-        value: 'Frequency',
-        type: ['Frequency','Alphabetically','Power','Wordle Score'],
-    },
-    'Show Sort Value': {
-        value: false,    
-    },
-    'Wordle Mode': {
-        value: 'Super Hard Mode',
-        type: ['Normal','Hard Mode','Super Hard Mode'],
-    },
-    'Use Wordle Answer List': {
-        value: false,   
     },
 }  
 
@@ -253,18 +272,21 @@ async function searchleMain(document) {
         }
     }
     
-    function combineOptions(oldOptions,newOptions) {
-        for (let [key,val] of Object.entries(oldOptions)) {   
-            if (key in newOptions && typeof newOptions[key] === 'object' && 'value' in newOptions[key]) {
-                if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
-                    combineOptions(val.value,newOptions[key].value) 
-                } else {
-                    oldOptions[key].value = newOptions[key].value
-                }
+    function applyOptions(oldOptions,newOptions) {
+        for (let [key,obj0] of Object.entries(oldOptions)) { 
+            if (key in newOptions) {
+                const obj1 = newOptions[key]
+                if (typeof obj1 === 'object' && !Array.isArray(obj1) && obj !== null) {
+                    if ('value' in obj0 && 'value' in obj1) {
+                        if (JSON.stringify(obj0.type) === JSON.stringify(obj1.type)) { obj0.value = obj1.value }
+                    }
+                    if ('subop' in obj0 && 'subop' in obj1) { applyOptions(obj0.subop,obj1.subop) }
+                }      
             }
         }
     }
-    
+            
+
     function changeOption(keys,val) {
         const n = keys.length
         let opt = options
@@ -379,13 +401,16 @@ async function searchleMain(document) {
     // add info
     document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n','<br>')
     
-    // add options 
+    // add list options options 
     for (const list in wordlist['lists']) {
-        let lists = options['Lists To Use'].value
-        if (!(list in lists)) { lists[list] = options['Lists To Use'].type.value }
+        if (!(list in options.lists.subops)) {
+            options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid']}
+        }
     }
-    if ('options' in cookies) { combineOptions(options,cookies.options) }
+    
+    if ('options' in cookies) { applyOptions(options,cookies.options) }
     setCookie('options',options)
+    console.log('options')
     // createOptions(options)
 
     // attach button events
