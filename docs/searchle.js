@@ -290,6 +290,7 @@ async function searchleMain(document) {
         let opt = options
         for (let i=0; i++; i<n-1) { opt = opt[keys[i]].subops }
         opt[keys[n-1]].value = val
+        console.log(options)
     }
     
     function createOption(option, keys, parent) {
