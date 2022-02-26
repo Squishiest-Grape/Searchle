@@ -3,30 +3,30 @@ const version = 'v0.1.4'
 const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json'
 const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
 
-let optionDef = {
+let options = {
     'Lists To Use': {
-        initial: {'Proper Nouns': 'Avoid'},
-        option: {
-            initial: 'Include', 
-            option: ['Require', 'Include', 'Nothing', 'Avoid'], 
+        value: {'Proper Nouns': 'Avoid'},
+        type: {
+            value: 'Include', 
+            type: ['Require', 'Include', 'Nothing', 'Avoid'], 
         },
     },
     'Frequency Requirement': {
-        initial: '',
+        value: '',
     },
     'Sort By': {
-        initial: 'Frequency',
-        option: ['Frequency','Alphabetically','Power','Wordle Score'],
+        value: 'Frequency',
+        type: ['Frequency','Alphabetically','Power','Wordle Score'],
     },
     'Show Sort Value': {
-        initial: false,    
+        value: false,    
     },
     'Wordle Mode': {
-        initial: 'Super Hard Mode',
-        option: ['Normal','Hard Mode','Super Hard Mode'],
+        value: 'Super Hard Mode',
+        type: ['Normal','Hard Mode','Super Hard Mode'],
     },
     'Use Wordle Answer List': {
-        initial: false,   
+        value: false,   
     },
 }  
 
@@ -230,12 +230,6 @@ async function searchleMain(document) {
         activeTab(name)
     }
     
-    function optionDef2values(optionDef) {
-        let options = {}
-        for (const [key, value] of Object.entries(optionDef)) { options[key] = value.initial }
-        return options    
-    }
-    
     function getCookies() {
         const rawCookies = document.cookie
         let cookies = {}
@@ -262,13 +256,65 @@ async function searchleMain(document) {
     
     function combineOptions(oldOptions,newOptions) {
         for (let [key,val] of Object.entries(oldOptions)) {
-            if (key in newOptions) {
-                if (typeof val === 'object' && !Array.isArray(val) && val !== null) {
-                    combineOptions(val,newOptions[key]) 
+            if (key in newOptions && newOptions[key].value !== null) {
+                if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
+                    combineOptions(val.value,newOptions[key].value) 
+                } else {
+                    oldOptions[key].value = newOptions[key].value
                 }
-                oldOptions[key] = newOptions[key] 
             }
         }
+    }
+    
+    function changeOption(keys,val) {
+        const n = keys.length
+        let opt = options
+        for (let i=0; i++; i<n-1) {
+            opt = opt[keys[i]].value            
+        }
+        opt[keys[n-1]].value = val     
+        console.log(options)
+    }
+    
+    function createOptions(options,box=null,keys=null) {
+        if (box == null) { box = document.getElementById('boxOptions') }
+        if (keys == null) { keys == [] }
+        for (let [key,val] of Object.entries(options)) {
+            if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
+                const frame = document.createElement('div')
+                frame.appendChild(document.createTextNode(key))
+                let newOptions = {}
+                for (const [k,v] of Object.entries(val.value)) {
+                    newOptions[k] = {value: v, type: val.type.type}
+                }
+                createOptions(newOptions,frame)
+            } else if (Array.isArray(val.type)) {
+                const elem = document.createElement('select')
+                for (const v of val.type) {
+                    const e = document.creatElement('option',{value:v})
+                    e.appendChild(document.createTextNode(v))
+                    elem.appendChild(e)
+                }
+                elem.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)                
+            } else if (val.type === null) {
+                if (typeof val.value === 'boolean') {
+                    const e = document.createElement('input',{type:'checkbox', value:val.value})
+                    e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
+                    box.appendChild(e)
+                    box.appendChild(document.createTextNode(key))
+                } else if (typeof val.value === 'string') {
+                    const e = document.createElement('input',{type:'text', value:val.value})
+                    e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
+                    box.appendChild(e)
+                    box.appendChild(document.createTextNode(key))
+                } else if (typeof val.value === 'number') {
+                    const e = document.createElement('input',{type:'number', value:val.value})
+                    e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
+                    box.appendChild(e)
+                    box.appendChild(document.createTextNode(key))                    
+                } else { console.log('Option of uknown type') }
+            } else { console.log('Option of uknown type') }
+        }        
     }
     
     // get data
@@ -280,13 +326,10 @@ async function searchleMain(document) {
     document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n','<br>')
     
     // add options 
-    let options = optionDef2values(optionDef)
-    for (const list in wordlist['lists']) { options['Lists To Use'] = optionDef['Lists To Use'].option.initial }
+    for (const list in wordlist['lists']) { options['Lists To Use'].value[list] = options['Lists To Use'].type.value }
     if ('options' in cookies) { combineOptions(options,cookies.options) }
-    
     setCookie('options',options)
-    
-    document.getElementById('boxOptions').innerHTML = 'Options not implmented'
+    displayOptions(options)
 
     // attach button events
     document.getElementById('searchleBtn').onclick = searchle
