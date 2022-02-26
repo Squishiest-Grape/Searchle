@@ -7,12 +7,10 @@ let options = {
     lists: {
         label: 'Word Lists',
         subops: {
+            'Frequency Requirement: ': { value: '' },
             'Proper Nouns': {
                 value: 'Avoid',
                 type: ['Require', 'Include', 'Nothing', 'Avoid'],  
-            },
-            'Frequency Requirement': {
-                value: ''        
             },
         }
     },
@@ -30,7 +28,7 @@ let options = {
                             mode: {
                                 label: 'Mode',
                                 value: 'Super Hard Mode',
-                                type: ['Normal','Hard Mode','Super Hard Mode'],
+                                type: ['Normal','Hard','Super Hard'],
                             },
                             useAns: {
                                 label: 'Use Wordle Answers',    
@@ -296,7 +294,11 @@ async function searchleMain(document) {
     function createOption(option, keys, parent) {
         const frame = document.createElement('div')
         const id = keys.join('.')
+        let label = keys[keys.length-1]
+        if ('label' in option) { label = option.label }
         if ('value' in option) {
+            let subframe = document.createElement('div') 
+            subframe.style.float = 'left'
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
                     const element = document.createElement('select', {id: id})
@@ -306,24 +308,30 @@ async function searchleMain(document) {
                         element.appendChild(e) 
                     }
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
-                    frame.appendChild(element)
+                    subframe.appendChild(element)
+                    subframe.appendChild(document.createTextNode(label))
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
                 let element
                 if (typeof option.value === 'boolean') {
                     element = document.createElement('input', {type:'checkbox', id: id, value: option.value})
+                    element.onchange = (e) => changeOption(keys, e.srcElement.value)  
+                    subframe.appendChild(element)
+                    subframe.appendChild(document.createTextNode(label))
                 } else if (typeof option.value === 'string') {
                     element = document.createElement('input', {type:'text', id: id, value: option.value})
+                    element.onchange = (e) => changeOption(keys, e.srcElement.value)  
+                    subframe.appendChild(document.createTextNode(label))
+                    subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
                     element = document.createElement('input', {type:'number', id: id, value: option.value})
+                    element.onchange = (e) => changeOption(keys, e.srcElement.value)  
+                    subframe.appendChild(document.createTextNode(label))
+                    subframe.appendChild(element)
                 } else { console.log(`Unknown option of value ${option.value}`) }
-                element.onchange = (e) => changeOption(keys, e.srcElement.value)
-                frame.appendChild(element)
             }
+            frame.appendChild(subframe)
         }
-        let label = keys[keys.length-1]
-        if ('label' in option) { label = option.label } 
-        frame.appendChild(document.createTextNode(label))
         if ('subops' in option) {
             let subframe = document.createElement('div')    
             subframe.style.marginLeft = '5%'
