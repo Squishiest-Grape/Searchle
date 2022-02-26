@@ -323,7 +323,11 @@ async function searchleMain(document) {
     document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n','<br>')
     
     // add options 
-    for (const list in wordlist['lists']) { options['Lists To Use'].value[list] = options['Lists To Use'].type.value }
+    for (const list in wordlist['lists']) {
+        if (list in options['Lists To Use'].value) {
+            options['Lists To Use'].value[list] = options['Lists To Use'].type.value
+        }
+    }
     if ('options' in cookies) { combineOptions(options,cookies.options) }
     console.log(options)
     setCookie('options',options)
