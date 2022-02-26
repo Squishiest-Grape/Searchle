@@ -6,7 +6,7 @@ const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle
 let options = {
     lists: {
         label: 'Word Lists',
-        subop: {
+        subops: {
             'Proper Nouns': {
                 value: 'Avoid',
                 type: ['Require', 'Include', 'Nothing', 'Avoid'],  
@@ -18,16 +18,16 @@ let options = {
     },
     sort: {
         label: 'Sorting Options',
-        subop: {
+        subops: {
             order: {
                 label: 'Order',    
                 value: ['Frequency'],
                 type: ['Frequency','Alphabetically','Power','Wordle Score'],
-                subop: {
+                subops: {
                     wordle: {
                         label: 'Wordle Sort Options',
                         require: 'Wordle Score',
-                        subop: {
+                        subops: {
                             mode: {
                                 label: 'Mode',
                                 value: 'Super Hard Mode',
@@ -280,7 +280,7 @@ async function searchleMain(document) {
                     if ('value' in obj0 && 'value' in obj1) {
                         if (JSON.stringify(obj0.type) === JSON.stringify(obj1.type)) { obj0.value = obj1.value }
                     }
-                    if ('subop' in obj0 && 'subop' in obj1) { applyOptions(obj0.subop,obj1.subop) }
+                    if ('subops' in obj0 && 'subops' in obj1) { applyOptions(obj0.subops,obj1.subops) }
                 }      
             }
         }
@@ -290,7 +290,7 @@ async function searchleMain(document) {
     function changeOption(keys,val) {
         const n = keys.length
         let opt = options
-        for (let i=0; i++; i<n-1) { opt = opt[keys[i]].value  }
+        for (let i=0; i++; i<n-1) { opt = opt[keys[i]].value }
         opt[keys[n-1]].value = val     
         console.log(options)
     }
