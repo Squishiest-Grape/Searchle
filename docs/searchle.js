@@ -401,6 +401,7 @@ async function searchleMain(document) {
     // add info
     document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n','<br>')
     
+    console.log(options)
     // add list options options 
     for (const list in wordlist['lists']) {
         if (!(list in options.lists.subops)) {
