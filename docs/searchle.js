@@ -220,6 +220,7 @@ async function searchleMain(document) {
     function optionDef2values(optionDef) {
         let options = {}
         for (const [key, value] of Object.entries(optionDef)) {
+            console.log([key,value])
             options[key] = value.value   
         }
         return options    
