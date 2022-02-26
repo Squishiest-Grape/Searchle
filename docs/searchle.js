@@ -281,7 +281,7 @@ async function searchleMain(document) {
     
     // add options 
     let options = optionDef2values(optionDef)
-    for (const list in wordlist['lists']) { options['Lists to Use'] = optionDef['Lists to Use'].option.initial }
+    for (const list in wordlist['lists']) { options['Lists To Use'] = optionDef['Lists To Use'].option.initial }
     if ('options' in cookies) { combineOptions(options,cookies.options) }
     
     setCookie('options',options)
