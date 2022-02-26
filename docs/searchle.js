@@ -294,7 +294,7 @@ async function searchleMain(document) {
     
     function createOption(option,keys,parent) {
         const frame = document.createElement('div')
-        const id = '.'.join(keys)
+        const id = keys.join('.')
         if ('value' in option) {
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
