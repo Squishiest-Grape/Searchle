@@ -1,22 +1,5 @@
 const version = 'v0.1.4'
 
-class Option {
-    constuctor(initial, option=null) {
-        console.log('Created option')
-        this.value = initial
-        this.option = option
-    }
-}
-
-let optionDef = {
-    'Lists To Use': new Option({'Proper Nouns': 'Avoid'}, new Option('Include',['Require', 'Include', 'Nothing', 'Avoid'])),
-    'Sort By': new Option('Frequency',['Frequency','Alphabetically','Power','Wordle Score']),
-    'Wordle Mode': new Option('Super Hard Mode',['Normal','Hard Mode','Super Hard Mode']),
-    'Use Wordle Answer List': new Option(false),
-    'Show Sort Value': new Option(false),
-    'Frequency Requirement': new Option(''),
-}  
-
 
 async function searchleMain(document) {
 
@@ -247,7 +230,22 @@ async function searchleMain(document) {
         }
     }
     
-    
+    class Option {
+        constuctor(initial, option=null) {
+            console.log('Created option')
+            this.value = initial
+            this.option = option
+        }
+    }
+
+    let optionDef = {
+        'Lists To Use': new Option({'Proper Nouns': 'Avoid'}, new Option('Include',['Require', 'Include', 'Nothing', 'Avoid'])),
+        'Sort By': new Option('Frequency',['Frequency','Alphabetically','Power','Wordle Score']),
+        'Wordle Mode': new Option('Super Hard Mode',['Normal','Hard Mode','Super Hard Mode']),
+        'Use Wordle Answer List': new Option(false),
+        'Show Sort Value': new Option(false),
+        'Frequency Requirement': new Option(''),
+    }  
     
     // get data
     let wordlist = await fetch('https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json').then(response => response.json())
