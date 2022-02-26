@@ -288,7 +288,7 @@ async function searchleMain(document) {
             } else if (Array.isArray(val.type)) {
                 const elem = document.createElement('select')
                 for (const v of val.type) {
-                    const e = document.creatElement('option',{value:v})
+                    const e = document.createElement('option',{value:v})
                     e.appendChild(document.createTextNode(v))
                     elem.appendChild(e)
                 }
