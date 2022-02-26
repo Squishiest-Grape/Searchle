@@ -258,6 +258,8 @@ async function searchleMain(document) {
         console.log(oldOptions)
         console.log(newOptions)
         for (let [key,val] of Object.entries(oldOptions)) {
+            console.log(key)
+            console.log(newOptions)            
             if (key in newOptions && newOptions[key].value !== null) {
                 if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
                     combineOptions(val.value,newOptions[key].value) 
