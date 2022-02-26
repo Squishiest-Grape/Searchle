@@ -326,7 +326,7 @@ async function searchleMain(document) {
     for (const list in wordlist['lists']) { options['Lists To Use'].value[list] = options['Lists To Use'].type.value }
     if ('options' in cookies) { combineOptions(options,cookies.options) }
     setCookie('options',options)
-    displayOptions(options)
+    createOptions(options)
 
     // attach button events
     document.getElementById('searchleBtn').onclick = searchle
