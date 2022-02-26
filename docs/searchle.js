@@ -3,15 +3,23 @@ const version = 'v0.1.4'
 const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json'
 const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
 
-
 let optionDef = {
     'Lists To Use': {
         initial: {'Proper Nouns': 'Avoid'},
-        option: {initial: 'Include', option: ['Require', 'Include', 'Nothing', 'Avoid'], },
+        option: {
+            initial: 'Include', 
+            option: ['Require', 'Include', 'Nothing', 'Avoid'], 
+        },
+    },
+    'Frequency Requirement': {
+        initial: '',
     },
     'Sort By': {
         initial: 'Frequency',
         option: ['Frequency','Alphabetically','Power','Wordle Score'],
+    },
+    'Show Sort Value': {
+        initial: false,    
     },
     'Wordle Mode': {
         initial: 'Super Hard Mode',
@@ -20,12 +28,6 @@ let optionDef = {
     'Use Wordle Answer List': {
         initial: false,   
     },
-    'Show Sort Value': {
-        initial: false,    
-    },
-    'Frequency Requirement': {
-        initial: '',
-    }
 }  
 
 async function searchleMain(document) {
@@ -146,9 +148,9 @@ async function searchleMain(document) {
         
         try {
             // get html values
-            let pattern = document.getElementById("searchlePattern").value
-            let requires = document.getElementById("searchleRequires").value
-            let avoids = document.getElementById("searchleAvoids").value
+            let pattern = document.getElementById('searchlePattern').value
+            let requires = document.getElementById('searchleRequires').value
+            let avoids = document.getElementById('searchleAvoids').value
 
             // get limits
             let limits = {}
@@ -246,14 +248,28 @@ async function searchleMain(document) {
         return cookies
     }
 
+    function setCookie(key,val,days=30) {
+        const d = new Date()
+        d.setTime(d.getTime() + (days*24*60*60*1000))
+        document.cookie = key + '=' + JSON.stringify(val) + '; expires=' + d.toUTCString()  
+    }
+    
     function setCookies(cookies,days=30) {
         for (const [key,val] of Object.entries(cookies)) {
-            const d = new Date()
-            d.setTime(d.getTime() + (days*24*60*60*1000))
-            document.cookie = key + '=' + JSON.stringify(val) + '; expires=' + d.toUTCString()    
+            setCookie(key,val,days)
         }
     }
     
+    function combineOptions(oldOptions,newOptions) {
+        for (let [key,val] of Object.entries(oldOptions)) {
+            if (key in newOptions) {
+                if (typeof val === 'object' && !Array.isArray(val) && val !== null) {
+                    combineOptions(val,newOptions[key]) 
+                }
+                oldOptions[key] = newOptions[key] 
+            }
+        }
+    }
     
     // get data
     let wordlist = await fetch(wordlistUrl).then(response => response.json())
@@ -261,16 +277,19 @@ async function searchleMain(document) {
     let cookies = getCookies()
     
     // add info
-    document.getElementById("boxInfo").innerHTML = helptext.replaceAll('\n','<br>')
+    document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n','<br>')
     
     // add options 
     let options = optionDef2values(optionDef)
-    cookies['options'] = options
-    setCookies(cookies)
-    document.getElementById("boxOptions").innerHTML = 'Options not implmented'
+    for (const list of wordlist['lists']) { options['Lists to Use'] = optionDef['Lists to Use'].option.initial }
+    if ('options' in cookies) { combineOptions(options,cookies.options) }
+    
+    setCookie('options',options)
+    
+    document.getElementById('boxOptions').innerHTML = 'Options not implmented'
 
     // attach button events
-    document.getElementById("searchleBtn").onclick = searchle
+    document.getElementById('searchleBtn').onclick = searchle
     const tabs = document.getElementsByClassName('tabBtn')
     for (const e of tabs) { e.onclick = tabClick }
     
