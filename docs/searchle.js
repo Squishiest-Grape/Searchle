@@ -8,8 +8,8 @@ class Option {
 }
 
 let options = {
-    'Lists To Use': new Option({'Proper Nouns': 'Avoid'}, new Option('Include',['Require', 'Include', 'Nothing', 'Avoid']))
-    'Sort By': new Option('Frequency',['Frequency','Alphabetically','Power','Wordle Score'])
+    'Lists To Use': new Option({'Proper Nouns': 'Avoid'}, new Option('Include',['Require', 'Include', 'Nothing', 'Avoid'])),
+    'Sort By': new Option('Frequency',['Frequency','Alphabetically','Power','Wordle Score']),
     'Wordle Mode': new Option('Super Hard Mode',['Normal','Hard Mode','Super Hard Mode']),
     'Use Wordle Answer List': new Option(false),
     'Show Sort Value': new Option(false),
