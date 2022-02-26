@@ -240,7 +240,7 @@ async function searchleMain(document) {
         }
         return cookies
     }
-
+    
     function setCookie(key,val,days=30) {
         const d = new Date()
         d.setTime(d.getTime() + (days*24*60*60*1000))
@@ -273,14 +273,68 @@ async function searchleMain(document) {
         console.log(options)
     }
     
+    function createOption(key,option,parent=null,keys=null) {
+        if (parent == null) { parent = document.getElementById('boxOptions') }
+        if (keys == null) { keys == [] }
+        keys = keys.concat(key)
+        if (typeof option.value === 'object' && !Array.isArray(option.value) && option.value !== null) {
+            parent.appendChild(document.createTextNode(key+':'))
+            const frame = document.createElement('div')
+            frame.style.marginLeft = '5%'
+            for (const [k,v] of Object.entries(option.value)) {
+                createOption(k,v
+                
+                newOptions[k] = {value: v, type: val.type.type}
+            }
+            createOptions(newOptions,frame)
+            box.appendChild(frame)
+        } else if (Array.isArray(val.type)) {
+            const elem = document.createElement('select')
+            for (const v of val.type) {
+                const e = document.createElement('option',{value:v})
+                e.appendChild(document.createTextNode(v))
+                elem.appendChild(e)
+            }
+            elem.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)     
+            box.appendChild(elem)
+        } else if (val.type === null || val.type === undefined) {
+            if (typeof val.value === 'boolean') {
+                const e = document.createElement('input',{type:'checkbox', value:val.value})
+                e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
+                box.appendChild(e)
+                box.appendChild(document.createTextNode(key))
+            } else if (typeof val.value === 'string') {
+                const e = document.createElement('input',{type:'text', value:val.value})
+                e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
+                box.appendChild(e)
+                box.appendChild(document.createTextNode(key))
+            } else if (typeof val.value === 'number') {
+                const e = document.createElement('input',{type:'number', value:val.value})
+                e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
+                box.appendChild(e)
+                box.appendChild(document.createTextNode(key))                    
+            } else { console.log('Option of uknown type') }
+        } else { console.log('Option of uknown type') }
+    }        
+
+        
+    }
+    
+    
+    
+    
+    
+    
     function createOptions(options,box=null,keys=null) {
         if (box == null) { box = document.getElementById('boxOptions') }
         if (keys == null) { keys == [] }
         for (let [key,val] of Object.entries(options)) {
             if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
-                console.log(`Creating Options: ${key}`)
+                box.appendChild(document.createTextNode(key+':'))
                 const frame = document.createElement('div')
-                frame.appendChild(document.createTextNode(key))
+                frame.style.marginLeft = '5%'
+                
+                
                 let newOptions = {}
                 for (const [k,v] of Object.entries(val.value)) {
                     newOptions[k] = {value: v, type: val.type.type}
@@ -288,7 +342,6 @@ async function searchleMain(document) {
                 createOptions(newOptions,frame)
                 box.appendChild(frame)
             } else if (Array.isArray(val.type)) {
-                console.log(`Creating List: ${key}`)
                 const elem = document.createElement('select')
                 for (const v of val.type) {
                     const e = document.createElement('option',{value:v})
@@ -299,19 +352,16 @@ async function searchleMain(document) {
                 box.appendChild(elem)
             } else if (val.type === null || val.type === undefined) {
                 if (typeof val.value === 'boolean') {
-                    console.log(`Creating Bool: ${key}`)
                     const e = document.createElement('input',{type:'checkbox', value:val.value})
                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
                     box.appendChild(e)
                     box.appendChild(document.createTextNode(key))
                 } else if (typeof val.value === 'string') {
-                    console.log(`Creating String: ${key}`)
                     const e = document.createElement('input',{type:'text', value:val.value})
                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
                     box.appendChild(e)
                     box.appendChild(document.createTextNode(key))
                 } else if (typeof val.value === 'number') {
-                    console.log(`Creating Number: ${key}`)
                     const e = document.createElement('input',{type:'number', value:val.value})
                     e.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)
                     box.appendChild(e)
