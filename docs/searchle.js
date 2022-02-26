@@ -264,8 +264,8 @@ async function searchleMain(document) {
             if ((key in newOptions) && (newOptions[key].value !== null)) {
                 if (typeof val.value === 'object' && !Array.isArray(val.value) && val.value !== null) {
                     console.log('subop')
-                    console.log(val)
-                    console.log(newOptions[key])       
+                    console.log(val.value)
+                    console.log(newOptions[key].value)       
                     combineOptions(val.value,newOptions[key].value) 
                 } else {
                     oldOptions[key].value = newOptions[key].value
