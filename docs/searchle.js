@@ -230,10 +230,7 @@ async function searchleMain(document) {
     
     function optionDef2values(optionDef) {
         let options = {}
-        for (const [key, value] of Object.entries(optionDef)) {
-            console.log([key,value])
-            options[key] = value.initial
-        }
+        for (const [key, value] of Object.entries(optionDef)) { options[key] = value.initial }
         return options    
     }
     
@@ -262,14 +259,12 @@ async function searchleMain(document) {
     let wordlist = await fetch(wordlistUrl).then(response => response.json())
     let helptext = await fetch(helptextUrl).then(response => response.text())
     let cookies = getCookies()
-    console.log(cookies)
     
     // add info
     document.getElementById("boxInfo").innerHTML = helptext.replaceAll('\n','<br>')
     
     // add options 
     let options = optionDef2values(optionDef)
-    console.log(options)
     cookies['options'] = options
     setCookies(cookies)
     document.getElementById("boxOptions").innerHTML = 'Options not implmented'
