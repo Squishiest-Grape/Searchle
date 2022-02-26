@@ -385,9 +385,8 @@ async function searchleMain(document) {
         if (!(list in lists)) { lists[list] = options['Lists To Use'].type.value }
     }
     if ('options' in cookies) { combineOptions(options,cookies.options) }
-    console.log(options)
     setCookie('options',options)
-    createOptions(options)
+    // createOptions(options)
 
     // attach button events
     document.getElementById('searchleBtn').onclick = searchle
