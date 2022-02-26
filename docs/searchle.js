@@ -292,15 +292,19 @@ async function searchleMain(document) {
         opt[keys[n-1]].value = val
     }
     
-    function createOption(option,keys,parent) {
+    function createOption(option, keys, parent) {
         const frame = document.createElement('div')
         const id = keys.join('.')
         if ('value' in option) {
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
                     const element = document.createElement('select', {id: id})
-                    for (const val of option.type) { element.appendChild(document.createElement('option',{value:val})) }
-                    element.onchange = (e) => changeOption(keys.concat([key]),e.srcElement.value)  
+                    for (const val of option.type) { 
+                        const e = document.createElement('option', {value:val})
+                        e.appendChild(document.createTextNode(val))
+                        element.appendChild(e) 
+                    }
+                    element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     frame.appendChild(element)
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
@@ -312,7 +316,7 @@ async function searchleMain(document) {
                 } else if (typeof option.value === 'number') {
                     element = document.createElement('input', {type:'number', id: id, value: option.value})
                 } else { console.log(`Unknown option of value ${option.value}`) }
-                element.onchange = (e) => changeOption(keys,e.srcElement.value)
+                element.onchange = (e) => changeOption(keys, e.srcElement.value)
                 frame.appendChild(element)
             }
         }
@@ -328,11 +332,11 @@ async function searchleMain(document) {
         parent.appendChild(frame)
     }
     
-    function createOptions(options,keys=null,parent=null) {
+    function createOptions(options, keys=null, parent=null) {
         if (keys === null) { keys = [] }
         if (parent === null) { parent = document.getElementById('boxOptions') }
         for (const [key,option] of Object.entries(options)) {
-            createOption(option,keys.concat(key),parent)
+            createOption(option, keys.concat(key), parent)
         }
     }
     
