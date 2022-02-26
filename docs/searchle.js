@@ -324,9 +324,8 @@ async function searchleMain(document) {
     
     // add options 
     for (const list in wordlist['lists']) {
-        if (list in options['Lists To Use'].value) {
-            options['Lists To Use'].value[list] = options['Lists To Use'].type.value
-        }
+        let lists = options['Lists To Use'].value
+        if (list in lists) { lists[list] = options['Lists To Use'].type.value }
     }
     if ('options' in cookies) { combineOptions(options,cookies.options) }
     console.log(options)
