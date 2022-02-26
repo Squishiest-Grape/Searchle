@@ -286,10 +286,9 @@ async function searchleMain(document) {
     }
             
     function changeOption(keys,val) {
-        const n = keys.length
         let opt = options
-        for (let i=0; i++; i<n-1) { opt = opt[keys[i]].subops }
-        opt[keys[n-1]].value = val
+        for (let i=0; i++; i<keys.length-1) { opt = opt[keys[i]].subops }
+        opt[keys[keys.length-1]].value = val
         console.log(options)
     }
     
