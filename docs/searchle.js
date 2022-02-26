@@ -1,5 +1,12 @@
 const version = 'v0.1.4'
 
+class Option {
+    constuctor(initial,option=null) {
+        this.value = initial
+        this.option = option
+    }
+}
+
 let optionDef = {
     'Lists To Use': new Option({'Proper Nouns': 'Avoid'}, new Option('Include',['Require', 'Include', 'Nothing', 'Avoid'])),
     'Sort By': new Option('Frequency',['Frequency','Alphabetically','Power','Wordle Score']),
@@ -8,13 +15,7 @@ let optionDef = {
     'Show Sort Value': new Option(false),
     'Frequency Requirement': new Option(''),
 }  
-    
-class Option {
-    constuctor(initial,option=null) {
-        this.value = initial
-        this.option = option
-    }
-}
+
 
 async function searchleMain(document) {
 
@@ -228,6 +229,7 @@ async function searchleMain(document) {
         const rawCookies = document.cookie
         let cookies = {}
         for (const str of rawCookies.split(';')) {
+            console.lot(str)
             const [key,val] = str.split('=')
             cookies[key.trim()] = JSON.parse(val.trim())     
         }
