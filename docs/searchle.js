@@ -17,6 +17,10 @@ let options = {
     sort: {
         label: 'Sorting Options',
         subops: {
+            show: {
+                label: 'Show Value',
+                value: false,
+            },
             order: {
                 label: 'Order',    
                 value: 'Frequency',
@@ -37,10 +41,6 @@ let options = {
                         },
                     },
                 },
-            },
-            show: {
-                label: 'Show Value',
-                value: false,
             },
         },
     },
@@ -311,7 +311,7 @@ async function searchleMain(document) {
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
                 if (typeof option.value === 'boolean') {
-                    const element = document.createElement('input', {type:'checkbox', id: id, checked: option.value})
+                    const element = document.createElement('input', {type:'checkbox', id: id})
                     element.onchange = (e) => changeOption(keys, e.srcElement.checked)  
                     subframe.appendChild(element)
                     subframe.appendChild(document.createTextNode(' '+label))
