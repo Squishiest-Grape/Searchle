@@ -318,6 +318,7 @@ async function searchleMain(document) {
                 if (good) { ans.push(i) } 
             }
         }
+        ans = ans.map(i=>wordlist.words[i])
         ans  = ans.join('\n')
         } catch (error) {
             ans = error       
