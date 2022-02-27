@@ -237,6 +237,10 @@ async function searchleMain(document) {
         activeTab('Results')
     } 
     
+    function hitKey(e) {
+        if (e.keyCode == 13) { searchle() }
+    }
+    
     function activeTab(name) {
         for (let e of document.getElementsByClassName('box')) { e.style.display = 'none' }
         for (let e of document.getElementsByClassName('tabBtn')) { e.className = e.className.replace(' active','') }
@@ -386,9 +390,9 @@ async function searchleMain(document) {
     createOptions(options)
 
     // attach button events
-    document.getElementById('searchleBtn').onclick = searchle
-    const tabs = document.getElementsByClassName('tabBtn')
-    for (const e of tabs) { e.onclick = tabClick }
+    document.getElementById('searchleBtn').onclick = searchle  
+    for (const e of document.getElementsByClassName('tabBtn')) { e.onclick = tabClick }
+    for (const e of document.getElementsByClassName('searchInp')) { e.addEventListner('keyup', hitKey) }
     
     activeTab('Info')
     console.log(`Loaded Serachle ${version}`)
