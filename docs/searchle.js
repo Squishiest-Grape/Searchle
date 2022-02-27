@@ -320,23 +320,21 @@ async function searchleMain(document) {
             }
         }
         
-
         const sort = getOption(['sort','order'])
         if (sort == 'Alphabetical') {
             inds.sort((a,b) => (wordlist.words[a]<wordlist.words[b]) ? -1 : 1 )            
         }
         let ans = inds.map(i=>[wordlist.words[i]])
         if (getOption(['sort','show'])) {
-            let max = wordlist.lists['Exquisite Corpus'].length
+            const max = Math.round(1/wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1])
             for (let i=0; i<inds.length; i++) {
                 const ind = inds[i]
                 const f = wordlist.freq[ind]
-                if (f>=0) { ans[i].push(`1/${1/f}`) }
-                else { ans[i].push(`1/${max}+`) }
+                if (f>0) { ans[i].push(`1 / ${1/Math.round(f)}`) }
+                else { ans[i].push(`1 / ${max}+`) }
             }
         }
-        console.log(ans)
-        ans = ans.map(info=>info.join('  -  ')).join('\n')
+        ans = ans.map(info=>info.join('   -   ')).join('\n')
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
     } 
