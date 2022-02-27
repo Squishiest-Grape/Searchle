@@ -427,12 +427,14 @@ async function searchleMain(document) {
                     element.checked = option.value 
                     element.onchange = (e) => changeOption(keys, e.srcElement.checked)
                 } else if (typeof option.value === 'string') {
-                    element = document.createElement('input', {id: id, value: option.value})
+                    element = document.createElement('input', {id: id})
                     element.type = 'text'
+                    element.value = option.value 
                     element.onchange = (e) => changeOption(keys, e.srcElement.value) 
                 } else if (typeof option.value === 'number') {
-                    element = document.createElement('input', {id: id, value: option.value})
+                    element = document.createElement('input', {id: id})
                     element.type = 'number'
+                    element.value = option.value
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                 } else { console.log(`Unknown option of value ${option.value}`) }
             }
