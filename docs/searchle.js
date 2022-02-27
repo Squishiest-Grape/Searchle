@@ -262,14 +262,8 @@ async function searchleMain(document) {
                 else { d = d.replace('<','>') }
             }
             v = eval(v)
-            if (f == 'p') { 
-                f = 'c' 
-                v = wordlist.words.length * v / 100 
-            }
-            if (f == 'c') {
-                f = 'f'
-                v = wordlist.freq[Math.round(v)]   
-            }
+            if (f == 'p') { f = 'c'; v = wordlist.words.length * v / 100 }
+            if (f == 'c') { f = 'f'; v = wordlist.freq[Math.round(v)] }
             console.log([f,d,v])
             console.log(wordlist.freq)
             if (f == 'f') {
