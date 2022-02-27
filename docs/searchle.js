@@ -10,7 +10,7 @@ let options = {
             order: {
                 label: 'Order',
                 value: 'Frequency',
-                type: ['Frequency','Alphabetically','Score'],
+                type: ['Frequency','Alphabetical','Score'],
                 pos: 'right',
             },      
             show: {
@@ -310,10 +310,8 @@ async function searchleMain(document) {
     // search function
     function searchle() {
         const [pattern,limits] = getCriteria()
-        let inds = getInds()
-        let ans = []
-        let sort = []
-        for (const i of inds) {
+        let inds = []
+        for (const i of getInds()) {
             const word = wordlist.words[i]
             if (pattern.test(word)) {
                 let good = true
@@ -324,11 +322,30 @@ async function searchleMain(document) {
                         break
                     }
                 }
-                if (good) { ans.push(i) } 
+                if (good) { inds.push(i) } 
             }
         }
-        ans = ans.map(i=>wordlist.words[i])
-        ans  = ans.join('\n')
+        let ans = [inds.map(i=>[i,wordlist.words[i]])]
+        switch (getOption(['sort','order'])) {
+            case 'Alphabetical':
+                ans.sort((a,b) => a[1]<b[1] ? -1 : 1 )
+            case 'Frequency':
+                if (getOption(['sort','show'])) {
+                    let max = wordlist.lists['Exquisite Corpus'].length
+                    for (let i=0; i<ans.length; i++) {
+                        const ind = ans[i][0]
+                        const f = wordlist.freq[ind]
+                        if (f>=0) { ans[i].push(`1/${1/f}`) }
+                        else { ans[i].push(`1/${max}+`) }
+                    }
+                }
+                break;
+            case 'Score':
+                break;
+            default:
+                throw 'Unknown order'
+        }
+        ans = ans.map(info=>info.slice(1).join('  -  ')).join('\n')
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
     } 
