@@ -313,8 +313,8 @@ async function searchleMain(document) {
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
                 if (typeof option.value === 'boolean') {
-                    const element = document.createElement('input', {type:'checkbox', id: id, value: option.value})
-                    element.onchange = (e) => changeOption(keys, e.srcElement.value)  
+                    const element = document.createElement('input', {type:'checkbox', id: id, checked: option.value})
+                    element.onchange = (e) => changeOption(keys, e.srcElement.checked)  
                     subframe.appendChild(element)
                     subframe.appendChild(document.createTextNode(' '+label))
                 } else if (typeof option.value === 'string') {
