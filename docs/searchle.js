@@ -4,16 +4,6 @@ const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle
 const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
 
 let options = {
-    lists: {
-        label: 'Word Lists',
-        subops: {
-            'Frequency Req:': { value: '' },
-            'Proper Nouns': {
-                value: 'Avoid',
-                type: ['Require', 'Include', 'Nothing', 'Avoid'],  
-            },
-        }
-    },
     sort: {
         label: 'Sorting Options',
         subops: {
@@ -24,25 +14,38 @@ let options = {
             order: {
                 label: 'Order',    
                 value: 'Frequency',
-                type: ['Frequency','Alphabetically','Power','Wordle Score'],
+                type: ['Frequency','Alphabetically','Score'],
+            },
+            score: {
+                label: 'Score Sort Options',
                 subops: {
-                    wordle: {
-                        label: 'Wordle Sort Options',
-                        subops: {
-                            mode: {
-                                label: 'Mode',
-                                value: 'Super Hard Mode',
-                                type: ['Normal','Hard','Super Hard'],
-                            },
-                            useAns: {
-                                label: 'Use Wordle Answers',    
-                                value: false,  
-                            },
-                        },
+                    deep: {
+                        label: 'Deep Search',
+                        value: true,
+                    },
+                    wide: {
+                        label: 'Require Match',
+                        value: 'True',
+                        type: ['True','Pattern','False'],                        
+                    },
+                    list: {
+                        label: 'Use Alt List',
+                        value: '',
+                        type: [''],
                     },
                 },
             },
         },
+    },
+    lists: {
+        label: 'Word Lists',
+        subops: {
+            'Frequency Req:': { value: '' },
+            'Proper Nouns': {
+                value: 'Avoid',
+                type: ['Require', 'Include', 'Nothing', 'Avoid'],  
+            },
+        }
     },
 }  
 
@@ -307,37 +310,33 @@ async function searchleMain(document) {
                     }
                     element.value = option.value
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
-                    const L = document.createTextNode(' '+label)
                     subframe.appendChild(element)
-                    subframe.appendChild(L)
+                    if (label) { subframe.appendChild(document.createTextNode(' '+label)) }
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
                 if (typeof option.value === 'boolean') {
                     const element = document.createElement('input', {id: id})
                     element.type = 'checkbox'
                     element.checked = option.value 
-                    element.onchange = (e) => changeOption(keys, e.srcElement.checked)  
-                    const L = document.createTextNode(' '+label)
+                    element.onchange = (e) => changeOption(keys, e.srcElement.checked) 
                     subframe.appendChild(element)
-                    subframe.appendChild(L)
+                    if (label) { subframe.appendChild(document.createTextNode(' '+label)) }
                 } else if (typeof option.value === 'string') {
                     const element = document.createElement('input', {id: id, value: option.value})
                     element.onchange = (e) => changeOption(keys, e.srcElement.value) 
-                    const L = document.createTextNode(label+' ')
-                    subframe.appendChild(L)
+                    if (label) { subframe.appendChild(document.createTextNode(label+' ')) }
                     subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
                     const element = document.createElement('input', {id: id, value: option.value})
                     element.type = 'number'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
-                    const L = document.createTextNode(label+' ')
-                    subframe.appendChild(L)
+                    if (label) { subframe.appendChild(document.createTextNode(label+' ')) }
                     subframe.appendChild(element)
                 } else { console.log(`Unknown option of value ${option.value}`) }
             }
             frame.appendChild(subframe)
         } else {
-            frame.appendChild(document.createTextNode(label))
+            if (label) { frame.appendChild(document.createTextNode(label)) }
         }
         if ('subops' in option) {
             let subframe = document.createElement('div')    
@@ -368,6 +367,7 @@ async function searchleMain(document) {
     for (const list in wordlist['lists']) {
         if (!(list in options.lists.subops)) {
             options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid']}
+            options.sort.score.list.type.append(list)
         }
     }
     
