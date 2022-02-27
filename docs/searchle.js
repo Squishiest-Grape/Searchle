@@ -311,18 +311,21 @@ async function searchleMain(document) {
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
                 if (typeof option.value === 'boolean') {
-                    const element = document.createElement('input', {type:'checkbox', id: id})
+                    const element = document.createElement('input', {id: id})
+                    element.type = 'checkbox'
+                    element.checked = option.value 
                     element.onchange = (e) => changeOption(keys, e.srcElement.checked)  
                     subframe.appendChild(element)
                     subframe.appendChild(document.createTextNode(' '+label))
                 } else if (typeof option.value === 'string') {
-                    const element = document.createElement('input', {type:'text', id: id, value: option.value})
+                    const element = document.createElement('input', {id: id, value: option.value})
                     element.style.float = 'left'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value) 
                     subframe.appendChild(document.createTextNode(label+' '))
                     subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
-                    const element = document.createElement('input', {type:'number', id: id, value: option.value})
+                    const element = document.createElement('input', {id: id, value: option.value})
+                    element.type = 'number'
                     element.style.float = 'left'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     subframe.appendChild(document.createTextNode(label+' '))
