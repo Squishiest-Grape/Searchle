@@ -210,6 +210,21 @@ async function searchleMain(document) {
         return [pattern,limits]
     }
     
+    function setU(s1,s2) {
+        return new Set([...s1,...s2])
+    }
+    
+    function setI(s1,s2) {
+        s2 = new Set(s2)
+        return new Set([...s1].filter(e=>s2.has(e)))
+    }
+    
+    function setD(s1,s2) {
+        s2 = new Set(s2)
+        return new Set([...s1].filter(e=>!s2.has(e)))
+    }
+    
+    
     function getInds() {    
         let opts = {}
         for (const [key,opt] of Object.entries(options.lists.subops)) {
@@ -220,19 +235,17 @@ async function searchleMain(document) {
         }
         let ans = new Set()
         if ('Require' in opts && opts.Require.length > 0) {
-            ans = wordlist.lists[opts.Require[0]]
-            for (let i=1; i<=opts.Require.length; i++) { ans = ans && new Set(wordlist.lists[opts.Require[i]]) }
+            ans = new Set(wordlist.lists[opts.Require[0]])
+            for (let i=1; i<=opts.Require.length; i++) { ans = setI(ans,wordlist.lists[opts.Require[i]]) }
         } else if ('Include' in opts) {
             for (const key of opts.Include) { 
-                console.log(key)
-                console.log(new Set(wordlist.lists[key]))
-                ans = ans || new Set(wordlist.lists[key]) 
+                ans = setU(ans, wordlist.lists[key]))
             }
         }
         if ('Avoid' in opts) {
             let avoid = new Set()
-            for (const key of opts.Avoid) { avoid = avoid || new Set(wordlist.lists[key]) }
-            for (const val of [...avoid]) { ans.delete(val) }
+            for (const key of opts.Avoid) { avoid = setU(avoid, wordlist.lists[key]) }
+            ans = setD(ans, avoid)
         }
         ans = [...ans]
         let freq = getOption(['lists','Frequency'])
