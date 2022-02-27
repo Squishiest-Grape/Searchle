@@ -320,9 +320,6 @@ async function searchleMain(document) {
         }
         ans = ans.map(i=>wordlist.words[i])
         ans  = ans.join('\n')
-        } catch (error) {
-            ans = error       
-        }
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
     } 
