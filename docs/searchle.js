@@ -285,10 +285,9 @@ async function searchleMain(document) {
             
     function changeOption(keys,val) {
         let opt = options
-        console.log([opt,keys,val])
         for (let i=0; i<keys.length-1; i++) { opt = opt[keys[i]].subops }
         opt[keys[keys.length-1]].value = val
-        console.log(options)
+        setCookie('options',options)
     }
     
     function createOption(option, keys, parent) {
@@ -298,7 +297,8 @@ async function searchleMain(document) {
         if ('label' in option) { label = option.label }
         if ('value' in option) {
             let subframe = document.createElement('div') 
-            subframe.style.float = 'left'
+            subframe.style.tableLayout = 'fixed'
+            subframe.style.flex = 1
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
                     const element = document.createElement('select', {id: id})
@@ -309,24 +309,23 @@ async function searchleMain(document) {
                     }
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     subframe.appendChild(element)
-                    subframe.appendChild(document.createTextNode(label))
+                    subframe.appendChild(document.createTextNode(' '+label))
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
-                let element
                 if (typeof option.value === 'boolean') {
-                    element = document.createElement('input', {type:'checkbox', id: id, value: option.value})
+                    const element = document.createElement('input', {type:'checkbox', id: id, value: option.value})
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     subframe.appendChild(element)
-                    subframe.appendChild(document.createTextNode(label))
+                    subframe.appendChild(document.createTextNode(' '+label))
                 } else if (typeof option.value === 'string') {
-                    element = document.createElement('input', {type:'text', id: id, value: option.value})
+                    const element = document.createElement('input', {type:'text', id: id, value: option.value})
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
-                    subframe.appendChild(document.createTextNode(label))
+                    subframe.appendChild(document.createTextNode(label+' '))
                     subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
-                    element = document.createElement('input', {type:'number', id: id, value: option.value})
+                    const element = document.createElement('input', {type:'number', id: id, value: option.value})
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
-                    subframe.appendChild(document.createTextNode(label))
+                    subframe.appendChild(document.createTextNode(label+' '))
                     subframe.appendChild(element)
                 } else { console.log(`Unknown option of value ${option.value}`) }
             }
