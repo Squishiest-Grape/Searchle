@@ -234,10 +234,11 @@ async function searchleMain(document) {
              }
         }
         let ans = new Set()
+        console.log(opts)
+        console.log(wordlist.lists)
         if ('Require' in opts && opts.Require.length > 0) {
             ans = new Set(wordlist.lists[opts.Require[0]])
             for (let i=1; i<=opts.Require.length; i++) { ans = setI(ans,wordlist.lists[opts.Require[i]]) }
-            console.log(ans)
         } else if ('Include' in opts) {
             for (const key of opts.Include) { 
                 ans = setU(ans, wordlist.lists[key])
@@ -268,24 +269,10 @@ async function searchleMain(document) {
                 v = wordlist.words.length * v / 100 
             }
             if (f == 'c') {
-                if (d.includes('<')) {
-                    if (d.includes('=')) { d += 1 }
-                    let i = 0
-                    while (i < ans.length) {
-                        if (ans[i] >= i) { break }  
-                        i++
-                    }
-                    ans = ans.slice(0,i+1)
-                } else if (d.includes('>')) {
-                    if (d.includes('=')) { d -= 1 }
-                    let i = ans.length-1
-                    while (i >= 0) {
-                        if (ans[i] <= i) { break }  
-                        i--
-                    }
-                    ans = ans.slice(i+1)
-                }
-            } else if (f == 'f') {
+                f = 'f'
+                v = wordlist.freq[Math.round(v)]   
+            }
+            if (f == 'f') {
                 if (f == '>') {
                     let i = 0
                     while (i < ans.length) {
