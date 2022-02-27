@@ -312,7 +312,11 @@ async function searchleMain(document) {
                     element.value = option.value
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     subframe.appendChild(element)
-                    if (label) { subframe.appendChild(document.createTextNode(' '+label)) }
+                    if (label) { 
+                        const L = document.createElement('label')
+                        L.appendChild(document.createTextNode(' '+label)
+                        subframe.appendChild(L) 
+                    }
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
                 if (typeof option.value === 'boolean') {
@@ -321,17 +325,29 @@ async function searchleMain(document) {
                     element.checked = option.value 
                     element.onchange = (e) => changeOption(keys, e.srcElement.checked) 
                     subframe.appendChild(element)
-                    if (label) { subframe.appendChild(document.createTextNode(' '+label)) }
+                    if (label) { 
+                        const L = document.createElement('label')
+                        L.appendChild(document.createTextNode(' '+label)
+                        subframe.appendChild(L) 
+                    }
                 } else if (typeof option.value === 'string') {
                     const element = document.createElement('input', {id: id, value: option.value})
                     element.onchange = (e) => changeOption(keys, e.srcElement.value) 
-                    if (label) { subframe.appendChild(document.createTextNode(label+' ')) }
+                    if (label) { 
+                        const L = document.createElement('label')
+                        L.appendChild(document.createTextNode(label+' ')
+                        subframe.appendChild(L) 
+                    }
                     subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
                     const element = document.createElement('input', {id: id, value: option.value})
                     element.type = 'number'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
-                    if (label) { subframe.appendChild(document.createTextNode(label+' ')) }
+                    if (label) { 
+                        const L = document.createElement('label')
+                        L.appendChild(document.createTextNode(label+' ')
+                        subframe.appendChild(L) 
+                    }
                     subframe.appendChild(element)
                 } else { console.log(`Unknown option of value ${option.value}`) }
             }
