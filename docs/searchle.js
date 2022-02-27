@@ -234,11 +234,9 @@ async function searchleMain(document) {
              }
         }
         let ans = new Set()
-        console.log(opts)
-        console.log(wordlist.lists)
         if ('Require' in opts && opts.Require.length > 0) {
             ans = new Set(wordlist.lists[opts.Require[0]])
-            for (let i=1; i<=opts.Require.length; i++) { ans = setI(ans,wordlist.lists[opts.Require[i]]) }
+            for (let i=1; i<opts.Require.length; i++) { ans = setI(ans,wordlist.lists[opts.Require[i]]) }
         } else if ('Include' in opts) {
             for (const key of opts.Include) { 
                 ans = setU(ans, wordlist.lists[key])
@@ -311,7 +309,6 @@ async function searchleMain(document) {
     function searchle() {
         const [pattern,limits] = getCriteria()
         let inds = getInds()
-        console.log(inds)
         let ans = []
         let sort = []
         for (const i of inds) {
