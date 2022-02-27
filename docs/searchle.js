@@ -367,7 +367,7 @@ async function searchleMain(document) {
     for (const list in wordlist['lists']) {
         if (!(list in options.lists.subops)) {
             options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid']}
-            options.sort.score.list.type.append(list)
+            options.sort.subops.score.subops.list.type.push(list)
         }
     }
     
