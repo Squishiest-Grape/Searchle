@@ -327,7 +327,7 @@ async function searchleMain(document) {
         let ans = inds.map(i=>[wordlist.words[i]])
         if (getOption(['sort','show'])) {
             let max = wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1]
-            const max = Math.round(1/wordlist.freq(max))
+            max = Math.round(1/wordlist.freq(max))
             for (let i=0; i<inds.length; i++) {
                 const f = wordlist.freq[inds[i]]
                 if (f>0) { ans[i].push(`1 / ${Math.round(1/f)}`) }
