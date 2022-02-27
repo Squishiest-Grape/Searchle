@@ -296,8 +296,7 @@ async function searchleMain(document) {
         let label = keys[keys.length-1]
         if ('label' in option) { label = option.label }
         if ('value' in option) {
-            let subframe = document.createElement('div') 
-            subframe.style.float = 'left'
+            let subframe = document.createElement('div')
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
                     const element = document.createElement('select', {id: id, value:option.value})
@@ -318,11 +317,13 @@ async function searchleMain(document) {
                     subframe.appendChild(document.createTextNode(' '+label))
                 } else if (typeof option.value === 'string') {
                     const element = document.createElement('input', {type:'text', id: id, value: option.value})
-                    element.onchange = (e) => changeOption(keys, e.srcElement.value)  
+                    element.style.float = 'left'
+                    element.onchange = (e) => changeOption(keys, e.srcElement.value) 
                     subframe.appendChild(document.createTextNode(label+' '))
                     subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
                     const element = document.createElement('input', {type:'number', id: id, value: option.value})
+                    element.style.float = 'left'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     subframe.appendChild(document.createTextNode(label+' '))
                     subframe.appendChild(element)
