@@ -12,7 +12,7 @@ let options = {
                 value: 'Frequency',
                 type: ['Frequency','Alphabetically','Score'],
                 pos: 'right',
-            },
+            },      
             show: {
                 label: 'Show Value',
                 value: false,
@@ -161,75 +161,162 @@ async function searchleMain(document) {
         return ans
     }
     
+    function combRange(r1,r2) {
+        let r = [r1[0],r1[1]]
+        if (r2[0] > r[0]) { r[0] = r2[0] }
+        if (r[1] == NaN) || (r2[1] < r[1])) { r[1] = r2[1] }
+        return r
+    }
+    
+    
+    function getCriteria() {
+        let limits = {}
+        const requires = parse(document.getElementById('searchleRequires').value)
+        for (let i=0; i<requires.length; i++) {
+            let [num,val,inv] = requires[i]
+            if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
+            if (inv) { throw 'Inverse not implimented in requires' }
+            if (val == null) { throw 'Wildcards not implimented in requires' }
+            if (num == null) { num = 1 }
+            if (!Array.isArray(num)) { num = [num,NaN] }
+            if (val in limits) { limits[val] = combRange(val,num) }
+            else { limits[val] = num }
+        }
+        const avoids = parse(document.getElementById('searchleAvoids').value)
+        for (let i=0; i<avoids.length; i++) {
+            let [num,val,inv] = avoids[i]
+            if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
+            if (inv) { throw 'Inverse not implimented in avoids' }
+            if (val == null) { throw 'Wildcards not implimented in avoids' }
+            if (num == null) { num = [0,0] }
+            else if (Array.isArray(num)) {
+                if (num[1] != NaN) { throw 'Multi-range not implimented' }
+                num = [0,num[0]-1]
+            }
+            else {
+                num = [0,num-1]
+            }
+            num[1] = Math.max(0,num[1])       
+            if (val in limits) { limits[val] = combRange(val,num) }
+            else { limits[val] = num }
+        }
+        let pattern = parse(document.getElementById('searchlePattern').value)
+        pattern = pattern2regex(pattern)
+        return [pattern,limits]
+    }
+    
+    function getInds() {    
+        let opts = {}
+        for (const [key,opt] of Object.entries(options.lists.subops)) {
+            if (key in wordlist.lists) {
+                if (!(opt.value in opts)) { opts[opt.value] = [] } 
+                opts[opt.value].push(key)
+             }
+        }
+        let ans = new Set()
+        if ('Require' in opts && opts.Require.length > 0) {
+            ans = wordlist.lists[opts.Require[0]]
+            for (let i=1; i<=opts.Require.length; i++) { ans = ans && new Set(wordlist.lists[opts.Require[i]]) }
+        } else if ('Include' in opts) {
+            for (const key of opts.Include) { ans = ans || new Set(wordlist.lists[key]) }
+        }
+        if ('Avoid' in opts) {
+            let avoid = new Set()
+            for (const key of opts.Avoid) { avoid = avoid || new Set(wordlist.lists[key]) }
+            for (const val of [...avoid]) { ans.delete(val) }
+        }
+        ans = [...ans]        
+        let freq = getOption(['lists','Frequency'])
+        freq = freq.split(/(<|>|<=|>=)/)
+        if (freq.length == 3) {
+            freq = freq.map(s=>s.trim().toLowerCase())
+            let f,d,v
+            if ('fpc'.includes(freq[0])) { 
+                [f,d,v] = freq
+            }
+            else if ('fpc'.includes(freq[2])) {
+                [v,d,f] = freq
+                if (d.includes('>')) { d = d.replace('>','<') }
+                else { d = d.replace('<','>') }
+            }
+            v = eval(v)
+            if (f == 'p') { 
+                f = 'c' 
+                v = wordlist.words.length * v / 100 
+            }
+            if (f == 'c') {
+                if (d.includes('<')) {
+                    if (d.includes('=') { d += 1 }
+                    let i = 0
+                    while (i < ans.length) {
+                        if (ans[i] >= i) { break }  
+                        i++
+                    }
+                    ans = ans.slice(0,i+1)
+                } else if (d.includes('>')) {
+                    if (d.includes('=') { d -= 1 }
+                    let i = ans.length-1
+                    while (i >= 0) {
+                        if (ans[i] <= i) { break }  
+                        i--
+                    }
+                    ans = ans.slice(i+1)
+                }
+            } else if (f == 'f') {
+                if (f == '>') {
+                    let i = 0
+                    while (i < ans.length) {
+                        if (wordlist.freq[ans[i]] <= v) { break }
+                        i++ 
+                    }
+                    ans = ans.slice(0,i+1)
+                } else if (f == '>=') {
+                    let i = 0
+                    while (i < ans.length) {
+                        if (wordlist.freq[ans[i]] < v) { break }
+                        i++ 
+                    }
+                    ans = ans.slice(0,i+1)
+                } else if (f == '<') {
+                    let i = ans.length-1
+                    while (i >= 0) {
+                        if (wordlist.freq[ans[i]] >= v) { break }
+                        i--
+                    }
+                    ans = ans.slice(i+1)
+                } else if (f == '<=') {
+                    let i = ans.length-1
+                    while (i >= 0) {
+                        if (wordlist.freq[ans[i]] > v) { break }
+                        i--
+                    }
+                    ans = ans.slice(i+1)
+                }
+            }
+        }
+        return ans
+    }
+ 
     // search function
     function searchle() {
-        
-        let ans = ''
-        
-        try {
-            // get html values
-            let pattern = document.getElementById('searchlePattern').value
-            let requires = document.getElementById('searchleRequires').value
-            let avoids = document.getElementById('searchleAvoids').value
-
-            // get limits
-            let limits = {}
-
-            avoids = parse(avoids)
-            for (let i=0; i<avoids.length; i++) {
-                let [num,val,inv] = avoids[i]
-                if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
-                if (inv) { throw 'Inverse not implimented in avoids' }
-                if (val == null) { throw 'Wildcards not implimented in avoids' }
-                if (num == null) { num = [0,0] }
-                else if (Array.isArray(num)) {
-                    if (num[1] != NaN) { throw 'Multi-range not implimented' }
-                    num = [0,num[0]]
-                }
-                else { num = [0,num] }
-                if (val in limits) {
-                    if (limits[val][0] > num[0]) { num[0] = limits[val][0] }
-                    if ((num[1] == NaN) || (limits[val][1] < num[1])) { num[1] = limits[val][1] } 
-                }
-                limits[val] = num
-            }
-
-            requires = parse(requires)
-            for (let i=0; i<requires.length; i++) {
-                let [num,val,inv] = requires[i]
-                if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
-                if (inv) { throw 'Inverse not implimented in requires' }
-                if (val == null) { throw 'Wildcards not implimented in requires' }
-                if (num == null) { num = 1 }
-                if (Array.isArray(num)) {
-                    limits[val] = num
-                } else {
-                    if (val in limits) { limits[val] = [limits[val][0]+num,limits[val][1]+num] }
-                    else { limits[val] = [num,NaN] }
+        const [pattern,limits] = getCriteria()
+        let re = new RegExp('^'+pattern+'$','i')
+        let inds = getInds()
+        for (const i of inds) {
+            const word = wordlist.words[i]
+            if (re.test(word)) {
+            let good = true
+            for (const part in limits) {
+                let c = (word.match(new RegExp(part,'gi')) || []).length
+                if (c < limits[part][0] || c > limits[part][1]) {
+                    good = false
+                    break
                 }
             }
-
-            pattern = parse(pattern)
-            pattern = pattern2regex(pattern)
-
-            // solve  
-            let re = new RegExp('^'+pattern+'$','i')
-
-            ans = []
-            for (const word of wordlist['words']) {
-                if (re.test(word)) {
-                let good = true
-                for (const part in limits) {
-                    let c = (word.match(new RegExp(part,'gi')) || []).length
-                    if (c < limits[part][0] || c > limits[part][1]) {
-                        good = false
-                        break
-                    }
-                }
-                if (good) { ans.push(word) } 
-                }
+            if (good) { ans.push(word) } 
             }
-            ans  = ans.join('\n')
+        }
+        ans  = ans.join('\n')
         } catch (error) {
             ans = error       
         }
@@ -296,6 +383,12 @@ async function searchleMain(document) {
         for (let i=0; i<keys.length-1; i++) { opt = opt[keys[i]].subops }
         opt[keys[keys.length-1]].value = val
         setCookie('options',options)
+    }
+    
+    function getOption(keys) {
+        let opt = options
+        for (let i=0; i<keys.length-1; i++) { opt = opt[keys[i]].subops }
+        return opt[keys[keys.length-1]].value
     }
     
     function createOption(option, keys, parent) {
