@@ -312,9 +312,9 @@ async function searchleMain(document) {
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     subframe.appendChild(element)
                     if (label) {
-                        subframe.appendChild(document.createTextNode('&nbsp;'))
                         const L = document.createElement('label')
                         L.appendChild(document.createTextNode(label))
+                        L.style.marginLeft = '3%'
                         subframe.appendChild(L) 
                     }
                 } else { console.log(`Unknown option of type ${option.type}`) }
@@ -326,9 +326,9 @@ async function searchleMain(document) {
                     element.onchange = (e) => changeOption(keys, e.srcElement.checked) 
                     subframe.appendChild(element)
                     if (label) {
-                        subframe.appendChild(document.createTextNode('&nbsp;'))
                         const L = document.createElement('label')
                         L.appendChild(document.createTextNode(label))
+                        L.style.marginLeft = '3%'
                         subframe.appendChild(L)
                     }
                 } else if (typeof option.value === 'string') {
@@ -339,7 +339,7 @@ async function searchleMain(document) {
                         const L = document.createElement('label')
                         L.appendChild(document.createTextNode(label))
                         subframe.appendChild(L)
-                        subframe.appendChild(document.createTextNode('&nbsp;'))
+                        L.style.marginRight = '3%'
                     }
                     subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
@@ -350,7 +350,7 @@ async function searchleMain(document) {
                         const L = document.createElement('label')
                         L.appendChild(document.createTextNode(label))
                         subframe.appendChild(L)
-                        subframe.appendChild(document.createTextNode('&nbsp;'))
+                        L.style.marginRight = '3%'
                     }
                     subframe.appendChild(element)
                 } else { console.log(`Unknown option of value ${option.value}`) }
