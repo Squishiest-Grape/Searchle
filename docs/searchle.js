@@ -218,6 +218,7 @@ async function searchleMain(document) {
                 opts[opt.value].push(key)
              }
         }
+        console.log(opts)
         let ans = new Set()
         if ('Require' in opts && opts.Require.length > 0) {
             ans = wordlist.lists[opts.Require[0]]
@@ -230,7 +231,8 @@ async function searchleMain(document) {
             for (const key of opts.Avoid) { avoid = avoid || new Set(wordlist.lists[key]) }
             for (const val of [...avoid]) { ans.delete(val) }
         }
-        ans = [...ans]        
+        ans = [...ans]
+        console.log(ans)
         let freq = getOption(['lists','Frequency'])
         freq = freq.split(/(<|>|<=|>=)/)
         if (freq.length == 3) {
