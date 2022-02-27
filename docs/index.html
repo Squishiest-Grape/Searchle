@@ -14,7 +14,7 @@
     border: 0;
     padding: 0;
   }
-  html, body, .frame {
+  html, body, {
     width: 100%;
     height: 100%;
   }
@@ -25,14 +25,12 @@
     font-size: xx-large;
     font-weight: bold;
     cursor: pointer;
-    border: 1px;
-    outline: 1px;
   }
   #searchArea * {
     font-size: x-large;
   }
   input {
-    border: 1px;
+    border: 1px solid #ccc;
     outline: 1px;
   }
   .tab {
@@ -67,25 +65,23 @@
 </style>
 
 <body>
-  <div class=frame>
-    <div class=block id=search>
-      <input type=button class=block id=searchleBtn value=Searchle>
-      <table class=block id=searchArea>
-        <tr><td>Pattern:</td><td><input type=text class=searchInp id=searchlePattern></td></tr>
-        <tr><td>Require:</td><td><input type=text class=searchInp id=searchleRequires></td></tr>
-        <tr><td>Avoid:</td>  <td><input type=text class=searchInp id=searchleAvoids></td></tr>
-      </table>
-    </div>
-    <div class=block id=tab>
-      <button class=tabBtn>Results</button>
-      <button class=tabBtn>Info</button>
-      <button class=tabBtn>Options</button>
-    </div>
-    <div class=block id=box>
-      <div class=box id=boxResults><textarea id=searchleResult></textarea></div>
-      <div class=box id=boxInfo></div>
-      <div class=box id=boxOptions></div>
-    </div>
+  <div class=block id=search>
+    <input type=button class=block id=searchleBtn value=Searchle>
+    <table class=block id=searchArea>
+      <tr><td>Pattern:</td><td><input type=text class=searchInp id=searchlePattern></td></tr>
+      <tr><td>Require:</td><td><input type=text class=searchInp id=searchleRequires></td></tr>
+      <tr><td>Avoid:</td>  <td><input type=text class=searchInp id=searchleAvoids></td></tr>
+    </table>
+  </div>
+  <div class=block id=tab>
+    <button class=tabBtn>Results</button>
+    <button class=tabBtn>Info</button>
+    <button class=tabBtn>Options</button>
+  </div>
+  <div class=block id=box>
+    <div class=box id=boxResults><textarea id=searchleResult></textarea></div>
+    <div class=box id=boxInfo></div>
+    <div class=box id=boxOptions></div>
   </div>
 </body>
 
