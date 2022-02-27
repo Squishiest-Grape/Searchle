@@ -299,12 +299,13 @@ async function searchleMain(document) {
             let subframe = document.createElement('div')
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
-                    const element = document.createElement('select', {id: id, value:option.value})
+                    const element = document.createElement('select', {id: id})
                     for (const val of option.type) {
-                        const e = document.createElement('option', {value:val})
-                        e.appendChild(document.createTextNode(val))
-                        element.appendChild(e) 
+                        const E = document.createElement('option', {value:val})
+                        E.appendChild(document.createTextNode(val))
+                        element.appendChild(E) 
                     }
+                    element.value = option.value
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     subframe.appendChild(element)
                     subframe.appendChild(document.createTextNode(' '+label))
@@ -313,22 +314,29 @@ async function searchleMain(document) {
                 if (typeof option.value === 'boolean') {
                     const element = document.createElement('input', {id: id})
                     element.type = 'checkbox'
+                    element.style.float = 'left'
                     element.checked = option.value 
                     element.onchange = (e) => changeOption(keys, e.srcElement.checked)  
+                    const L = document.createTextNode(' '+label)
+                    L.style.float = 'left'
                     subframe.appendChild(element)
-                    subframe.appendChild(document.createTextNode(' '+label))
+                    subframe.appendChild(L)
                 } else if (typeof option.value === 'string') {
                     const element = document.createElement('input', {id: id, value: option.value})
                     element.style.float = 'left'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value) 
-                    subframe.appendChild(document.createTextNode(label+' '))
+                    const L = document.createTextNode(label+' ')
+                    L.style.float = 'left'
+                    subframe.appendChild(L)
                     subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
                     const element = document.createElement('input', {id: id, value: option.value})
                     element.type = 'number'
                     element.style.float = 'left'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
-                    subframe.appendChild(document.createTextNode(label+' '))
+                    const L = document.createTextNode(label+' ')
+                    L.style.float = 'left'
+                    subframe.appendChild(L)
                     subframe.appendChild(element)
                 } else { console.log(`Unknown option of value ${option.value}`) }
             }
