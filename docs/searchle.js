@@ -265,7 +265,6 @@ async function searchleMain(document) {
             if (f == 'p') { f = 'c'; v = wordlist.words.length * v / 100 }
             if (f == 'c') { f = 'f'; v = wordlist.freq[Math.round(v)] }
             console.log([f,d,v])
-            console.log(wordlist.freq)
             if (f == 'f') {
                 if (f == '>') {
                     let i = 0
@@ -322,12 +321,12 @@ async function searchleMain(document) {
         
         const sort = getOption(['sort','order'])
         if (sort == 'Alphabetical') {
-            inds.sort((a,b) => (wordlist.words[a]<wordlist.words[b]) ? -1 : 1 )            
+            inds.sort((a,b) => (wordlist.words[a]=<wordlist.words[b]) ? -1 : 1 )            
         }
         let ans = inds.map(i=>[wordlist.words[i]])
         if (getOption(['sort','show'])) {
             let max = wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1]
-            max = Math.round(1/wordlist.freq[max]) + 1
+            max = parseInt(1/wordlist.freq[max]) + 1
             for (let i=0; i<inds.length; i++) {
                 const f = wordlist.freq[inds[i]]
                 if (f>0) { ans[i].push(`1 / ${Math.round(1/f)}`) }
