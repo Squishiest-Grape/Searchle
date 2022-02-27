@@ -7,7 +7,7 @@ let options = {
     lists: {
         label: 'Word Lists',
         subops: {
-            'Frequency Requirement: ': { value: '' },
+            'Frequency Req:': { value: '' },
             'Proper Nouns': {
                 value: 'Avoid',
                 type: ['Require', 'Include', 'Nothing', 'Avoid'],  
@@ -297,12 +297,12 @@ async function searchleMain(document) {
         if ('label' in option) { label = option.label }
         if ('value' in option) {
             let subframe = document.createElement('div') 
-            subframe.style.tableLayout = 'fixed'
-            subframe.style.flex = 1
+            subframe.style.float = 'left'
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
-                    const element = document.createElement('select', {id: id})
-                    for (const val of option.type) { 
+                    const element = document.createElement('select', {id: id, value:option.value})
+                    for (const val of option.type) {
+                        if (val == option.value) {
                         const e = document.createElement('option', {value:val})
                         e.appendChild(document.createTextNode(val))
                         element.appendChild(e) 
