@@ -270,6 +270,7 @@ async function searchleMain(document) {
                 f = 'f'
                 v = wordlist.freq[Math.round(v)]   
             }
+            console.log([f,d,v])
             if (f == 'f') {
                 if (f == '>') {
                     let i = 0
