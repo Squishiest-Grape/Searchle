@@ -11,7 +11,8 @@
     font-size: large;
     font-family: monospace; 
   }
-  #search * {
+  #search > * {
+    width: 100%;
     font-size: x-large;
   }
   #search input { 
@@ -20,10 +21,9 @@
   #searchleBtn {
     font-size: xx-large;
     font-weight: bold;
+    cursor: pointer;
   }
   .tab {
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
     width: 100%;
     display: flex;
     margin: 0;
@@ -31,25 +31,19 @@
   }
   .tabBtn {
     font-size: x-large;
-    background-color: inherit;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    transition: 0.3s;
-    table-layout: fixed;
     width: 100%;
     felx: 1;
-  }
-  .tabBtn:hover {
-    background-color: #ddd;
+    background-color: inherit;
+    cursor: pointer;
+    transition: 0.3s;
   }
   .tabBtn.active {
     background-color: #ccc;
   }
   .box {
+    height: 100%;
     display: none;
     border-top: none;
-    height: 100%;
     overflow: auto;
   }
   textarea {
