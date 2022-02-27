@@ -326,11 +326,11 @@ async function searchleMain(document) {
         }
         let ans = inds.map(i=>[wordlist.words[i]])
         if (getOption(['sort','show'])) {
-            const max = Math.round(1/wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1])
+            let max = wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1]
+            const max = Math.round(1/wordlist.freq(max))
             for (let i=0; i<inds.length; i++) {
-                const ind = inds[i]
-                const f = wordlist.freq[ind]
-                if (f>0) { ans[i].push(`1 / ${1/Math.round(f)}`) }
+                const f = wordlist.freq[inds[i]]
+                if (f>0) { ans[i].push(`1 / ${Math.round(1/f)}`) }
                 else { ans[i].push(`1 / ${max}+`) }
             }
         }
