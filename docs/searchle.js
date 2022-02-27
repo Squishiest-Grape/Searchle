@@ -5,13 +5,10 @@ const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle
 
 let options = {
     sort: {
-        label: 'Sorting Options:',
+        label: 'Sorting Options',
+        value: 'Frequency',
+        type: ['Frequency','Alphabetically','Score'],
         subops: {
-            order: {
-                label: '',    
-                value: 'Frequency',
-                type: ['Frequency','Alphabetically','Score'],
-            },
             show: {
                 label: 'Show Value',
                 value: false,
@@ -42,7 +39,8 @@ let options = {
         subops: {
             'Proper Nouns': {
                 value: 'Avoid',
-                type: ['Require', 'Include', 'Nothing', 'Avoid'],  
+                type: ['Require', 'Include', 'Nothing', 'Avoid'],
+                left: true,
             },
         }
     },
@@ -300,9 +298,10 @@ async function searchleMain(document) {
         if ('value' in option) {
             let subframe = document.createElement('span')
             subframe.style.display = 'flex'
+            let element
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
-                    const element = document.createElement('select', {id: id})
+                    element = document.createElement('select', {id: id})
                     for (const val of option.type) {
                         const E = document.createElement('option', {value:val})
                         E.appendChild(document.createTextNode(val))
@@ -310,50 +309,33 @@ async function searchleMain(document) {
                     }
                     element.value = option.value
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
-                    subframe.appendChild(element)
-                    if (label) {
-                        const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(label))
-                        L.style.marginLeft = '3%'
-                        subframe.appendChild(L) 
-                    }
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
                 if (typeof option.value === 'boolean') {
-                    const element = document.createElement('input', {id: id})
+                    element = document.createElement('input', {id: id})
                     element.type = 'checkbox'
                     element.checked = option.value 
-                    element.onchange = (e) => changeOption(keys, e.srcElement.checked) 
-                    subframe.appendChild(element)
-                    if (label) {
-                        const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(label))
-                        L.style.marginLeft = '3%'
-                        subframe.appendChild(L)
-                    }
+                    element.onchange = (e) => changeOption(keys, e.srcElement.checked)
                 } else if (typeof option.value === 'string') {
-                    const element = document.createElement('input', {id: id, value: option.value})
+                    element = document.createElement('input', {id: id, value: option.value})
                     element.type = 'text'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value) 
-                    if (label) { 
-                        const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(label))
-                        subframe.appendChild(L)
-                        L.style.marginRight = '3%'
-                    }
-                    subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
-                    const element = document.createElement('input', {id: id, value: option.value})
+                    element = document.createElement('input', {id: id, value: option.value})
                     element.type = 'number'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
-                    if (label) { 
-                        const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(label))
-                        subframe.appendChild(L)
-                        L.style.marginRight = '3%'
-                    }
-                    subframe.appendChild(element)
                 } else { console.log(`Unknown option of value ${option.value}`) }
+            }
+            const L = document.createElement('label')
+            L.appendChild(document.createTextNode(label))
+            if ('left' in option && option.left) {
+                L.style.marginLeft = '3%'
+                subframe.appendChild(element)
+                subframe.appendChild(L)
+            } else {
+                L.style.marginRight = '3%'
+                subframe.appendChild(L) 
+                subframe.appendChild(element)
             }
             frame.appendChild(subframe)
         } else {
@@ -387,7 +369,7 @@ async function searchleMain(document) {
     // add list options options 
     for (const list in wordlist['lists']) {
         if (!(list in options.lists.subops)) {
-            options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid']}
+            options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid'], left=true}
             options.sort.subops.score.subops.list.type.push(list)
         }
     }
