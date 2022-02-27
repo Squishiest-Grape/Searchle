@@ -313,7 +313,7 @@ async function searchleMain(document) {
                     subframe.appendChild(element)
                     if (label) { 
                         const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(' '+label)
+                        L.appendChild(document.createTextNode(' '+label))
                         subframe.appendChild(L) 
                     }
                 } else { console.log(`Unknown option of type ${option.type}`) }
@@ -326,7 +326,7 @@ async function searchleMain(document) {
                     subframe.appendChild(element)
                     if (label) { 
                         const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(' '+label)
+                        L.appendChild(document.createTextNode(' '+label))
                         subframe.appendChild(L) 
                     }
                 } else if (typeof option.value === 'string') {
@@ -334,7 +334,7 @@ async function searchleMain(document) {
                     element.onchange = (e) => changeOption(keys, e.srcElement.value) 
                     if (label) { 
                         const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(label+' ')
+                        L.appendChild(document.createTextNode(label+' '))
                         subframe.appendChild(L) 
                     }
                     subframe.appendChild(element)
@@ -344,7 +344,7 @@ async function searchleMain(document) {
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     if (label) { 
                         const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(label+' ')
+                        L.appendChild(document.createTextNode(label+' '))
                         subframe.appendChild(L) 
                     }
                     subframe.appendChild(element)
