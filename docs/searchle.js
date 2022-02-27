@@ -7,14 +7,14 @@ let options = {
     sort: {
         label: 'Sorting Options:',
         subops: {
+            order: {
+                label: '',    
+                value: 'Frequency',
+                type: ['Frequency','Alphabetically','Score'],
+            },
             show: {
                 label: 'Show Value',
                 value: false,
-            },
-            order: {
-                label: 'Order',    
-                value: 'Frequency',
-                type: ['Frequency','Alphabetically','Score'],
             },
             score: {
                 label: 'Score Sort Options:',
