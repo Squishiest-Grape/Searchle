@@ -246,7 +246,7 @@ async function searchleMain(document) {
             }
             if (f == 'c') {
                 if (d.includes('<')) {
-                    if (d.includes('=') { d += 1 }
+                    if (d.includes('=')) { d += 1 }
                     let i = 0
                     while (i < ans.length) {
                         if (ans[i] >= i) { break }  
@@ -254,7 +254,7 @@ async function searchleMain(document) {
                     }
                     ans = ans.slice(0,i+1)
                 } else if (d.includes('>')) {
-                    if (d.includes('=') { d -= 1 }
+                    if (d.includes('=')) { d -= 1 }
                     let i = ans.length-1
                     while (i >= 0) {
                         if (ans[i] <= i) { break }  
@@ -302,18 +302,20 @@ async function searchleMain(document) {
         const [pattern,limits] = getCriteria()
         let re = new RegExp('^'+pattern+'$','i')
         let inds = getInds()
+        let ans = []
+        let sort = []
         for (const i of inds) {
             const word = wordlist.words[i]
             if (re.test(word)) {
-            let good = true
-            for (const part in limits) {
-                let c = (word.match(new RegExp(part,'gi')) || []).length
-                if (c < limits[part][0] || c > limits[part][1]) {
-                    good = false
-                    break
+                let good = true
+                for (const part in limits) {
+                    let c = (word.match(new RegExp(part,'gi')) || []).length
+                    if (c < limits[part][0] || c > limits[part][1]) {
+                        good = false
+                        break
+                    }
                 }
-            }
-            if (good) { ans.push(word) } 
+                if (good) { ans.push(i) } 
             }
         }
         ans  = ans.join('\n')
