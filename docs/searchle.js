@@ -307,35 +307,30 @@ async function searchleMain(document) {
                     }
                     element.value = option.value
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
+                    const L = document.createTextNode(' '+label)
                     subframe.appendChild(element)
-                    subframe.appendChild(document.createTextNode(' '+label))
+                    subframe.appendChild(L)
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
                 if (typeof option.value === 'boolean') {
                     const element = document.createElement('input', {id: id})
                     element.type = 'checkbox'
-                    element.style.float = 'left'
                     element.checked = option.value 
                     element.onchange = (e) => changeOption(keys, e.srcElement.checked)  
                     const L = document.createTextNode(' '+label)
-                    L.style.float = 'left'
                     subframe.appendChild(element)
                     subframe.appendChild(L)
                 } else if (typeof option.value === 'string') {
                     const element = document.createElement('input', {id: id, value: option.value})
-                    element.style.float = 'left'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value) 
                     const L = document.createTextNode(label+' ')
-                    L.style.float = 'left'
                     subframe.appendChild(L)
                     subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
                     const element = document.createElement('input', {id: id, value: option.value})
                     element.type = 'number'
-                    element.style.float = 'left'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     const L = document.createTextNode(label+' ')
-                    L.style.float = 'left'
                     subframe.appendChild(L)
                     subframe.appendChild(element)
                 } else { console.log(`Unknown option of value ${option.value}`) }
