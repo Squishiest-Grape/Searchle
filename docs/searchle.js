@@ -5,7 +5,7 @@ const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle
 
 let options = {
     sort: {
-        label: 'Sorting Options',
+        label: 'Sorting Options:',
         subops: {
             show: {
                 label: 'Show Value',
@@ -17,7 +17,7 @@ let options = {
                 type: ['Frequency','Alphabetically','Score'],
             },
             score: {
-                label: 'Score Sort Options',
+                label: 'Score Sort Options:',
                 subops: {
                     deep: {
                         label: 'Deep Search',
@@ -29,7 +29,7 @@ let options = {
                         type: ['True','Pattern','False'],                        
                     },
                     list: {
-                        label: 'Use Alt List',
+                        label: 'Alt List',
                         value: '',
                         type: [''],
                     },
@@ -38,9 +38,9 @@ let options = {
         },
     },
     lists: {
-        label: 'Word Lists',
+        label: 'Word Lists:',
         subops: {
-            'Frequency Req:': { value: '' },
+            'Frequency Req': { value: '' },
             'Proper Nouns': {
                 value: 'Avoid',
                 type: ['Require', 'Include', 'Nothing', 'Avoid'],  
@@ -300,6 +300,7 @@ async function searchleMain(document) {
         if ('label' in option) { label = option.label }
         if ('value' in option) {
             let subframe = document.createElement('span')
+            subframe.style.display = 'block'
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
                     const element = document.createElement('select', {id: id})
