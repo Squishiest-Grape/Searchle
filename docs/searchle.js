@@ -321,7 +321,7 @@ async function searchleMain(document) {
         
         const sort = getOption(['sort','order'])
         if (sort == 'Alphabetical') {
-            inds.sort((a,b) => (wordlist.words[a]=<wordlist.words[b]) ? -1 : 1 )            
+            inds.sort((a,b) => (wordlist.words[a]<=wordlist.words[b]) ? -1 : 1 )            
         }
         let ans = inds.map(i=>[wordlist.words[i]])
         if (getOption(['sort','show'])) {
