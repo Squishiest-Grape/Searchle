@@ -299,7 +299,7 @@ async function searchleMain(document) {
         let label = keys[keys.length-1]
         if ('label' in option) { label = option.label }
         if ('value' in option) {
-            let subframe = document.createElement('div')
+            let subframe = document.createElement('span')
             if ('type' in option) {
                 if (Array.isArray(option.type)) {
                     const element = document.createElement('select', {id: id})
