@@ -167,8 +167,7 @@ async function searchleMain(document) {
         if (r[1] == NaN || r2[1] < r[1]) { r[1] = r2[1] }
         return r
     }
-    
-    
+
     function getCriteria() {
         let limits = {}
         const requires = parse(document.getElementById('searchleRequires').value)
@@ -200,8 +199,14 @@ async function searchleMain(document) {
             if (val in limits) { limits[val] = combRange(val,num) }
             else { limits[val] = num }
         }
-        let pattern = parse(document.getElementById('searchlePattern').value)
-        pattern = pattern2regex(pattern)
+        let pattern = document.getElementById('searchlePattern').value
+        if (pattern) {
+            pattern = parse(pattern)
+            pattern = pattern2regex(pattern) 
+            pattern = new RegExp('^'+pattern+'$','i')
+        } else {
+            pattern = new RegExp('','i')
+        }
         return [pattern,limits]
     }
     
@@ -300,13 +305,13 @@ async function searchleMain(document) {
     // search function
     function searchle() {
         const [pattern,limits] = getCriteria()
-        let re = new RegExp('^'+pattern+'$','i')
         let inds = getInds()
+        console.log(inds)
         let ans = []
         let sort = []
         for (const i of inds) {
             const word = wordlist.words[i]
-            if (re.test(word)) {
+            if (pattern.test(word)) {
                 let good = true
                 for (const part in limits) {
                     let c = (word.match(new RegExp(part,'gi')) || []).length
