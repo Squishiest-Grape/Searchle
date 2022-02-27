@@ -319,28 +319,24 @@ async function searchleMain(document) {
                 if (good) { inds.push(i) } 
             }
         }
-        let ans = [inds.map(i=>[i,wordlist.words[i]])]
-        switch (getOption(['sort','order'])) {
-            case 'Alphabetical':
-                ans.sort((a,b) => a[1]<b[1] ? -1 : 1 )
-            case 'Frequency':
-                if (getOption(['sort','show'])) {
-                    let max = wordlist.lists['Exquisite Corpus'].length
-                    for (let i=0; i<ans.length; i++) {
-                        const ind = ans[i][0]
-                        const f = wordlist.freq[ind]
-                        if (f>=0) { ans[i].push(`1/${1/f}`) }
-                        else { ans[i].push(`1/${max}+`) }
-                    }
-                }
-                break;
-            case 'Score':
-                break;
-            default:
-                throw 'Unknown order'
+        
+
+        const sort = getOption(['sort','order'])
+        if (sort == 'Alphabetical') {
+            inds.sort((a,b) => (wordlist.words[a]<wordlist.words[b]) ? -1 : 1 )            
+        }
+        let ans = inds.map(i=>[wordlist.words[i]])
+        if (getOption(['sort','show'])) {
+            let max = wordlist.lists['Exquisite Corpus'].length
+            for (let i=0; i<inds.length; i++) {
+                const ind = inds[i]
+                const f = wordlist.freq[ind]
+                if (f>=0) { ans[i].push(`1/${1/f}`) }
+                else { ans[i].push(`1/${max}+`) }
+            }
         }
         console.log(ans)
-        ans = ans.map(info=>info.slice(1).join('  -  ')).join('\n')
+        ans = ans.map(info=>info.join('  -  ')).join('\n')
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
     } 
