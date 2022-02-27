@@ -23,19 +23,30 @@
     font-weight: bold;
     cursor: pointer;
   }
+  #search table {
+    margin: 0;
+    padding: 0;
+  }
   .tab {
     width: 100%;
     display: flex;
     margin: 0;
     padding: 0;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
   }
   .tabBtn {
     font-size: x-large;
     width: 100%;
     felx: 1;
     background-color: inherit;
+    border: none;
+    outline: none;
     cursor: pointer;
     transition: 0.3s;
+  }
+  .tabBtn:hover {
+    background-color: #ddd;
   }
   .tabBtn.active {
     background-color: #ccc;
