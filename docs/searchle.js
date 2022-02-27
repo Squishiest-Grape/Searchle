@@ -392,7 +392,7 @@ async function searchleMain(document) {
     // attach button events
     document.getElementById('searchleBtn').onclick = searchle  
     for (const e of document.getElementsByClassName('tabBtn')) { e.onclick = tabClick }
-    for (const e of document.getElementsByClassName('searchInp')) { e.addEventListner('keyup', hitKey) }
+    for (const e of document.getElementsByClassName('searchInp')) { e.addEventListener('keyup', hitKey) }
     
     activeTab('Info')
     console.log(`Loaded Serachle ${version}`)
