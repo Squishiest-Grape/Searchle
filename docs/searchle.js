@@ -40,7 +40,6 @@ let options = {
     lists: {
         label: 'Word Lists:',
         subops: {
-            'Frequency Req': { value: '' },
             'Proper Nouns': {
                 value: 'Avoid',
                 type: ['Require', 'Include', 'Nothing', 'Avoid'],  
@@ -313,9 +312,10 @@ async function searchleMain(document) {
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     subframe.appendChild(element)
                     if (label) { 
-                        const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(' '+label))
-                        subframe.appendChild(L) 
+//                         const L = document.createElement('label')
+//                         L.appendChild(document.createTextNode(' '+label))
+//                         subframe.appendChild(L) 
+                        subframe.appendChild(document.createTextNode(' '+label)) 
                     }
                 } else { console.log(`Unknown option of type ${option.type}`) }
             } else {
@@ -326,17 +326,19 @@ async function searchleMain(document) {
                     element.onchange = (e) => changeOption(keys, e.srcElement.checked) 
                     subframe.appendChild(element)
                     if (label) { 
-                        const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(' '+label))
-                        subframe.appendChild(L) 
+//                         const L = document.createElement('label')
+//                         L.appendChild(document.createTextNode(' '+label))
+//                         subframe.appendChild(L)
+                        subframe.appendChild(document.createTextNode(' '+label)) 
                     }
                 } else if (typeof option.value === 'string') {
                     const element = document.createElement('input', {id: id, value: option.value})
                     element.onchange = (e) => changeOption(keys, e.srcElement.value) 
                     if (label) { 
-                        const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(label+' '))
-                        subframe.appendChild(L) 
+//                         const L = document.createElement('label')
+//                         L.appendChild(document.createTextNode(label+' '))
+//                         subframe.appendChild(L) 
+                        subframe.appendChild(document.createTextNode(label+' ')) 
                     }
                     subframe.appendChild(element)
                 } else if (typeof option.value === 'number') {
@@ -344,9 +346,10 @@ async function searchleMain(document) {
                     element.type = 'number'
                     element.onchange = (e) => changeOption(keys, e.srcElement.value)  
                     if (label) { 
-                        const L = document.createElement('label')
-                        L.appendChild(document.createTextNode(label+' '))
-                        subframe.appendChild(L) 
+//                         const L = document.createElement('label')
+//                         L.appendChild(document.createTextNode(label+' '))
+//                         subframe.appendChild(L) 
+                        subframe.appendChild(document.createTextNode(label+' ')) 
                     }
                     subframe.appendChild(element)
                 } else { console.log(`Unknown option of value ${option.value}`) }
@@ -387,6 +390,8 @@ async function searchleMain(document) {
             options.sort.subops.score.subops.list.type.push(list)
         }
     }
+    options.lists.subops['Frequency'] = { value: '' }
+    
     
     if ('options' in cookies) { applyOptions(options,cookies.options) }
     setCookie('options',options)
