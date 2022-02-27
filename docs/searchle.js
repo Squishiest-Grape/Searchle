@@ -302,7 +302,6 @@ async function searchleMain(document) {
                 if (Array.isArray(option.type)) {
                     const element = document.createElement('select', {id: id, value:option.value})
                     for (const val of option.type) {
-                        if (val == option.value) {
                         const e = document.createElement('option', {value:val})
                         e.appendChild(document.createTextNode(val))
                         element.appendChild(e) 
