@@ -239,7 +239,7 @@ async function searchleMain(document) {
             for (let i=1; i<=opts.Require.length; i++) { ans = setI(ans,wordlist.lists[opts.Require[i]]) }
         } else if ('Include' in opts) {
             for (const key of opts.Include) { 
-                ans = setU(ans, wordlist.lists[key]))
+                ans = setU(ans, wordlist.lists[key])
             }
         }
         if ('Avoid' in opts) {
