@@ -345,6 +345,7 @@ async function searchleMain(document) {
             default:
                 throw 'Unknown order'
         }
+        console.log(ans)
         ans = ans.map(info=>info.slice(1).join('  -  ')).join('\n')
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
@@ -503,7 +504,7 @@ async function searchleMain(document) {
             options.sort.subops.score.subops.list.type.push(list)
         }
     }
-    options.lists.subops['Frequency'] = { value: '' }
+    options.lists.subops['Frequency'] = { value: 'f > 0' }
     
     
     if ('options' in cookies) { applyOptions(options,cookies.options) }
