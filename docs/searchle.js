@@ -5,13 +5,18 @@ const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle
 
 let options = {
     sort: {
-        label: 'Sorting Options',
-        value: 'Frequency',
-        type: ['Frequency','Alphabetically','Score'],
+        label: 'Sorting Options:',
         subops: {
+            order: {
+                label: 'Order',
+                value: 'Frequency',
+                type: ['Frequency','Alphabetically','Score'],
+                pos: 'right',
+            },
             show: {
                 label: 'Show Value',
                 value: false,
+                pos: 'right',
             },
             score: {
                 label: 'Score Sort Options:',
@@ -40,7 +45,6 @@ let options = {
             'Proper Nouns': {
                 value: 'Avoid',
                 type: ['Require', 'Include', 'Nothing', 'Avoid'],
-                left: true,
             },
         }
     },
@@ -327,15 +331,16 @@ async function searchleMain(document) {
                 } else { console.log(`Unknown option of value ${option.value}`) }
             }
             const L = document.createElement('label')
-            L.appendChild(document.createTextNode(label))
-            if ('left' in option && option.left) {
-                L.style.marginLeft = '3%'
-                subframe.appendChild(element)
-                subframe.appendChild(L)
-            } else {
-                L.style.marginRight = '3%'
+            if ('pos' in option && option.pos=='right') {
+                L.appendChild(document.createTextNode(label+':'))
+                L.style.marginRight = '2%'
                 subframe.appendChild(L) 
                 subframe.appendChild(element)
+            } else {
+                L.appendChild(document.createTextNode(label))
+                L.style.marginLeft = '2%'
+                subframe.appendChild(element)
+                subframe.appendChild(L)
             }
             frame.appendChild(subframe)
         } else {
@@ -369,7 +374,7 @@ async function searchleMain(document) {
     // add list options options 
     for (const list in wordlist['lists']) {
         if (!(list in options.lists.subops)) {
-            options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid'], left:true}
+            options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid']}
             options.sort.subops.score.subops.list.type.push(list)
         }
     }
