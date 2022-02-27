@@ -237,6 +237,7 @@ async function searchleMain(document) {
         if ('Require' in opts && opts.Require.length > 0) {
             ans = new Set(wordlist.lists[opts.Require[0]])
             for (let i=1; i<=opts.Require.length; i++) { ans = setI(ans,wordlist.lists[opts.Require[i]]) }
+            console.log(ans)
         } else if ('Include' in opts) {
             for (const key of opts.Include) { 
                 ans = setU(ans, wordlist.lists[key])
