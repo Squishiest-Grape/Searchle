@@ -164,7 +164,7 @@ async function searchleMain(document) {
     function combRange(r1,r2) {
         let r = [r1[0],r1[1]]
         if (r2[0] > r[0]) { r[0] = r2[0] }
-        if (r[1] == NaN) || (r2[1] < r[1])) { r[1] = r2[1] }
+        if (r[1] == NaN || r2[1] < r[1]) { r[1] = r2[1] }
         return r
     }
     
