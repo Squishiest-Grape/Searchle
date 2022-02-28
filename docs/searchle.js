@@ -350,6 +350,8 @@ async function searchleMain(document) {
 
     
     function newCriteria(guess, sol, pattern, limits) {
+        guess = wordlist.words[guess]
+        sol = wordlist.words[sol]
         let n_pattern = [...pattern]
         let n_limits = {}
         for (const [k,v] of Object.entries(limits)) { n_limits[k] = [...v] }
@@ -386,12 +388,10 @@ async function searchleMain(document) {
 
     
     
-    function getNewInds(inds, width, pattern, limits, ind) {
+    function getNewInds(inds, width, pattern, limits) {
         if (width == 'Full') { inds = c_search(inds, pattern, limits) }            
         else if (width == 'Partial') { inds = c_search(inds, pattern) } 
         else { inds = [...inds] }
-        const i = inds.indexOf[ind]
-        inds.splice(i, 1)
         return inds
     }
     
@@ -401,9 +401,6 @@ async function searchleMain(document) {
         [pattern, limits] = newCriteria(guess, sol, pattern, limits)
         ans = c_search(ans, pattern, limits)
         if (ans.length == 1) { return 2 }
-        
-        
-        
     }
     
     
@@ -450,8 +447,28 @@ async function searchleMain(document) {
         
 //     }
     
+    function sortByCol(arrays, ind, reverse=False) {
+        let inds = [...arrays[0].keys()]
+        if (reverse) { inds.sort((a,b) => arrays[ind][a] < arrays[ind][b] ? -1 : 1) }
+        else { inds.sort((a,b) => arrays[ind][a] > arrays[ind][b] ? -1 : 1) }
+        for (let a=0; a<arrays.length; a++) { arrays[a] = inds.map(i=>arrays[a][i]) }
+        return arrays
+    }
+ 
     
-    
+    function shallowScore(guess, ans_inds, pattern, limits) {
+        let score = 0
+        for (const sol of ans_inds) {
+            if (guess == sol) { score += 1 }
+            else {
+                const [n_pattern, n_limits] = newCriteria(guess, sol, pattern, limits)
+                const ans = c_search(ans_inds, n_pattern, n_limits) 
+                score += ans.length + 1
+            }
+        }
+        return score / ans_inds.length        
+    }
+
     
     // search function
     function searchle() {
@@ -461,8 +478,16 @@ async function searchleMain(document) {
         if (sort == 'Score') {
             pattern = cleanPattern(pattern)
             const width = getOption(['sort', 'score', 'wide'])
-            console.log(c_pattern2regex(pattern))
-//             let ans_inds = c_search(getInds(getOption(['sort', 'score', 'list'])), pattern, limits)     
+
+            let ans_inds = c_search(getInds(getOption(['sort', 'score', 'list'])), pattern, limits)     
+            inds = getNewInds(getInds(), width, pattern, limits) {
+            
+            let score = inds.map(i=>shallowScore(i, ans_inds, pattern, limits))
+           
+            [inds,score] = sortByCol([inds,score],1)
+            
+            
+            
 //             const width = getOption(['sort', 'score', 'wide'])
 //             if (width == 'Full') {
 //                 inds = c_search(getInds(''), pattern, limits)            
