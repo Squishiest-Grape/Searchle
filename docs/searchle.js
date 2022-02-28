@@ -301,26 +301,25 @@ async function searchleMain(document) {
     }
     
     
-    function c_search(inds, c_pattern, limits=null) {
-        let ans = []    
+    function c_search(words, c_pattern, limits=null) {   
         if (limits === null) {
             const r = c_pattern2regex(c_pattern,true)
-            ans = inds.filter(i=>r.test(wordlist.words[i]))
+            return words.filter(w=>r.test(w))
         } else {
             const r = c_pattern2regex(c_pattern)
-            for (const i of getInds()) {
-                const word = wordlist.words[i]
+            let ans = []
+            for (const word of words) {
                 if (r.test(word)) {
                     let good = true
                     for (const L in limits) {
                         const c = countStr(word,L)
                         if (c < limits[L][0] || c > limits[L][1]) { good = false; break }
                     }
-                    if (good) { ans.push(i) } 
+                    if (good) { ans.push(word) } 
                 }
             }
+            return ans
         }
-        return ans
     }
     
 
@@ -350,8 +349,6 @@ async function searchleMain(document) {
 
     
     function newCriteria(guess, sol, pattern, limits) {
-        guess = wordlist.words[guess]
-        sol = wordlist.words[sol]
         let n_pattern = [...pattern]
         let n_limits = {}
         for (const [k,v] of Object.entries(limits)) { n_limits[k] = [...v] }
@@ -388,67 +385,6 @@ async function searchleMain(document) {
 
     
     
-    function getNewInds(inds, width, pattern, limits) {
-        if (width == 'Full') { inds = c_search(inds, pattern, limits) }            
-        else if (width == 'Partial') { inds = c_search(inds, pattern) } 
-        else { inds = [...inds] }
-        return inds
-    }
-    
-    
-    function scoreGuess(guess, sol, pattern, limits, inds, ans) {
-        if (guess == sol) { return 1 }
-        [pattern, limits] = newCriteria(guess, sol, pattern, limits)
-        ans = c_search(ans, pattern, limits)
-        if (ans.length == 1) { return 2 }
-    }
-    
-    
-    
-//     function getScore(ind, ans_inds, pattern, limits, width, inds) {
-//         if (ans_inds.legnth == 0) { throw 'Ran out of solutions' }
-//         if (ans_inds.length == 1) { return 1 }
-//         if (ans_inds.length == 2) { return 1.5 }
-//         let score = 0
-//         for (const i of ans_inds) {
-//             const [n_pattern,n_limits] = newCriteria(wordlist.words[ind], wordlist.words[i], pattern, limits)
-//             const n_ans_inds = c_search(ans_inds, pattern, limits)
-             
-                
-//         }
-//     }
-    
-
-    
-//     function getScores(ans_inds, pattern, limits, width, inds) {
-//         if (width == 'Full') { inds = c_search(inds, pattern, limits) }            
-//         else if (width == 'Partial') { inds = c_search(inds, pattern) } 
-//         else { inds = [...inds] }
-        
-//         let scores = []
-//         for (const i of inds) {
-//             let score = 0
-//             for (const j of ans_inds) {
-//                 const [n_pattern,n_limits] = newCriteria(wordlist.words[i], wordlist.words[j], pattern, limits)
-//                 const n_ans_inds = c_search(ans_inds, pattern, limits)
-//                 if (n_ans_inds.length == 1) { score += 1 }   
-//                 else {
-//                     getScores(ans_inds, 
-                    
-//                 }
-//             }
- 
-            
-            
-            
-            
-//         }
-        
-        
-//     }
-    
-
-    
     function sortByCol(arrays, ind, reverse=false) {
         let inds = [...arrays[0].keys()]        
         if (reverse) { inds.sort((a,b) => arrays[ind][a] < arrays[ind][b] ? -1 : 1) }
@@ -456,21 +392,33 @@ async function searchleMain(document) {
         for (let a=0; a<arrays.length; a++) { arrays[a] = inds.map(i=>arrays[a][i]) }
         return arrays
     }
- 
     
-    function shallowScore(guess, ans_inds, pattern, limits) {
-        let score = 0
-        for (const sol of ans_inds) {
-            if (guess == sol) { score += 1 }
-            else {
-                const [n_pattern, n_limits] = newCriteria(guess, sol, pattern, limits)
-                const ans = c_search(ans_inds, n_pattern, n_limits) 
-                score += ans.length + 1
-            }
-        }
-        return score / ans_inds.length        
-    }
 
+    function getScores(words, pot_sol, pattern, limits) {
+        let ans = []
+        for (const guess of words) {
+            let score = 0
+            for (const sol of pot_sol) {
+                if (guess !== sol) {
+                    const [n_pattern, n_limits] = newCriteria(guess, sol, pattern, limits)
+                    score += c_search(pot_sol, n_pattern, n_limits).length                 
+                }
+                score += 1
+            }
+            ans.push(score/pot_sol.length)
+        }
+        return ans
+    }
+    
+        
+    function getWords(words, width, pattern, limits) {
+        if (width == 'Full') { words = c_search(words, pattern, limits) }            
+        else if (width == 'Partial') { words = c_search(words, pattern) } 
+        else { words = [...words] }
+        return words
+    }
+    
+    
     
     // search function
     function searchle() {
@@ -494,32 +442,17 @@ async function searchleMain(document) {
                 ans.push(freq)
             }
         } else if (sort === 'Score') {
+            pattern = cleanPattern(pattern)
+            const width = getOption(['sort', 'score', 'wide'])
+            let pot_sol = getInds(getOption(['sort', 'score', 'list'])).map(i=>wordlist.words[i])
+            pot_sol = c_search(pot_sol, pattern, limits)
+            let words = getInds().map(i=>wordlist.words[i])
+            words = getWords(words, width, pattern, limits)
+            let scores = getScores(words, pot_sol, pattern, limits)
             
-//             pattern = cleanPattern(pattern)
-//             const width = getOption(['sort', 'score', 'wide'])
-
-//             let ans_inds = c_search(getInds(getOption(['sort', 'score', 'list'])), pattern, limits)     
-//             let inds = getNewInds(getInds(), width, pattern, limits)
-            
-//             let sort_vals = inds.map(i=>shallowScore(i, ans_inds, pattern, limits))
-            
-//             ans = [inds.map(i=>wordlist.words[i]),sort_vals]
-            
-            
-            // [inds,score] = sortByCol([inds,score],1)
-             
-            
-            
-//             const width = getOption(['sort', 'score', 'wide'])
-//             if (width == 'Full') {
-//                 inds = c_search(getInds(''), pattern, limits)            
-//             } else if (width == 'Partial') {
-//                 inds = c_search(getInds(''), pattern)    
-//             } else if (width == 'None') {
-//                 inds = getInds('')
-//             } else { throw `Unknown sort match option ${width}` }
-//             let scores = getScores(ans_inds,inds,pattern,limits)
-            
+            ans.push(words)
+            ans.push(scores)
+ 
 
         }
         const A = [...ans.keys()].slice(1)
