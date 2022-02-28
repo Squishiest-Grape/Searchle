@@ -547,6 +547,8 @@ function searchle() {
         let words = getInds().map(i=>wordlist.words[i])
         words = getWords(words, width, pattern, limits)
         let scores = getScores(words, pot_sol, pattern, limits)
+        console.log(words)
+        console.log(scores)
         [words,scores] = sortByCol([words,scores],1)
         ans.push(words)
         if (show) { ans.push(scores) }
@@ -616,8 +618,8 @@ const letterList = 'abcdefghijklmnopqrstuvwxyz'
 
 function sortByCol(arrays, ind, reverse=false) {
     let inds = [...arrays[0].keys()]        
-    if (reverse) { inds.sort((a,b) => arrays[ind][a] < arrays[ind][b] ? -1 : 1) }
-    else { inds.sort((a,b) => arrays[ind][a] > arrays[ind][b] ? -1 : 1) }
+    if (reverse) { inds.sort((a,b) => arrays[ind][a] < arrays[ind][b] ? 1 : -1) }
+    else { inds.sort((a,b) => arrays[ind][a] > arrays[ind][b] ? 1 : -1) }
     return arrays.map(A=>inds.map(i=>A[i]))
 }
 
