@@ -87,8 +87,7 @@ function sortByCol(arrays, ind, reverse=false) {
     let inds = [...arrays[0].keys()]        
     if (reverse) { inds.sort((a,b) => arrays[ind][a] < arrays[ind][b] ? -1 : 1) }
     else { inds.sort((a,b) => arrays[ind][a] > arrays[ind][b] ? -1 : 1) }
-    for (let a=0; a<arrays.length; a++) { arrays[a] = inds.map(i=>arrays[a][i]) }
-    return arrays
+    return arrays.map(A=>inds.map(i=>A[i]))
 }
 
 function setCookie(key,val,days=30) {
