@@ -379,7 +379,7 @@ function getWords(words, width, pattern, limits) {
     return words
 }
 
-function getScores(words, pot_sol, pattern, limits) {
+async function getScores(words, pot_sol, pattern, limits) {
     let ans = []
     for (const guess of words) {
         let score = 0
@@ -546,9 +546,7 @@ function searchle() {
         pot_sol = c_search(pot_sol, pattern, limits)
         let words = getInds().map(i=>wordlist.words[i])
         words = getWords(words, width, pattern, limits)
-        let scores = getScores(words, pot_sol, pattern, limits)
-        console.log(words)
-        console.log(scores)
+        let scores = await getScores(words, pot_sol, pattern, limits)
         [words,scores] = sortByCol([words,scores],1)
         ans.push(words)
         if (show) { ans.push(scores) }
