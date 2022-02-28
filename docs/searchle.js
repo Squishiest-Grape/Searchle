@@ -480,7 +480,7 @@ async function searchleMain(document) {
             const width = getOption(['sort', 'score', 'wide'])
 
             let ans_inds = c_search(getInds(getOption(['sort', 'score', 'list'])), pattern, limits)     
-            inds = getNewInds(getInds(), width, pattern, limits) {
+            inds = getNewInds(getInds(), width, pattern, limits)
             
             let score = inds.map(i=>shallowScore(i, ans_inds, pattern, limits))
            
