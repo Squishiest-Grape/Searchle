@@ -485,7 +485,7 @@ async function searchleMain(document) {
             let score = inds.map(i=>shallowScore(i, ans_inds, pattern, limits))
            
             [inds,score] = sortByCol([inds,score],1)
-            
+             
             
             
 //             const width = getOption(['sort', 'score', 'wide'])
