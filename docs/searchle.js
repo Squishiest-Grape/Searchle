@@ -7,9 +7,6 @@ async function searchleMain(document) {
 
 const version = 'v0.1.5'
 
-const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json'
-const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
-
 let options = {
     sort: {
         label: 'Sorting Options:',
@@ -49,6 +46,12 @@ let options = {
         subops: {},
     },
 }  
+
+// get data
+const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json'
+const wordlist = await fetch(wordlistUrl).then(response => response.json())
+const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
+const helptext = await fetch(helptextUrl).then(response => response.text())
 
 
 /*===================================================================================================================\\
@@ -612,17 +615,13 @@ function searchle() {
     document.getElementById('searchleResult').innerHTML = ans
     activeTab('Results')
 } 
-    
-// get data
-let wordlist = await fetch(wordlistUrl).then(response => response.json())
-let helptext = await fetch(helptextUrl).then(response => response.text())
-let cookies = getCookies()
 
 // add info
 document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n','<br>')
 activeTab('Info')
 
-// add list options options 
+// add list options options
+let cookies = getCookies()
 for (const list in wordlist['lists']) {
     if (!(list in options.lists.subops)) {
         options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left'} 
