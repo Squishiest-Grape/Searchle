@@ -482,9 +482,11 @@ async function searchleMain(document) {
             let ans_inds = c_search(getInds(getOption(['sort', 'score', 'list'])), pattern, limits)     
             inds = getNewInds(getInds(), width, pattern, limits)
             
-            let score = inds.map(i=>shallowScore(i, ans_inds, pattern, limits))
+            let score = await inds.map(i=>shallowScore(i, ans_inds, pattern, limits))
            
-            [inds,score] = sortByCol([inds,score],1)
+            console.log(score)
+            
+            // [inds,score] = sortByCol([inds,score],1)
              
             
             
