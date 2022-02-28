@@ -279,12 +279,12 @@ async function searchleMain(document) {
     }
     
     function search(inds,pattern,limits=null) {
-        let ans = []    
         if (limits === null) {
             const r = pattern2regex(pattern,true)
-            ans = inds.filter(i=>r.test(wordlist.words[i]))
-        } else {
+            return = inds.filter(i=>r.test(wordlist.words[i])
+        } else {                                  
             const r = pattern2regex(pattern)
+            let ans = [] 
             for (const i of inds) {
                 const word = wordlist.words[i]
                 if (r.test(word)) {
@@ -296,8 +296,8 @@ async function searchleMain(document) {
                     if (good) { ans.push(i) } 
                 }
             }
+            return ans
         }
-        return ans
     }
     
     
@@ -447,8 +447,10 @@ async function searchleMain(document) {
         
 //     }
     
-    function sortByCol(arrays, ind, reverse=False) {
-        let inds = [...arrays[0].keys()]
+
+    
+    function sortByCol(arrays, ind, reverse=false) {
+        let inds = [...arrays[0].keys()]        
         if (reverse) { inds.sort((a,b) => arrays[ind][a] < arrays[ind][b] ? -1 : 1) }
         else { inds.sort((a,b) => arrays[ind][a] > arrays[ind][b] ? -1 : 1) }
         for (let a=0; a<arrays.length; a++) { arrays[a] = inds.map(i=>arrays[a][i]) }
@@ -473,18 +475,36 @@ async function searchleMain(document) {
     // search function
     function searchle() {
         let [pattern, limits] = getCriteria()
-        let inds = []
+        let ans = []
         const sort = getOption(['sort', 'order'])
-        if (sort == 'Score') {
-            pattern = cleanPattern(pattern)
-            const width = getOption(['sort', 'score', 'wide'])
-
-            let ans_inds = c_search(getInds(getOption(['sort', 'score', 'list'])), pattern, limits)     
-            inds = getNewInds(getInds(), width, pattern, limits)
+        const show = getOption(['sort', 'show'])
+        if (sort === 'Alphabetical') {
+            const inds = search(getInds(), pattern, limits)
+            const words = inds.map(i=>wordlist.words[i])
+            words.sort()
+            ans.push(words)
+        } else if (sort === 'Frequency') {
+            const inds = search(getInds(), pattern, limits)
+            const words = inds.map(i=>wordlist.words[i])
+            ans.push(words)
+            if (show) {
+                let max = wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1]
+                max = parseInt(1/wordlist.freq[max]) + 1
+                const freq = inds.map(i=>wordlist.freq[i]).map(f => (f>0) ? `1 / ${Math.round(1/f)}` : `1 / ${max}+`)
+                ans.push(freq)
+            }
+        } else if (sort === 'Score') {
             
-            let score = inds.map(i=>shallowScore(i, ans_inds, pattern, limits))
-           
-            console.log(score)
+//             pattern = cleanPattern(pattern)
+//             const width = getOption(['sort', 'score', 'wide'])
+
+//             let ans_inds = c_search(getInds(getOption(['sort', 'score', 'list'])), pattern, limits)     
+//             let inds = getNewInds(getInds(), width, pattern, limits)
+            
+//             let sort_vals = inds.map(i=>shallowScore(i, ans_inds, pattern, limits))
+            
+//             ans = [inds.map(i=>wordlist.words[i]),sort_vals]
+            
             
             // [inds,score] = sortByCol([inds,score],1)
              
@@ -500,25 +520,10 @@ async function searchleMain(document) {
 //             } else { throw `Unknown sort match option ${width}` }
 //             let scores = getScores(ans_inds,inds,pattern,limits)
             
-            
-        } else {
-            inds = search(getInds(), pattern, limits)
-            if (sort == 'Alphabetical') {
-                inds.sort((a, b) => (wordlist.words[a]<=wordlist.words[b]) ? -1 : 1 )
-            }
-        }
 
-        let ans = inds.map(i=>[wordlist.words[i]])
-        if (getOption(['sort','show'])) {
-            let max = wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1]
-            max = parseInt(1/wordlist.freq[max]) + 1
-            for (let i=0; i<inds.length; i++) {
-                const f = wordlist.freq[inds[i]]
-                if (f>0) { ans[i].push(`1 / ${Math.round(1/f)}`) }
-                else { ans[i].push(`1 / ${max}+`) }
-            }
         }
-        ans = ans.map(info=>info.join('   -   ')).join('\n')
+        const A = [...ans.keys()].slice(1)
+        ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('   -   ')).joing('\n')
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
     } 
