@@ -523,7 +523,7 @@ async function searchleMain(document) {
 
         }
         const A = [...ans.keys()].slice(1)
-        ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('   -   ')).joing('\n')
+        ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('   -   ')).join('\n')
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
     } 
