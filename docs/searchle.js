@@ -147,7 +147,7 @@ async function searchleMain(document) {
             }
             if (num != null) {
                 if (Array.isArray(num)) {
-                    if (num[1] == NaN) { ans += '{'+String(num[0])+',}' }
+                    if (isNaN(num[1])) { ans += '{'+String(num[0])+',}' }
                     else { ans += '{'+String(num[0])+','+String(num[1])+'}' }                    
                 } else {
                     ans += '{'+String(num)+'}'
@@ -460,7 +460,7 @@ async function searchleMain(document) {
     options.lists.subops['Frequency'] = { value: 'f > 0' }
     
     console.log('test')
-    let p = parse('0+')
+    let p = parse('c!at')
     console.log(p)
     console.log(pattern2regex(p))
     console.log(pattern2regex(p,true))
