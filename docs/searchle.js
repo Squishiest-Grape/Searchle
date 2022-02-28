@@ -40,7 +40,6 @@ let options = {
     lists: {
         label: 'Word Lists:',
         subops: {},
-        }
     },
 }  
 
