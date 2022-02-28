@@ -10,7 +10,7 @@ let options = {
             order: {
                 label: 'Order',
                 value: 'Frequency',
-                type: ['Frequency','Alphabetical','Score'],
+                type: ['Frequency', 'Alphabetical', 'Score'],
             },      
             show: {
                 label: 'Show Value',
@@ -26,7 +26,7 @@ let options = {
                     wide: {
                         label: 'Require Match',
                         value: 'True',
-                        type: ['True','Pattern','False'],                        
+                        type: ['True', 'Pattern', 'False'],                        
                     },
                     list: {
                         label: 'Alt List',
@@ -126,26 +126,29 @@ async function searchleMain(document) {
     }
     
     // parse to string
-    function pattern2regex(pattern) {
+    function pattern2regex(pattern,ignoreGroup=false) {
         let ans = ''
         for (let [num,val,inv] of pattern) {
             if (Array.isArray(val)) {
-                ans += '['
-                if (inv) { ans += '^' }
-                ans += val.map(v=>pattern2regex([v])).join('|')
-                ans += ']'        
+                if (ignoreGroup) {
+                    ans += '.'
+                } else {
+                    ans += '['
+                    if (inv) { ans += '^' }
+                    ans += val.map(v=>pattern2regex([v])).join('|')
+                    ans += ']' 
+                }
             } else {
                 if (val == null) { val = '.' }
-                if (inv) { ans += '[^' + val + ']' }
+                if (inv) {
+                    if (ignoreGroup) { ans += '.' }
+                    else { ans += '[^' + val + ']' }
                 else { ans += val }                
             }
             if (num != null) {
                 if (Array.isArray(num)) {
-                    if (num[1] == NaN) {
-                        ans += '{'+String(num[0])+',}'
-                    } else {
-                        ans += '{'+String(num[0])+','+String(num[1])+'}'
-                    }                    
+                    if (num[1] == NaN) { ans += '{'+String(num[0])+',}' }
+                    else { ans += '{'+String(num[0])+','+String(num[1])+'}' }                    
                 } else {
                     ans += '{'+String(num)+'}'
                 }
@@ -295,6 +298,7 @@ async function searchleMain(document) {
                 else { ans[i].push(`1 / ${max}+`) }
             }
         }
+        
         ans = ans.map(info=>info.join('   -   ')).join('\n')
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
@@ -455,7 +459,12 @@ async function searchleMain(document) {
     }
     options.lists.subops['Frequency'] = { value: 'f > 0' }
     
-    
+    console.log('test')
+    let p = parse('')
+    console.log(p)
+    console.log(pattern2regex(p))
+    console.log(pattern2regex(p,true))
+        
     if ('options' in cookies) { applyOptions(options,cookies.options) }
     setCookie('options',options)
     createOptions(options)
