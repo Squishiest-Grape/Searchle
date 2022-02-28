@@ -39,12 +39,7 @@ let options = {
     },
     lists: {
         label: 'Word Lists:',
-        subops: {
-            'Proper Nouns': {
-                value: 'Avoid',
-                type: ['Require', 'Include', 'Nothing', 'Avoid'],
-                pos: 'left',
-            },
+        subops: {},
         }
     },
 }  
