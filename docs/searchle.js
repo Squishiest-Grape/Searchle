@@ -281,7 +281,7 @@ async function searchleMain(document) {
     function search(inds,pattern,limits=null) {
         if (limits === null) {
             const r = pattern2regex(pattern,true)
-            return = inds.filter(i=>r.test(wordlist.words[i])
+            return = inds.filter(i=>r.test(wordlist.words[i]))
         } else {                                  
             const r = pattern2regex(pattern)
             let ans = [] 
