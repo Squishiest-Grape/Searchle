@@ -262,7 +262,11 @@ async function searchleMain(document) {
             v = eval(v)
             if (f == 'p') { f = 'c'; v = wordlist.words.length * v / 100 }
             if (f == 'c') { f = 'f'; v = wordlist.freq[Math.round(v)] }
-            if (f == 'f') {  fun = eval('f => f'+f+String(v)) }
+            if (f == 'f') { 
+                const str = 'f => f' + f + String(v)
+                console.log(str)
+                fun = eval(str)
+            }
             else { throw `Unknown character ${f} in frequency limit` }
             ans = ans.filter(i=>fun(wordlist.freq[i]))
         }
