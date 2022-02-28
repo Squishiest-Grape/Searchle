@@ -52,92 +52,6 @@ const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle
 const wordlist = await fetch(wordlistUrl).then(response => response.json())
 const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
 const helptext = await fetch(helptextUrl).then(response => response.text())
-
-
-/*===================================================================================================================\\
-|                                               General Functions
-\\===================================================================================================================*/
-
-function replace(str,old_chars,new_cha) {
-    for (const c of old_chars) { str = str.replaceAll(c,new_cha) }
-    return str
-}
-
-function setU(s1,s2) {
-    return new Set([...s1,...s2])
-}
-
-function setI(s1,s2) {
-    s2 = new Set(s2)
-    return new Set([...s1].filter(e=>s2.has(e)))
-}
-
-function setD(s1,s2) {
-    s2 = new Set(s2)
-    return new Set([...s1].filter(e=>!s2.has(e)))
-}
-
-function countStr(str,sub) {
-    return str.split(sub).length -1    
-}   
-    
-const letterList = 'abcdefghijklmnopqrstuvwxyz'  
-
-function sortByCol(arrays, ind, reverse=false) {
-    let inds = [...arrays[0].keys()]        
-    if (reverse) { inds.sort((a,b) => arrays[ind][a] < arrays[ind][b] ? -1 : 1) }
-    else { inds.sort((a,b) => arrays[ind][a] > arrays[ind][b] ? -1 : 1) }
-    return arrays.map(A=>inds.map(i=>A[i]))
-}
-
-function setCookie(key,val,days=30) {
-    const d = new Date()
-    d.setTime(d.getTime() + (days*24*60*60*1000))
-    document.cookie = key + '=' + JSON.stringify(val) + '; expires=' + d.toUTCString()  
-}
-
-function setCookies(cookies,days=30) {
-    for (const [key,val] of Object.entries(cookies)) { setCookie(key,val,days) }
-}
-    
-function getCookies() {
-    const rawCookies = document.cookie
-    let cookies = {}
-    for (const str of rawCookies.split(';')) {
-        if (str) {
-            const [key,val] = str.split('=')
-            cookies[key.trim()] = JSON.parse(val.trim())    
-        }
-    }
-    return cookies
-}
-
-function changeOption(keys,val) {
-    let opt = options
-    for (let i=0; i<keys.length-1; i++) { opt = opt[keys[i]].subops }
-    opt[keys[keys.length-1]].value = val
-    setCookie('options',options)
-}
-
-function getOption(keys) {
-    let opt = options
-    for (let i=0; i<keys.length-1; i++) { opt = opt[keys[i]].subops }
-    return opt[keys[keys.length-1]].value
-}
-
-function applyOptions(oldOptions,newOptions) {
-    for (let [key,obj0] of Object.entries(oldOptions)) { 
-        if (key in newOptions) {
-            const obj1 = newOptions[key]
-            if (typeof obj1 === 'object' && !Array.isArray(obj1) && obj1 !== null) {
-                if ('value' in obj0 && 'value' in obj1) {
-                    if (JSON.stringify(obj0.type) === JSON.stringify(obj1.type)) { obj0.value = obj1.value }
-                }
-                if ('subops' in obj0 && 'subops' in obj1) { applyOptions(obj0.subops,obj1.subops) }
-            }      
-        }
-    }
-}
     
 
 /*===================================================================================================================\\
@@ -485,6 +399,33 @@ function getScores(words, pot_sol, pattern, limits) {
 /*===================================================================================================================\\
 |                                                 HTML Functions
 \\===================================================================================================================*/    
+
+function changeOption(keys,val) {
+    let opt = options
+    for (let i=0; i<keys.length-1; i++) { opt = opt[keys[i]].subops }
+    opt[keys[keys.length-1]].value = val
+    setCookie('options',options)
+}
+
+function getOption(keys) {
+    let opt = options
+    for (let i=0; i<keys.length-1; i++) { opt = opt[keys[i]].subops }
+    return opt[keys[keys.length-1]].value
+}
+
+function applyOptions(oldOptions,newOptions) {
+    for (let [key,obj0] of Object.entries(oldOptions)) { 
+        if (key in newOptions) {
+            const obj1 = newOptions[key]
+            if (typeof obj1 === 'object' && !Array.isArray(obj1) && obj1 !== null) {
+                if ('value' in obj0 && 'value' in obj1) {
+                    if (JSON.stringify(obj0.type) === JSON.stringify(obj1.type)) { obj0.value = obj1.value }
+                }
+                if ('subops' in obj0 && 'subops' in obj1) { applyOptions(obj0.subops,obj1.subops) }
+            }      
+        }
+    }
+}
     
 function hitKey(e) {
     if (e.keyCode == 13) { searchle() }
@@ -641,5 +582,63 @@ for (const e of document.getElementsByClassName('searchInp')) { e.addEventListen
 // print info
 console.log(`Loaded Serachle ${version}`)
     
+}
+
+
+/*===================================================================================================================\\
+|                                               General Functions
+\\===================================================================================================================*/
+
+function replace(str,old_chars,new_cha) {
+    for (const c of old_chars) { str = str.replaceAll(c,new_cha) }
+    return str
+}
+
+function setU(s1,s2) {
+    return new Set([...s1,...s2])
+}
+
+function setI(s1,s2) {
+    s2 = new Set(s2)
+    return new Set([...s1].filter(e=>s2.has(e)))
+}
+
+function setD(s1,s2) {
+    s2 = new Set(s2)
+    return new Set([...s1].filter(e=>!s2.has(e)))
+}
+
+function countStr(str,sub) {
+    return str.split(sub).length -1    
+}   
     
+const letterList = 'abcdefghijklmnopqrstuvwxyz'  
+
+function sortByCol(arrays, ind, reverse=false) {
+    let inds = [...arrays[0].keys()]        
+    if (reverse) { inds.sort((a,b) => arrays[ind][a] < arrays[ind][b] ? -1 : 1) }
+    else { inds.sort((a,b) => arrays[ind][a] > arrays[ind][b] ? -1 : 1) }
+    return arrays.map(A=>inds.map(i=>A[i]))
+}
+
+function setCookie(key,val,days=30) {
+    const d = new Date()
+    d.setTime(d.getTime() + (days*24*60*60*1000))
+    document.cookie = key + '=' + JSON.stringify(val) + '; expires=' + d.toUTCString()  
+}
+
+function setCookies(cookies,days=30) {
+    for (const [key,val] of Object.entries(cookies)) { setCookie(key,val,days) }
+}
+    
+function getCookies() {
+    const rawCookies = document.cookie
+    let cookies = {}
+    for (const str of rawCookies.split(';')) {
+        if (str) {
+            const [key,val] = str.split('=')
+            cookies[key.trim()] = JSON.parse(val.trim())    
+        }
+    }
+    return cookies
 }
