@@ -400,6 +400,17 @@ async function searchleMain(document) {
     }
     
     
+    function scoreGuess(guess, sol, pattern, limits, inds, ans) {
+        if (guess == sol) { return 1 }
+        [pattern, limits] = newCriteria(guess, sol, pattern, limits)
+        ans = c_search(ans, pattern, limits)
+        if (ans.length == 1) { return 2 }
+        
+        
+        
+    }
+    
+    
     
 //     function getScore(ind, ans_inds, pattern, limits, width, inds) {
 //         if (ans_inds.legnth == 0) { throw 'Ran out of solutions' }
@@ -452,7 +463,9 @@ async function searchleMain(document) {
         let inds = []
         const sort = getOption(['sort', 'order'])
         if (sort == 'Score') {
-//             pattern = cleanPattern(pattern)
+            pattern = cleanPattern(pattern)
+            const width = getOption(['sort', 'score', 'wide'])
+            console.log(c_pattern2regex(pattern))
 //             let ans_inds = c_search(getInds(getOption(['sort', 'score', 'list'])), pattern, limits)     
 //             const width = getOption(['sort', 'score', 'wide'])
 //             if (width == 'Full') {
