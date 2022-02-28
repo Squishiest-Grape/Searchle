@@ -154,7 +154,19 @@ async function searchleMain(document) {
                 }
             }
         }
-        return new RegExp('^'+ans+'$','i')
+        return new RegExp('^'+ans+'$')
+    }
+    
+    function c_pattern2regex(c_pattern,ignoreGroups=false) {
+        let ans = ''
+        for (const c of c_pattern) {
+            if (c.length==1) { ans += c } 
+            else { 
+                if (ignoreGroups) { ans += '.' }
+                else { ans += '[' + c + ']'}
+            }
+        } 
+        return new RegExp('^'+ans+'$')
     }
     
     function combRange(r1,r2) {
@@ -214,51 +226,57 @@ async function searchleMain(document) {
         return new Set([...s1].filter(e=>!s2.has(e)))
     }
     
-    
-    function getInds() {    
-        let opts = {}
-        for (const [key,opt] of Object.entries(options.lists.subops)) {
-            if (key in wordlist.lists) {
-                if (!(opt.value in opts)) { opts[opt.value] = [] } 
-                opts[opt.value].push(key)
-             }
-        }
-        let ans = new Set()
-        if ('Require' in opts && opts.Require.length > 0) {
-            ans = new Set(wordlist.lists[opts.Require[0]])
-            for (let i=1; i<opts.Require.length; i++) { ans = setI(ans,wordlist.lists[opts.Require[i]]) }
-        } else if ('Include' in opts) {
-            for (const key of opts.Include) { 
-                ans = setU(ans, wordlist.lists[key])
-            }
-        }
-        if ('Avoid' in opts) {
-            let avoid = new Set()
-            for (const key of opts.Avoid) { avoid = setU(avoid, wordlist.lists[key]) }
-            ans = setD(ans, avoid)
-        }
-        ans = [...ans]
-        let freq = getOption(['lists','Frequency'])
-        freq = freq.split(/(<|>|<=|>=)/)
-        if (freq.length == 3) {
-            freq = freq.map(s=>s.trim().toLowerCase())
-            let f, d, v, fun
-            if ('fpc'.includes(freq[0])) {  [f,d,v] = freq }
-            else if ('fpc'.includes(freq[2])) {
-                [v,d,f] = freq
-                if (d.includes('>')) { d = d.replace('>','<') }
-                else { d = d.replace('<','>') }
-            } else { throw `Unknown characters ${freq} in frequency limit` }
-            v = eval(v)
-            if (f == 'p') { f = 'c'; v = wordlist.words.length * v / 100 }
-            if (f == 'c') { f = 'f'; v = wordlist.freq[Math.round(v)] }
-            if (f == 'f') { fun = eval('f => f' + d + String(v)) }
-            else { throw `Unknown character ${f} in frequency limit` }
-            ans = ans.filter(i=>fun(wordlist.freq[i]))
-        }
-        return ans
+    function countStr(str,sub) {
+        return str.split(sub).length -1    
     }
     
+    function getInds(list='') {
+        if (list==='') {
+            let opts = {}
+            for (const [key,opt] of Object.entries(options.lists.subops)) {
+                if (key in wordlist.lists) {
+                    if (!(opt.value in opts)) { opts[opt.value] = [] } 
+                    opts[opt.value].push(key)
+                 }
+            }
+            let ans = new Set()
+            if ('Require' in opts && opts.Require.length > 0) {
+                ans = new Set(wordlist.lists[opts.Require[0]])
+                for (let i=1; i<opts.Require.length; i++) { ans = setI(ans,wordlist.lists[opts.Require[i]]) }
+            } else if ('Include' in opts) {
+                for (const key of opts.Include) { 
+                    ans = setU(ans, wordlist.lists[key])
+                }
+            }
+            if ('Avoid' in opts) {
+                let avoid = new Set()
+                for (const key of opts.Avoid) { avoid = setU(avoid, wordlist.lists[key]) }
+                ans = setD(ans, avoid)
+            }
+            ans = [...ans]
+            let freq = getOption(['lists','Frequency'])
+            freq = freq.split(/(<|>|<=|>=)/)
+            if (freq.length == 3) {
+                freq = freq.map(s=>s.trim().toLowerCase())
+                let f, d, v, fun
+                if ('fpc'.includes(freq[0])) {  [f,d,v] = freq }
+                else if ('fpc'.includes(freq[2])) {
+                    [v,d,f] = freq
+                    if (d.includes('>')) { d = d.replace('>','<') }
+                    else { d = d.replace('<','>') }
+                } else { throw `Unknown characters ${freq} in frequency limit` }
+                v = eval(v)
+                if (f == 'p') { f = 'c'; v = wordlist.words.length * v / 100 }
+                if (f == 'c') { f = 'f'; v = wordlist.freq[Math.round(v)] }
+                if (f == 'f') { fun = eval('f => f' + d + String(v)) }
+                else { throw `Unknown character ${f} in frequency limit` }
+                ans = ans.filter(i=>fun(wordlist.freq[i]))
+            }
+            return ans
+        } else {
+            return wordlist.lists[list]
+        }
+    }
     
     function search(inds,pattern,limits=null) {
         let ans = []    
@@ -267,12 +285,12 @@ async function searchleMain(document) {
             ans = inds.filter(i=>r.test(wordlist.words[i]))
         } else {
             const r = pattern2regex(pattern)
-            for (const i of getInds()) {
+            for (const i of inds) {
                 const word = wordlist.words[i]
                 if (r.test(word)) {
                     let good = true
                     for (const part in limits) {
-                        let c = (word.match(new RegExp(part,'gi')) || []).length
+                        let c = (word.match(new RegExp(part,'g')) || []).length
                         if (c < limits[part][0] || c > limits[part][1]) { good = false; break }
                     }
                     if (good) { ans.push(i) } 
@@ -281,28 +299,179 @@ async function searchleMain(document) {
         }
         return ans
     }
+    
+    
+    function c_search(inds, c_pattern, limits=null) {
+        let ans = []    
+        if (limits === null) {
+            const r = c_pattern2regex(c_pattern,true)
+            ans = inds.filter(i=>r.test(wordlist.words[i]))
+        } else {
+            const r = c_pattern2regex(c_pattern)
+            for (const i of getInds()) {
+                const word = wordlist.words[i]
+                if (r.test(word)) {
+                    let good = true
+                    for (const L in limits) {
+                        const c = countStr(word,L)
+                        if (c < limits[L][0] || c > limits[L][1]) { good = false; break }
+                    }
+                    if (good) { ans.push(i) } 
+                }
+            }
+        }
+        return ans
+    }
+    
+
+    const letterList = 'abcdefghijklmnopqrstuvwxyz'  
+
+    function cleanPattern(pattern) {
+        let c_pattern = []
+        for (let [num,val,inv] of pattern) {
+            if (num === null) { num = 1 }
+            if (Array.isArray(num)) {
+                if (num[0] === num[1]) { num = num[0] }
+                else { throw 'Unable to clean pattern for number range' }
+            }
+            for (let c=0; c<num; c++) {
+                let V = letterList               
+                if (val !== null) {
+                    if (!Array.isArray(val)) { val = [val] }
+                    for (const v of val) { if (v.length != 1) { throw `Unable to clean pattern for '${v}'` } }
+                    if (inv) { for (const v of val) { V = V.replace(v,'') } }
+                    else { V = [...new Set(val)].join('') }
+                }
+                if (V.length === 1) {
+                    if (!(V in count)) { count[V] = 1 }
+                    else { count[V] += 1 }
+                }
+                c_pattern.push(V)
+            }
+        }
+        return c_pattern
+    }
+
+    
+    function newCriteria(guess, sol, pattern, limits) {
+        let n_pattern = [...pattern]
+        let n_limits = {}
+        for (const [k,v] of Object.entries(limits)) { n_limits[k] = [...v] }
+        let check = new Set()
+        let G = ''
+        for (let c=0; c<guess.length; c++) {
+            const L = guess[c]
+            if (L === sol[c]) {
+                n_pattern[c] = L
+                G += L
+            } else { 
+                n_pattern[c] = n_pattern[c].replace(L,'')
+                check.add(L)
+            }
+        }
+        for (const L of check) {
+            const cS = countStr(sol,L)
+            const cG = countStr(G,L)
+            if (cG == cS) { 
+                delete n_limits[L]
+            } else {
+                const c = countStr(guess,L) 
+                if (c > cS) { 
+                    n_limits[L] = [cS,cS]
+                } else {
+                    let num = [0,NaN]
+                    if (L in n_limits) { num = n_limits[L] }
+                    n_limits[L] = [c,num[1]]
+                }
+            }
+        }
+        return [n_pattern, n_limits]    
+    }
+
+    
+    
+    function getNewInds(inds, width, pattern, limits, ind) {
+        if (width == 'Full') { inds = c_search(inds, pattern, limits) }            
+        else if (width == 'Partial') { inds = c_search(inds, pattern) } 
+        else { inds = [...inds] }
+        const i = inds.indexOf[ind]
+        inds.splice(i, 1)
+        return inds
+    }
+    
+    
+    
+//     function getScore(ind, ans_inds, pattern, limits, width, inds) {
+//         if (ans_inds.legnth == 0) { throw 'Ran out of solutions' }
+//         if (ans_inds.length == 1) { return 1 }
+//         if (ans_inds.length == 2) { return 1.5 }
+//         let score = 0
+//         for (const i of ans_inds) {
+//             const [n_pattern,n_limits] = newCriteria(wordlist.words[ind], wordlist.words[i], pattern, limits)
+//             const n_ans_inds = c_search(ans_inds, pattern, limits)
+             
+                
+//         }
+//     }
+    
+
+    
+//     function getScores(ans_inds, pattern, limits, width, inds) {
+//         if (width == 'Full') { inds = c_search(inds, pattern, limits) }            
+//         else if (width == 'Partial') { inds = c_search(inds, pattern) } 
+//         else { inds = [...inds] }
+        
+//         let scores = []
+//         for (const i of inds) {
+//             let score = 0
+//             for (const j of ans_inds) {
+//                 const [n_pattern,n_limits] = newCriteria(wordlist.words[i], wordlist.words[j], pattern, limits)
+//                 const n_ans_inds = c_search(ans_inds, pattern, limits)
+//                 if (n_ans_inds.length == 1) { score += 1 }   
+//                 else {
+//                     getScores(ans_inds, 
+                    
+//                 }
+//             }
  
+            
+            
+            
+            
+//         }
+        
+        
+//     }
+    
+    
+    
     
     // search function
     function searchle() {
-        const [pattern,limits] = getCriteria()
-        let inds = search(getInds(),pattern,limits)
-        
-        const sort = getOption(['sort','order'])
-        if (sort == 'Alphabetical') {
-            inds.sort((a,b) => (wordlist.words[a]<=wordlist.words[b]) ? -1 : 1 )            
-        } else if (sort == 'Score') {
-            let ans_inds
-            const width = getOption(['sort','score','wide'])
-            if (width == 'Full') {
-                ans_inds = [...inds]
-            } else if (width == 'Partial') {
-                
-            } else if (width == 'None') {
-                
-            } else { throw `Unknown sort match option ${width}` }
+        const [pattern, limits] = getCriteria()
+        let inds = []
+        const sort = getOption(['sort', 'order'])
+        if (sort == 'Score') {
+//             pattern = cleanPattern(pattern)
+//             let ans_inds = c_search(getInds(getOption(['sort', 'score', 'list'])), pattern, limits)     
+//             const width = getOption(['sort', 'score', 'wide'])
+//             if (width == 'Full') {
+//                 inds = c_search(getInds(''), pattern, limits)            
+//             } else if (width == 'Partial') {
+//                 inds = c_search(getInds(''), pattern)    
+//             } else if (width == 'None') {
+//                 inds = getInds('')
+//             } else { throw `Unknown sort match option ${width}` }
+//             let scores = getScores(ans_inds,inds,pattern,limits)
+            
+            
+        } else {
+            inds = search(getInds(), pattern, limits)
+            if (sort == 'Alphabetical') {
+                inds.sort((a, b) => (wordlist.words[a]<=wordlist.words[b]) ? -1 : 1 )
+            }
         }
-        
+
         let ans = inds.map(i=>[wordlist.words[i]])
         if (getOption(['sort','show'])) {
             let max = wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1]
