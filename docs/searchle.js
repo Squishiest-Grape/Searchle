@@ -11,12 +11,10 @@ let options = {
                 label: 'Order',
                 value: 'Frequency',
                 type: ['Frequency','Alphabetical','Score'],
-                pos: 'right',
             },      
             show: {
                 label: 'Show Value',
                 value: false,
-                pos: 'right',
             },
             score: {
                 label: 'Score Sort Options:',
@@ -45,6 +43,7 @@ let options = {
             'Proper Nouns': {
                 value: 'Avoid',
                 type: ['Require', 'Include', 'Nothing', 'Avoid'],
+                pos: 'left',
             },
         }
     },
@@ -262,7 +261,7 @@ async function searchleMain(document) {
             v = eval(v)
             if (f == 'p') { f = 'c'; v = wordlist.words.length * v / 100 }
             if (f == 'c') { f = 'f'; v = wordlist.freq[Math.round(v)] }
-            if (f == 'f') { fun = eval(const str = 'f => f' + d + String(v)) }
+            if (f == 'f') { fun = eval('f => f' + d + String(v)) }
             else { throw `Unknown character ${f} in frequency limit` }
             ans = ans.filter(i=>fun(wordlist.freq[i]))
         }
@@ -413,16 +412,16 @@ async function searchleMain(document) {
                 } else { console.log(`Unknown option of value ${option.value}`) }
             }
             const L = document.createElement('label')
-            if ('pos' in option && option.pos=='right') {
-                L.appendChild(document.createTextNode(label+':'))
-                L.style.marginRight = '2%'
-                subframe.appendChild(L) 
-                subframe.appendChild(element)
-            } else {
+            if ('pos' in option && option.pos=='left') {
                 L.appendChild(document.createTextNode(label))
                 L.style.marginLeft = '2%'
                 subframe.appendChild(element)
                 subframe.appendChild(L)
+            } else {
+                L.appendChild(document.createTextNode(label+':'))
+                L.style.marginRight = '2%'
+                subframe.appendChild(L) 
+                subframe.appendChild(element)
             }
             frame.appendChild(subframe)
         } else {
@@ -456,7 +455,7 @@ async function searchleMain(document) {
     // add list options options 
     for (const list in wordlist['lists']) {
         if (!(list in options.lists.subops)) {
-            options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid']}
+            options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left'} 
             options.sort.subops.score.subops.list.type.push(list)
         }
     }
