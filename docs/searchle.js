@@ -143,7 +143,7 @@ async function searchleMain(document) {
                 if (inv) {
                     if (ignoreGroup) { ans += '.' }
                     else { ans += '[^' + val + ']' }
-                else { ans += val }                
+                } else { ans += val }                
             }
             if (num != null) {
                 if (Array.isArray(num)) {
