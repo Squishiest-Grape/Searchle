@@ -607,8 +607,9 @@ function searchle() {
         let words = getInds().map(i=>wordlist.words[i])
         words = getWords(words, width, pattern, limits)
         let scores = getScores(words, pot_sol, pattern, limits)
+        [words,scores] = sortByCol([words,scores],1)
         ans.push(words)
-        ans.push(scores)
+        if (show) { ans.push(scores) }
     }
     const A = [...ans.keys()].slice(1)
     ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('   -   ')).join('\n')
