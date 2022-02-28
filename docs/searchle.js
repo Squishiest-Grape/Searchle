@@ -435,7 +435,9 @@ function activeTab(name) {
     for (let e of document.getElementsByClassName('box')) { e.style.display = 'none' }
     for (let e of document.getElementsByClassName('tabBtn')) { e.className = e.className.replace(' active','') }
     document.getElementById('box'+name).style.display = 'block';
-    for (let e of document.getElementsByClassName('tabBtn')) { if (e.innerHTML == name) { e.className += ' active' } }
+    for (let e of document.getElementsByClassName('tabBtn')) {
+        if (e.innerHTML == name) { e.className += ' active' }
+    }
 }
 
 function tabClick(event) {
@@ -566,7 +568,11 @@ activeTab('Info')
 let cookies = getCookies()
 for (const list in wordlist['lists']) {
     if (!(list in options.lists.subops)) {
-        options.lists.subops[list] = {value: 'Include', type:['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left'} 
+        options.lists.subops[list] = {
+            value: 'Include', 
+            type:['Require', 'Include', 'Nothing', 'Avoid'], 
+            pos: 'left',
+        } 
         options.sort.subops.score.subops.list.type.push(list)
     }
 }
