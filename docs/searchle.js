@@ -459,7 +459,7 @@ async function searchleMain(document) {
     
     // search function
     function searchle() {
-        const [pattern, limits] = getCriteria()
+        let [pattern, limits] = getCriteria()
         let inds = []
         const sort = getOption(['sort', 'order'])
         if (sort == 'Score') {
