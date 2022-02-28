@@ -342,10 +342,6 @@ async function searchleMain(document) {
                     if (inv) { for (const v of val) { V = V.replace(v,'') } }
                     else { V = [...new Set(val)].join('') }
                 }
-                if (V.length === 1) {
-                    if (!(V in count)) { count[V] = 1 }
-                    else { count[V] += 1 }
-                }
                 c_pattern.push(V)
             }
         }
