@@ -460,7 +460,7 @@ async function searchleMain(document) {
     options.lists.subops['Frequency'] = { value: 'f > 0' }
     
     console.log('test')
-    let p = parse('')
+    let p = parse('0+')
     console.log(p)
     console.log(pattern2regex(p))
     console.log(pattern2regex(p,true))
