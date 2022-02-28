@@ -24,9 +24,9 @@ let options = {
                         value: true,
                     },
                     wide: {
-                        label: 'Require Match',
-                        value: 'True',
-                        type: ['True', 'Pattern', 'False'],                        
+                        label: 'Match Requirement',
+                        value: 'Full',
+                        type: ['Full', 'Partial', 'None'],                        
                     },
                     list: {
                         label: 'Alt List',
@@ -154,7 +154,7 @@ async function searchleMain(document) {
                 }
             }
         }
-        return ans
+        return new RegExp('^'+ans+'$','i')
     }
     
     function combRange(r1,r2) {
@@ -196,13 +196,7 @@ async function searchleMain(document) {
             else { limits[val] = num }
         }
         let pattern = document.getElementById('searchlePattern').value
-        if (pattern) {
-            pattern = parse(pattern)
-            pattern = pattern2regex(pattern) 
-            pattern = new RegExp('^'+pattern+'$','i')
-        } else {
-            pattern = new RegExp('','i')
-        }
+        pattern = parse(pattern)
         return [pattern,limits]
     }
     
@@ -264,30 +258,51 @@ async function searchleMain(document) {
         }
         return ans
     }
+    
+    
+    function search(inds,pattern,limits=null) {
+        let ans = []    
+        if (limits === null) {
+            const r = pattern2regex(pattern,true)
+            ans = inds.filter(i=>r.test(wordlist.words[i]))
+        } else {
+            const r = pattern2regex(pattern)
+            for (const i of getInds()) {
+                const word = wordlist.words[i]
+                if (r.test(word)) {
+                    let good = true
+                    for (const part in limits) {
+                        let c = (word.match(new RegExp(part,'gi')) || []).length
+                        if (c < limits[part][0] || c > limits[part][1]) { good = false; break }
+                    }
+                    if (good) { ans.push(i) } 
+                }
+            }
+        }
+        return ans
+    }
  
+    
     // search function
     function searchle() {
         const [pattern,limits] = getCriteria()
-        let inds = []
-        for (const i of getInds()) {
-            const word = wordlist.words[i]
-            if (pattern.test(word)) {
-                let good = true
-                for (const part in limits) {
-                    let c = (word.match(new RegExp(part,'gi')) || []).length
-                    if (c < limits[part][0] || c > limits[part][1]) {
-                        good = false
-                        break
-                    }
-                }
-                if (good) { inds.push(i) } 
-            }
-        }
+        let inds = search(getInds(),pattern,limits)
         
         const sort = getOption(['sort','order'])
         if (sort == 'Alphabetical') {
             inds.sort((a,b) => (wordlist.words[a]<=wordlist.words[b]) ? -1 : 1 )            
+        } else if (sort == 'Score') {
+            let ans_inds
+            const width = getOption(['sort','score','wide'])
+            if (width == 'Full') {
+                ans_inds = [...inds]
+            } else if (width == 'Partial') {
+                
+            } else if (width == 'None') {
+                
+            } else { throw `Unknown sort match option ${width}` }
         }
+        
         let ans = inds.map(i=>[wordlist.words[i]])
         if (getOption(['sort','show'])) {
             let max = wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1]
@@ -298,7 +313,6 @@ async function searchleMain(document) {
                 else { ans[i].push(`1 / ${max}+`) }
             }
         }
-        
         ans = ans.map(info=>info.join('   -   ')).join('\n')
         document.getElementById('searchleResult').innerHTML = ans
         activeTab('Results')
@@ -459,12 +473,6 @@ async function searchleMain(document) {
     }
     options.lists.subops['Frequency'] = { value: 'f > 0' }
     
-    console.log('test')
-    let p = parse('c!at')
-    console.log(p)
-    console.log(pattern2regex(p))
-    console.log(pattern2regex(p,true))
-        
     if ('options' in cookies) { applyOptions(options,cookies.options) }
     setCookie('options',options)
     createOptions(options)
