@@ -252,50 +252,19 @@ async function searchleMain(document) {
         freq = freq.split(/(<|>|<=|>=)/)
         if (freq.length == 3) {
             freq = freq.map(s=>s.trim().toLowerCase())
-            let f,d,v
-            if ('fpc'.includes(freq[0])) { 
-                [f,d,v] = freq
-            }
+            let f, d, v, fun
+            if ('fpc'.includes(freq[0])) {  [f,d,v] = freq }
             else if ('fpc'.includes(freq[2])) {
                 [v,d,f] = freq
                 if (d.includes('>')) { d = d.replace('>','<') }
                 else { d = d.replace('<','>') }
-            }
+            } else { throw `Unknown characters ${freq} in frequency limit` }
             v = eval(v)
             if (f == 'p') { f = 'c'; v = wordlist.words.length * v / 100 }
             if (f == 'c') { f = 'f'; v = wordlist.freq[Math.round(v)] }
-            console.log([f,d,v])
-            if (f == 'f') {
-                if (f == '>') {
-                    let i = 0
-                    while (i < ans.length) {
-                        if (wordlist.freq[ans[i]] <= v) { break }
-                        i++ 
-                    }
-                    ans = ans.slice(0,i+1)
-                } else if (f == '>=') {
-                    let i = 0
-                    while (i < ans.length) {
-                        if (wordlist.freq[ans[i]] < v) { break }
-                        i++ 
-                    }
-                    ans = ans.slice(0,i+1)
-                } else if (f == '<') {
-                    let i = ans.length-1
-                    while (i >= 0) {
-                        if (wordlist.freq[ans[i]] >= v) { break }
-                        i--
-                    }
-                    ans = ans.slice(i+1)
-                } else if (f == '<=') {
-                    let i = ans.length-1
-                    while (i >= 0) {
-                        if (wordlist.freq[ans[i]] > v) { break }
-                        i--
-                    }
-                    ans = ans.slice(i+1)
-                }
-            }
+            if (f == 'f') {  fun = eval('f => f'+f+String(v)) }
+            else { throw `Unknown character ${f} in frequency limit` }
+            ans = ans.filter(i=>fun(wordlist.freq[i]))
         }
         return ans
     }
