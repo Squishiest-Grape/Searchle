@@ -8,32 +8,25 @@ async function searchleMain(document) {
 const version = 'v0.1.5'
 
 let options = {
-    sort: {
-        label: 'Sorting Options:',
+    sort: { label: 'Sorting Options:',
         subops: {
-            order: {
-                label: 'Order',
+            order: { label: 'Order',
                 value: 'Frequency',
                 type: ['Frequency', 'Alphabetical', 'Score'],
             },      
-            show: {
-                label: 'Show Value',
+            show: { label: 'Show Value',
                 value: false,
             },
-            score: {
-                label: 'Score Sort Options:',
+            score: { label: 'Score Sort Options:',
                 subops: {
-                    deep: {
-                        label: 'Deep Search',
+                    deep: { label: 'Deep Search',
                         value: true,
                     },
-                    wide: {
-                        label: 'Match Requirement',
+                    wide: { label: 'Match Requirement',
                         value: 'Full',
                         type: ['Full', 'Partial', 'None'],                        
                     },
-                    list: {
-                        label: 'Alt List',
+                    list: { label: 'Alt List',
                         value: '',
                         type: [''],
                     },
@@ -41,10 +34,8 @@ let options = {
             },
         },
     },
-    lists: {
-        label: 'Word Lists:',
-        subops: {},
-    },
+    lists: { label: 'Word Lists:', },
+    freq: { label: 'Required Freq', value: 'f>0' },
 }  
 
 // get data
@@ -270,7 +261,7 @@ function getInds(list='') {
             ans = setD(ans, avoid)
         }
         ans = [...ans]
-        let freq = getOption(['lists','Frequency'])
+        let freq = getOption(['freq'])
         freq = freq.split(/(<|>|<=|>=)/)
         if (freq.length == 3) {
             freq = freq.map(s=>s.trim().toLowerCase())
@@ -397,20 +388,34 @@ function getScores(words, pot_sol, pattern, limits) {
 
     
 /*===================================================================================================================\\
-|                                                 HTML Functions
+|                                                Option FUnctions
 \\===================================================================================================================*/    
-
-function changeOption(keys,val) {
-    let opt = options
-    for (let i=0; i<keys.length-1; i++) { opt = opt[keys[i]].subops }
-    opt[keys[keys.length-1]].value = val
-    setCookie('options',options)
-}
 
 function getOption(keys) {
     let opt = options
-    for (let i=0; i<keys.length-1; i++) { opt = opt[keys[i]].subops }
-    return opt[keys[keys.length-1]].value
+    for (let i=0; i<keys.length; i++) {
+        const key = keys[i]
+        if (key in opt) {
+            const op = opt[key]
+            if (i == keys.length-1) { return op.value }
+            else if ('subops' in op) { opt = op.subops }   
+            else { return undefined }
+        } else { return undefined }
+    }
+}
+    
+function setOption(keys, val) {
+    let opt = options
+    for (let i=0; i<keys.length; i++) {
+        const key = keys[i]
+        if (!(key in opt)) { opt[key] = {} }
+        const op = op[key]
+        if (i == keys.length-1) { op.value = val }
+        else {
+            if (!('subops' in op)) { op.subops = {} } 
+            opt = op.subops
+        }
+    }
 }
 
 function applyOptions(oldOptions,newOptions) {
@@ -426,6 +431,11 @@ function applyOptions(oldOptions,newOptions) {
         }
     }
 }
+    
+    
+/*===================================================================================================================\\
+|                                                 HTML Functions
+\\===================================================================================================================*/
     
 function hitKey(e) {
     if (e.keyCode == 13) { searchle() }
@@ -463,24 +473,24 @@ function createOption(option, keys, parent) {
                     element.appendChild(E) 
                 }
                 element.value = option.value
-                element.onchange = (e) => changeOption(keys, e.srcElement.value)  
+                element.onchange = (e) => setOption(keys, e.srcElement.value)  
             } else { console.log(`Unknown option of type ${option.type}`) }
         } else {
             if (typeof option.value === 'boolean') {
                 element = document.createElement('input', {id: id})
                 element.type = 'checkbox'
                 element.checked = option.value 
-                element.onchange = (e) => changeOption(keys, e.srcElement.checked)
+                element.onchange = (e) => setOption(keys, e.srcElement.checked)
             } else if (typeof option.value === 'string') {
                 element = document.createElement('input', {id: id})
                 element.type = 'text'
                 element.value = option.value 
-                element.onchange = (e) => changeOption(keys, e.srcElement.value) 
+                element.onchange = (e) => setOption(keys, e.srcElement.value) 
             } else if (typeof option.value === 'number') {
                 element = document.createElement('input', {id: id})
                 element.type = 'number'
                 element.value = option.value
-                element.onchange = (e) => changeOption(keys, e.srcElement.value)  
+                element.onchange = (e) => setOption(keys, e.srcElement.value)  
             } else { console.log(`Unknown option of value ${option.value}`) }
         }
         const L = document.createElement('label')
@@ -567,16 +577,12 @@ activeTab('Info')
 // add list options options
 let cookies = getCookies()
 for (const list in wordlist['lists']) {
-    if (!(list in options.lists.subops)) {
-        options.lists.subops[list] = {
-            value: 'Include', 
-            type:['Require', 'Include', 'Nothing', 'Avoid'], 
-            pos: 'left',
-        } 
-        options.sort.subops.score.subops.list.type.push(list)
-    }
+    setOption(['lists',list],{
+        value: 'Include', 
+        type: ['Require', 'Include', 'Nothing', 'Avoid'],
+        pos: 'left',
+    })
 }
-options.lists.subops['Frequency'] = { value: 'f > 0' }
 if ('options' in cookies) { applyOptions(options,cookies.options) }
 setCookie('options',options)
 createOptions(options)
