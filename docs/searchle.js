@@ -1,4 +1,3 @@
-
 async function searchleMain(document) {
 
 /*===================================================================================================================\\
@@ -7,36 +6,25 @@ async function searchleMain(document) {
 
 const version = 'v0.1.5'
 
-let options = {
-    sort: { label: 'Sorting Options:',
+let options = { 
+    sort: {
+        label: 'Sorting Options:',
         subops: {
-            order: { label: 'Order',
-                value: 'Frequency',
-                type: ['Frequency', 'Alphabetical', 'Score'],
-            },      
-            show: { label: 'Show Value',
-                value: false,
-            },
-            score: { label: 'Score Sort Options:',
+            order: { label: 'Order', value: 'Frequency', type: ['Frequency', 'Alphabetical', 'Score'], },      
+            show: { label: 'Show Value', value: false, },
+            score: { 
+                label: 'Score Sort Options:',
                 subops: {
-                    deep: { label: 'Deep Search',
-                        value: true,
-                    },
-                    wide: { label: 'Match Requirement',
-                        value: 'Full',
-                        type: ['Full', 'Partial', 'None'],                        
-                    },
-                    list: { label: 'Alt List',
-                        value: '',
-                        type: [''],
-                    },
+                    deep: { label: 'Deep Search', value: true, },
+                    wide: { label: 'Match Requirement', value: 'Full', type: ['Full', 'Partial', 'None'], },
+                    list: { label: 'Alt List', value: '', type: [''], },
                 },
             },
         },
     },
     lists: { label: 'Word Lists:', },
     freq: { label: 'Required Freq', value: 'f>0' },
-}  
+}
 
 // get data
 const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json'
@@ -388,35 +376,41 @@ function getScores(words, pot_sol, pattern, limits) {
 
     
 /*===================================================================================================================\\
-|                                                Option FUnctions
+|                                                Option Functions
 \\===================================================================================================================*/    
 
-function getOption(keys) {
+function getFullOption(keys, force=false) {
     let opt = options
     for (let i=0; i<keys.length; i++) {
         const key = keys[i]
-        if (key in opt) {
+        if (key in opt || force) {
+            if (!(key in opt)) { opt[key] = {} }            
             const op = opt[key]
-            if (i == keys.length-1) { return op.value }
-            else if ('subops' in op) { opt = op.subops }   
+            if (i == keys.length-1) { return op }
+            else if ('subops' in op || force) {
+                if (!('subops' in op)) { op.subops = {} }         
+                opt = op.subops
+            }   
             else { return undefined }
         } else { return undefined }
     }
 }
-    
-function setOption(keys, val) {
+ 
+function setFullOption(keys, val) {
     let opt = options
     for (let i=0; i<keys.length; i++) {
         const key = keys[i]
-        if (!(key in opt)) { opt[key] = {} }
+        if (!(key in opt)) { opt[key] = {} }            
         const op = opt[key]
-        if (i == keys.length-1) { op.value = val }
-        else {
-            if (!('subops' in op)) { op.subops = {} } 
-            opt = op.subops
-        }
+        if (i == keys.length-1) { opt[key] = val }
+        if (!('subops' in op)) { op.subops = {} }         
+        opt = op.subops
     }
-}
+}    
+    
+function getOption(keys) { return getFullOption(keys).value }
+
+function setOption(keys, val) { getFullOption(keys, true).value = val }
 
 function applyOptions(oldOptions,newOptions) {
     for (let [key,obj0] of Object.entries(oldOptions)) { 
@@ -587,7 +581,7 @@ activeTab('Info')
 // add list options options
 let cookies = getCookies()
 for (const list in wordlist['lists']) {
-    setOption(['lists',list],{
+    setFullOption(['lists',list],{
         value: 'Include', 
         type: ['Require', 'Include', 'Nothing', 'Avoid'],
         pos: 'left',
@@ -665,3 +659,4 @@ function getCookies() {
     }
     return cookies
 }
+
