@@ -456,6 +456,7 @@ function tabClick(event) {
 }
 
 function createOption(option, keys, parent) {
+    console.log(option)
     const frame = document.createElement('div')
     const id = keys.join('.')
     let label = keys[keys.length-1]
@@ -468,7 +469,7 @@ function createOption(option, keys, parent) {
             if (Array.isArray(option.type)) {
                 element = document.createElement('select', {id: id})
                 for (const val of option.type) {
-                    const E = document.createElement('option', {value:val})
+                    const E = document.createElement('option', {value: val})
                     E.appendChild(document.createTextNode(val))
                     element.appendChild(E) 
                 }
@@ -491,7 +492,7 @@ function createOption(option, keys, parent) {
                 element.type = 'number'
                 element.value = option.value
                 element.onchange = (e) => setOption(keys, e.srcElement.value)  
-            } else { console.log(`Unknown option of value ${option.value}`) }
+            } else { throw `Unknown option of value ${option.value}` }
         }
         const L = document.createElement('label')
         if ('pos' in option && option.pos=='left') {
