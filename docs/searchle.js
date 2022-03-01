@@ -456,7 +456,6 @@ function tabClick(event) {
 }
 
 function createOption(option, keys, parent) {
-    console.log(option)
     const frame = document.createElement('div')
     const id = keys.join('.')
     let label = keys[keys.length-1]
@@ -475,7 +474,12 @@ function createOption(option, keys, parent) {
                 }
                 element.value = option.value
                 element.onchange = (e) => setOption(keys, e.srcElement.value)  
-            } else { console.log(`Unknown option of type ${option.type}`) }
+            } else {
+                console.log(keys)
+                console.log(option)
+                console.log(option.type)
+                throw `Unable to parse option wtih type ${option.type}`
+            }
         } else {
             if (typeof option.value === 'boolean') {
                 element = document.createElement('input', {id: id})
@@ -492,7 +496,12 @@ function createOption(option, keys, parent) {
                 element.type = 'number'
                 element.value = option.value
                 element.onchange = (e) => setOption(keys, e.srcElement.value)  
-            } else { throw `Unknown option of value ${option.value}` }
+            } else {
+                console.log(keys)
+                console.log(option)
+                console.log(options.value)
+                throw `Unable to parse option wtih value ${option.value}`
+            }
         }
         const L = document.createElement('label')
         if ('pos' in option && option.pos=='left') {
