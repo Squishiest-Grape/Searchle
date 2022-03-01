@@ -409,7 +409,7 @@ function setOption(keys, val) {
     for (let i=0; i<keys.length; i++) {
         const key = keys[i]
         if (!(key in opt)) { opt[key] = {} }
-        const op = op[key]
+        const op = opt[key]
         if (i == keys.length-1) { op.value = val }
         else {
             if (!('subops' in op)) { op.subops = {} } 
