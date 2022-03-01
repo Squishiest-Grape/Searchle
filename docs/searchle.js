@@ -13,17 +13,21 @@ let options = {
             order: { label: 'Order', value: 'Frequency', type: ['Frequency', 'Alphabetical', 'Score'], },      
             show: { label: 'Show Value', value: false, },
             score: { 
-                label: 'Score Sort Options:',
+                req: [['sort','order'],'Score'],
                 subops: {
                     deep: { label: 'Deep Search', value: true, },
-                    wide: { label: 'Match Requirement', value: 'Full', type: ['Full', 'Partial', 'None'], },
+                    match: { label: 'Req Match', value: 'Full', type: ['Full', 'Partial', 'None'], },
                     list: { label: 'Alt List', value: '', type: [''], },
                 },
             },
         },
     },
-    lists: { label: 'Word Lists:', },
-    freq: { label: 'Required Freq', value: 'f>0' },
+    lists: {
+        label: 'Word Lists:',
+        subops: {
+            other_req: { label: 'Other Req', value: '' },
+        },
+    },
 }
 
 // get data
@@ -249,23 +253,26 @@ function getInds(list='') {
             ans = setD(ans, avoid)
         }
         ans = [...ans]
-        let freq = getOption(['freq'])
-        freq = freq.split(/(<|>|<=|>=)/)
-        if (freq.length == 3) {
-            freq = freq.map(s=>s.trim().toLowerCase())
-            let f, d, v, fun
-            if ('fpc'.includes(freq[0])) {  [f,d,v] = freq }
-            else if ('fpc'.includes(freq[2])) {
-                [v,d,f] = freq
-                if (d.includes('>')) { d = d.replace('>','<') }
-                else { d = d.replace('<','>') }
-            } else { throw `Unknown characters ${freq} in frequency limit` }
-            v = eval(v)
-            if (f == 'p') { f = 'c'; v = wordlist.words.length * v / 100 }
-            if (f == 'c') { f = 'f'; v = wordlist.freq[Math.round(v)] }
-            if (f == 'f') { fun = eval('f => f' + d + String(v)) }
-            else { throw `Unknown character ${f} in frequency limit` }
-            ans = ans.filter(i=>fun(wordlist.freq[i]))
+        let other_req = getOption(['lists','other_req'])
+        for (const req of other_req.split(/,|;|\n/)) {
+            if (req) {
+                const ereq = req.split(/(<|>|<=|>=)/)
+                if (ereq.length == 3) {
+                    let [k,e,v] = ereq.map(s=>s.trim().toLowerCase())
+                    if ('f p c freq frequency perecent percentile count'.split().includes(v)) {
+                        [k,v] = [v,k]
+                        if (e.includes('>')) { e = e.replace('>','<') }
+                        else { e = e.replace('<','>') }
+                    }
+                    v = eval(v)
+                    if ('p percent percentile'.split().includes(k)) { k='c'; v = wordlist.words.length * v / 100 }
+                    if ('c count'.split().includes(k)) { k='f'; v = wordlist.freq[Math.round(v)] }
+                    if ('f freq frequency'.split().includes(k)) {
+                        const fun = eval('k => k' + e + String(v))
+                        ans = ans.filter(i=>fun(wordlist.freq[i]))
+                    } else { throw `Unknown requirement key ${k}` }
+                } else { throw `Unknown requirement ${req}` }
+            }
         }
         return ans
     } else {
@@ -273,7 +280,7 @@ function getInds(list='') {
     }
 }
 
-function search(inds,pattern,limits=null) {
+function search(inds, pattern, limits=null) {
     if (limits === null) {
         const r = pattern2regex(pattern,true)
         return inds.filter(i=>r.test(wordlist.words[i]))
@@ -351,9 +358,9 @@ function newCriteria(guess, sol, pattern, limits) {
     return [n_pattern, n_limits]    
 }
 
-function getWords(words, width, pattern, limits) {
-    if (width == 'Full') { words = c_search(words, pattern, limits) }            
-    else if (width == 'Partial') { words = c_search(words, pattern) } 
+function getWords(words, match, pattern, limits) {
+    if (match == 'Full') { words = c_search(words, pattern, limits) }            
+    else if (match == 'Partial') { words = c_search(words, pattern) } 
     else { words = [...words] }
     return words
 }
@@ -557,11 +564,11 @@ function searchle() {
         }
     } else if (sort === 'Score') {
         pattern = cleanPattern(pattern)
-        const width = getOption(['sort', 'score', 'wide'])
+        const match = getOption(['sort', 'score', 'match'])
         let pot_sol = getInds(getOption(['sort', 'score', 'list'])).map(i=>wordlist.words[i])
         pot_sol = c_search(pot_sol, pattern, limits)
         let words = getInds().map(i=>wordlist.words[i])
-        words = getWords(words, width, pattern, limits)
+        words = getWords(words, match, pattern, limits)
         let scores = getScores(words, pot_sol, pattern, limits)
         let temp = [words,scores]
         temp = sortByCol(temp,1)
@@ -581,11 +588,8 @@ activeTab('Info')
 // add list options options
 let cookies = getCookies()
 for (const list in wordlist['lists']) {
-    setFullOption(['lists',list],{
-        value: 'Include', 
-        type: ['Require', 'Include', 'Nothing', 'Avoid'],
-        pos: 'left',
-    })
+    setFullOption(['lists', list], {value: 'Include', type: ['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left',})
+    getFullOption(['sort','score','list']).type.push(list)
 }
 if ('options' in cookies) { applyOptions(options,cookies.options) }
 setCookie('options',options)
