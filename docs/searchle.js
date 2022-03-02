@@ -466,6 +466,9 @@ function changeOption(keys,val) {
     if (Array.isArray(keys)) { keys = keys.join('.') }
     if (keys in changeEvents) {
         let [value,frame] = changeEvents[keys]
+        console.log('key')
+        console.log(val)
+        console.log(value)
         if (val == value) { frame.style.display = 'block' }
         else { frame.style.display = 'none' }
     }
