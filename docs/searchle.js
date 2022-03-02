@@ -538,6 +538,7 @@ function createOption(option, keys, parent) {
     }
     if ('require' in option) {
         let [src_id,val] = option.require
+        if (Array.isArray(src_id)) { src_id = src_id.join('.') }
         changeEvents[src_id] = [val,frame]
     }
     parent.appendChild(frame)
