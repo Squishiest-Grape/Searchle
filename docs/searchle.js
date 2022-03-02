@@ -14,7 +14,7 @@ let options = {
             show: { label: 'Show Value', value: false, },
             score: { 
                 label: '',
-                req: [['sort','order'],'Score'],
+                require: [['sort','order'],'Score'],
                 subops: {
                     deep: { label: 'Deep Search', value: true, },
                     match: { label: 'Req Match', value: 'Full', type: ['Full', 'Partial', 'None'], },
@@ -459,6 +459,18 @@ function tabClick(event) {
     activeTab(name)
 }
 
+let changeEvents = {}
+    
+function changeOption(keys,val) {
+    setOption(keys,val)
+    if (Array.isArray(keys)) { keys = keys.join('.') }
+    if (keys in changeEvents) {
+        let [value,frame] = changeEvents[keys]
+        if (val == value) { frame.style.display = 'block' }
+        else { frame.style.display = 'none' }
+    }
+}
+    
 function createOption(option, keys, parent) {
     const frame = document.createElement('div')
     const id = keys.join('.')
@@ -477,11 +489,8 @@ function createOption(option, keys, parent) {
                     element.appendChild(E) 
                 }
                 element.value = option.value
-                element.onchange = (e) => setOption(keys, e.srcElement.value)  
+                element.onchange = (e) => changeOption(id, e.srcElement.value)  
             } else {
-                console.log(keys)
-                console.log(option)
-                console.log(option.type)
                 throw `Unable to parse option wtih type ${option.type}`
             }
         } else {
@@ -489,21 +498,18 @@ function createOption(option, keys, parent) {
                 element = document.createElement('input', {id: id})
                 element.type = 'checkbox'
                 element.checked = option.value 
-                element.onchange = (e) => setOption(keys, e.srcElement.checked)
+                element.onchange = (e) => changeOption(id, e.srcElement.checked)
             } else if (typeof option.value === 'string') {
                 element = document.createElement('input', {id: id})
                 element.type = 'text'
                 element.value = option.value 
-                element.onchange = (e) => setOption(keys, e.srcElement.value) 
+                element.onchange = (e) => changeOption(id, e.srcElement.value) 
             } else if (typeof option.value === 'number') {
                 element = document.createElement('input', {id: id})
                 element.type = 'number'
                 element.value = option.value
-                element.onchange = (e) => setOption(keys, e.srcElement.value)  
+                element.onchange = (e) => changeOption(id, e.srcElement.value)  
             } else {
-                console.log(keys)
-                console.log(option)
-                console.log(options.value)
                 throw `Unable to parse option wtih value ${option.value}`
             }
         }
@@ -529,6 +535,10 @@ function createOption(option, keys, parent) {
         createOptions(option.subops,keys,subframe)
         frame.appendChild(subframe)
     }
+    if ('require' in option) {
+        let [src_id,val] = options.require
+        changeEvents[src_id] = [val,frame]
+    }
     parent.appendChild(frame)
 }
 
@@ -540,12 +550,9 @@ function createOptions(options, keys=null, parent=null) {
     }
 }
 
-let changeEvents = []
-    
-function changeOption(keys=null,val==null) {
-    setOption(keys,val)
-    if 
-    
+function startOptions() {
+    createOptions(options)
+    for (const [k,e] of Object.entries(changeEvents)) { changeOption(k,getOption(k)) }
 }
     
     
@@ -605,7 +612,7 @@ for (const list in wordlist['lists']) {
 }
 if ('options' in cookies) { applyOptions(options,cookies.options) }
 setCookie('options',options)
-createOptions(options)
+startOptions(options)
 
 // attach button events
 document.getElementById('searchleBtn').onclick = searchle  
