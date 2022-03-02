@@ -10,15 +10,15 @@ let options = {
     sort: {
         label: 'Sorting Options:',
         subops: {
-            order: { label: 'Order', value: 'Frequency', type: ['Frequency', 'Alphabetical', 'Score'], },      
             show: { label: 'Show Value', value: false, },
+            order: { label: 'Order', value: 'Frequency', type: ['Frequency', 'Alphabetical', 'Score'], },     
             score: { 
                 label: '',
-                require: [['sort','order'],'Score'],
+                require: ['sort.order','Score'],
                 subops: {
-                    deep: { label: 'Deep Search', value: true, },
-                    match: { label: 'Req Match', value: 'Full', type: ['Full', 'Partial', 'None'], },
-                    list: { label: 'Alt List', value: '', type: [''], },
+                    deep: { label: 'Deep Search', value: true, require: ['sort.order', 'Score'],},
+                    match: { label: 'Req Match', value: 'Full', type: ['Full', 'Partial', 'None'], require: ['sort.order', 'Score'],},
+                    list: { label: 'Alt List', value: '', type: [''], require: ['sort.order', 'Score'],},
                 },
             },
         },
@@ -615,7 +615,6 @@ for (const list in wordlist['lists']) {
 if ('options' in cookies) { applyOptions(options,cookies.options) }
 setCookie('options',options)
 startOptions(options)
-console.log(changeEvents)
 
 // attach button events
 document.getElementById('searchleBtn').onclick = searchle  
