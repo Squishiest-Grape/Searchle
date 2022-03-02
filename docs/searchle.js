@@ -13,6 +13,7 @@ let options = {
             order: { label: 'Order', value: 'Frequency', type: ['Frequency', 'Alphabetical', 'Score'], },      
             show: { label: 'Show Value', value: false, },
             score: { 
+                label: '',
                 req: [['sort','order'],'Score'],
                 subops: {
                     deep: { label: 'Deep Search', value: true, },
@@ -259,15 +260,15 @@ function getInds(list='') {
                 const ereq = req.split(/(<|>|<=|>=)/)
                 if (ereq.length == 3) {
                     let [k,e,v] = ereq.map(s=>s.trim().toLowerCase())
-                    if ('f p c freq frequency perecent percentile count'.split().includes(v)) {
+                    if ('f p c freq frequency perecent percentile count'.split(' ').includes(v)) {
                         [k,v] = [v,k]
                         if (e.includes('>')) { e = e.replace('>','<') }
                         else { e = e.replace('<','>') }
                     }
                     v = eval(v)
-                    if ('p percent percentile'.split().includes(k)) { k='c'; v = wordlist.words.length * v / 100 }
-                    if ('c count'.split().includes(k)) { k='f'; v = wordlist.freq[Math.round(v)] }
-                    if ('f freq frequency'.split().includes(k)) {
+                    if ('p percent percentile'.split(' ').includes(k)) { k='c'; v = wordlist.words.length * v / 100 }
+                    if ('c count'.split(' ').includes(k)) { k='f'; v = wordlist.freq[Math.round(v)] }
+                    if ('f freq frequency'.split(' ').includes(k)) {
                         const fun = eval('k => k' + e + String(v))
                         ans = ans.filter(i=>fun(wordlist.freq[i]))
                     } else { throw `Unknown requirement key ${k}` }
@@ -387,6 +388,7 @@ function getScores(words, pot_sol, pattern, limits) {
 \\===================================================================================================================*/    
 
 function getFullOption(keys, force=false) {
+    if (!Array.isArray(keys)) { keys = keys.split('.') }
     let opt = options
     for (let i=0; i<keys.length; i++) {
         const key = keys[i]
@@ -404,6 +406,7 @@ function getFullOption(keys, force=false) {
 }
  
 function setFullOption(keys, val) {
+    if (!Array.isArray(keys)) { keys = keys.split('.') }
     let opt = options
     for (let i=0; i<keys.length; i++) {
         const key = keys[i]
@@ -537,6 +540,15 @@ function createOptions(options, keys=null, parent=null) {
     }
 }
 
+let changeEvents = []
+    
+function changeOption(keys=null,val==null) {
+    setOption(keys,val)
+    if 
+    
+}
+    
+    
     
 /*===================================================================================================================\\
 |                                                 Main Function
