@@ -462,11 +462,13 @@ function tabClick(event) {
 let changeEvents = {}
     
 function changeOption(keys,val) {
+    console.log(keys)
+    console.log(val)
     setOption(keys,val)
     if (Array.isArray(keys)) { keys = keys.join('.') }
     if (keys in changeEvents) {
         let [value,frame] = changeEvents[keys]
-        console.log('key')
+        console.log(keys)
         console.log(val)
         console.log(value)
         if (val == value) { frame.style.display = 'block' }
