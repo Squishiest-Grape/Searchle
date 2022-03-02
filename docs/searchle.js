@@ -537,8 +537,6 @@ function createOption(option, keys, parent) {
         frame.appendChild(subframe)
     }
     if ('require' in option) {
-        console.log('Require:')
-        console.log(option)
         let [src_id,val] = option.require
         changeEvents[src_id] = [val,frame]
     }
@@ -616,6 +614,7 @@ for (const list in wordlist['lists']) {
 if ('options' in cookies) { applyOptions(options,cookies.options) }
 setCookie('options',options)
 startOptions(options)
+console.log(changeEvents)
 
 // attach button events
 document.getElementById('searchleBtn').onclick = searchle  
