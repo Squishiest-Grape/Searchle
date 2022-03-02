@@ -536,7 +536,7 @@ function createOption(option, keys, parent) {
         frame.appendChild(subframe)
     }
     if ('require' in option) {
-        let [src_id,val] = options.require
+        let [src_id,val] = option.require
         changeEvents[src_id] = [val,frame]
     }
     parent.appendChild(frame)
