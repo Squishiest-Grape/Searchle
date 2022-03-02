@@ -418,7 +418,7 @@ function setFullOption(keys, val) {
     }
 }    
     
-function getOption(keys) { return getFullOption(keys).value }
+function getOption(keys) { return getFullOption(keys,true).value }
 
 function setOption(keys, val) { getFullOption(keys, true).value = val }
 
