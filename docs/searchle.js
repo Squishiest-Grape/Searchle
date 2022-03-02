@@ -462,15 +462,11 @@ function tabClick(event) {
 let changeEvents = {}
     
 function changeOption(keys,val) {
-    console.log(keys)
-    console.log(val)
     setOption(keys,val)
+    setCookie('options',options)
     if (Array.isArray(keys)) { keys = keys.join('.') }
     if (keys in changeEvents) {
         let [value,frame] = changeEvents[keys]
-        console.log(keys)
-        console.log(val)
-        console.log(value)
         if (val == value) { frame.style.display = 'block' }
         else { frame.style.display = 'none' }
     }
@@ -541,6 +537,8 @@ function createOption(option, keys, parent) {
         frame.appendChild(subframe)
     }
     if ('require' in option) {
+        console.log('Require:')
+        console.log(option)
         let [src_id,val] = option.require
         changeEvents[src_id] = [val,frame]
     }
