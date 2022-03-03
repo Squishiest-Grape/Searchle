@@ -283,7 +283,7 @@ function getInds(list='') {
 
 function search(inds, pattern, limits=null) {
     if (limits === null) {
-        const r = pattern2regex(pattern,true)
+        const r = pattern2regex(pattern, true)
         return inds.filter(i=>r.test(wordlist.words[i]))
     } else {                                  
         const r = pattern2regex(pattern)
@@ -293,7 +293,7 @@ function search(inds, pattern, limits=null) {
             if (r.test(word)) {
                 let good = true
                 for (const part in limits) {
-                    let c = (word.match(new RegExp(part,'g')) || []).length
+                    let c = (word.match(new RegExp(part, 'g')) || []).length
                     if (c < limits[part][0] || c > limits[part][1]) { good = false; break }
                 }
                 if (good) { ans.push(i) } 
@@ -305,7 +305,7 @@ function search(inds, pattern, limits=null) {
 
 function c_search(words, c_pattern, limits=null) {   
     if (limits === null) {
-        const r = c_pattern2regex(c_pattern,true)
+        const r = c_pattern2regex(c_pattern, true)
         return words.filter(w=>r.test(w))
     } else {
         const r = c_pattern2regex(c_pattern)
@@ -314,7 +314,7 @@ function c_search(words, c_pattern, limits=null) {
             if (r.test(word)) {
                 let good = true
                 for (const L in limits) {
-                    const c = countStr(word,L)
+                    const c = countStr(word, L)
                     if (c < limits[L][0] || c > limits[L][1]) { good = false; break }
                 }
                 if (good) { ans.push(word) } 
@@ -362,11 +362,11 @@ function newCriteria(guess, sol, pattern, limits) {
 function getWords(words, match, pattern, limits) {
     if (match == 'Full') { words = c_search(words, pattern, limits) }            
     else if (match == 'Partial') { words = c_search(words, pattern) } 
-    else { words = [...words] }
+    else { words = [...words] }   
     return words
 }
 
-function getScores(words, pot_sol, pattern, limits) {
+function getShallowScores(words, pot_sol, pattern, limits) {
     let ans = []
     for (const guess of words) {
         let score = 0
@@ -382,6 +382,28 @@ function getScores(words, pot_sol, pattern, limits) {
     return ans
 }
 
+function getScore(g, a, G, A, P, L, m) {
+    if (G.length == 1) { return 1 }
+    else if (G.length == 2) { return 1.5 }
+    else {
+        const [n_P, n_L] = newCriteria(g, a, P, L)
+        let S = getScores(G, A, n_P, n_L, m, g)
+        
+    }    
+}
+    
+function getScores(G, A, P, L, m, g=null) {
+    A = c_search(A, P, L)
+    G = getWords(A, P, L, m, g)
+    let S = []
+    for (const g of G) {
+        let s = 0
+        for (const a of A) { s += getScore(g, a, G, A, P, L, m) }
+        S.push(s/G.length) 
+    }
+    return S
+}
+    
     
 /*===================================================================================================================\\
 |                                                Option Functions
@@ -441,9 +463,7 @@ function applyOptions(oldOptions,newOptions) {
 |                                                 HTML Functions
 \\===================================================================================================================*/
     
-function hitKey(e) {
-    if (e.keyCode == 13) { searchle() }
-}
+function hitKey(e) { if (e.keyCode == 13) { searchle() } }
 
 function activeTab(name) {
     for (let e of document.getElementsByClassName('box')) { e.style.display = 'none' }
@@ -590,11 +610,13 @@ function searchle() {
         pot_sol = c_search(pot_sol, pattern, limits)
         let words = getInds().map(i=>wordlist.words[i])
         words = getWords(words, match, pattern, limits)
-        let scores = getScores(words, pot_sol, pattern, limits)
-        let temp = [words,scores]
-        temp = sortByCol(temp,1)
-        ans.push(temp[0])
-        if (show) { ans.push(temp[1]) }
+        let scores
+        if (getOption('sort.score.deep')) { scores = getScores(words, pot_sol, pattern, limits, match) }
+        else { scores = getShallowScores(words, pot_sol, pattern, limits) }
+        let wrdscrs = [words,scores]
+        wrdscrs = sortByCol(wrdscrs,1)
+        ans.push(wrdscrs[0])
+        if (show) { ans.push(wrdscrs[1]) }
     }
     const A = [...ans.keys()].slice(1)
     ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('   -   ')).join('\n')
@@ -636,23 +658,13 @@ function replace(str,old_chars,new_cha) {
     return str
 }
 
-function setU(s1,s2) {
-    return new Set([...s1,...s2])
-}
+function setU(s1,s2) { return new Set([...s1,...s2]) }
 
-function setI(s1,s2) {
-    s2 = new Set(s2)
-    return new Set([...s1].filter(e=>s2.has(e)))
-}
+function setI(s1,s2) { s2 = new Set(s2); return new Set([...s1].filter(e=>s2.has(e))) }
 
-function setD(s1,s2) {
-    s2 = new Set(s2)
-    return new Set([...s1].filter(e=>!s2.has(e)))
-}
+function setD(s1,s2) { s2 = new Set(s2); return new Set([...s1].filter(e=>!s2.has(e))) }
 
-function countStr(str,sub) {
-    return str.split(sub).length -1    
-}   
+function countStr(str,sub) { return str.split(sub).length -1 }   
     
 const letterList = 'abcdefghijklmnopqrstuvwxyz'  
 
