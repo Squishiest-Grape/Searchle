@@ -281,87 +281,83 @@ function getInds(list='') {
     }
 }
 
-function search(inds, pattern, limits=null) {
-    if (limits === null) {
-        const r = pattern2regex(pattern, true)
-        return inds.filter(i=>r.test(wordlist.words[i]))
-    } else {                                  
-        const r = pattern2regex(pattern)
-        let ans = [] 
-        for (const i of inds) {
-            const word = wordlist.words[i]
-            if (r.test(word)) {
-                let good = true
-                for (const part in limits) {
-                    let c = (word.match(new RegExp(part, 'g')) || []).length
-                    if (c < limits[part][0] || c > limits[part][1]) { good = false; break }
-                }
-                if (good) { ans.push(i) } 
+function search(inds, pattern, limits) {
+    const r = pattern2regex(pattern)
+    let ans = [] 
+    for (const i of inds) {
+        const word = wordlist.words[i]
+        if (r.test(word)) {
+            let good = true
+            for (const part in limits) {
+                let c = (word.match(new RegExp(part, 'g')) || []).length
+                if (c < limits[part][0] || c > limits[part][1]) { good = false; break }
             }
+            if (good) { ans.push(i) } 
         }
-        return ans
     }
+    return ans
 }
 
-function c_search(words, c_pattern, limits=null) {   
-    if (limits === null) {
-        const r = c_pattern2regex(c_pattern, true)
-        return words.filter(w=>r.test(w))
-    } else {
-        const r = c_pattern2regex(c_pattern)
-        let ans = []
-        for (const word of words) {
-            if (r.test(word)) {
-                let good = true
-                for (const L in limits) {
-                    const c = countStr(word, L)
-                    if (c < limits[L][0] || c > limits[L][1]) { good = false; break }
-                }
-                if (good) { ans.push(word) } 
+function c_search(words, c_pattern, limits) {   
+    let r = ''
+    for (const c of c_pattern) {
+        if (c.length==1) { r += c } 
+        else { r += '[' + c + ']' }
+    } 
+    r = new RegExp('^'+r+'$')
+    let ans = []
+    for (const word of words) {
+        if (r.test(word)) {
+            let good = true
+            for (const L in limits) {
+                const c = countStr(word, L)
+                if (c < limits[L][0] || c > limits[L][1]) { good = false; break }
             }
+            if (good) { ans.push(word) } 
         }
-        return ans
     }
+    return ans
 }
-
+    
+function c_s_search(words, c_pattern) {
+    let r = ''
+    for (const c of c_pattern) {
+        if (c.length==1) { r += c }
+        else { r += '.' }
+    } 
+    r = new RegExp('^'+r+'$')
+    return words.filter(w=>r.test(w))
+}
+    
 function newCriteria(guess, sol, pattern, limits) {
     let n_pattern = [...pattern]
     let n_limits = {}
     for (const [k,v] of Object.entries(limits)) { n_limits[k] = [...v] }
     let check = new Set()
-    let G = ''
     for (let c=0; c<guess.length; c++) {
         const L = guess[c]
         if (L === sol[c]) {
             n_pattern[c] = L
-            G += L
         } else { 
             n_pattern[c] = n_pattern[c].replace(L,'')
             check.add(L)
         }
     }
     for (const L of check) {
+        const cG = countStr(guess,L) 
         const cS = countStr(sol,L)
-        const cG = countStr(G,L)
-        if (cG == cS) { 
-            delete n_limits[L]
-        } else {
-            const c = countStr(guess,L) 
-            if (c > cS) { 
-                n_limits[L] = [cS,cS]
-            } else {
-                let num = [0,NaN]
-                if (L in n_limits) { num = n_limits[L] }
-                n_limits[L] = [c,num[1]]
-            }
+        if (cG > cS) { n_limits[L] = [cS,cS] }
+        else {
+            if (L in n_limits) { n_limits[L] = [cG, n_limits[L][1]] }
+            else { n_limits[L] = [cG, NaN] }
         }
     }
     return [n_pattern, n_limits]    
 }
 
 function getWords(words, match, pattern, limits) {
-    if (match == 'Full') { words = c_search(words, pattern, limits) }            
-    else if (match == 'Partial') { words = c_search(words, pattern) } 
+    if (match === 'Full') { words = c_search(words, pattern, limits) }            
+    else if (match === 'Partial') { words = c_s_search(words, pattern) } 
     else { words = [...words] }   
     return words
 }
