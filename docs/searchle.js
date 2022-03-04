@@ -610,6 +610,7 @@ function searchle() {
         const match = getOption('sort.score.match')
         let pot_sol = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i])
         let words = getInds().map(i=>wordlist.words[i])
+        words = getWords(words, pattern, limits, match)
         let scores
         if (getOption('sort.score.deep')) { scores = getScores(words, pot_sol, pattern, limits, match) }
         else { scores = getShallowScores(words, pot_sol, pattern, limits, match) }
