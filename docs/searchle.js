@@ -367,6 +367,7 @@ function getWords(words, pattern, limits, match, guess=null) {
 }
 
 function getShallowScores(G, A, P, L, m) {
+    console.log([G, A, P, L, m])
     A = c_search(A, P, L)
     G = getWords(A, P, L, m)
     let S = []
@@ -581,7 +582,6 @@ function startOptions() {
 }
     
     
-    
 /*===================================================================================================================\\
 |                                                 Main Function
 \\===================================================================================================================*/
@@ -626,17 +626,17 @@ function searchle() {
 } 
 
 // add info
-document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n','<br>')
+document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n', '<br>')
 activeTab('Info')
 
 // add list options options
 let cookies = getCookies()
 for (const list in wordlist['lists']) {
     setFullOption(['lists', list], {value: 'Include', type: ['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left',})
-    getFullOption(['sort','score','list']).type.push(list)
+    getFullOption(['sort', 'score', 'list']).type.push(list)
 }
-if ('options' in cookies) { applyOptions(options,cookies.options) }
-setCookie('options',options)
+if ('options' in cookies) { applyOptions(options, cookies.options) }
+setCookie('options', options)
 startOptions(options)
 
 // attach button events
@@ -665,7 +665,7 @@ function setI(s1,s2) { s2 = new Set(s2); return new Set([...s1].filter(e=>s2.has
 
 function setD(s1,s2) { s2 = new Set(s2); return new Set([...s1].filter(e=>!s2.has(e))) }
 
-function countStr(str,sub) { return str.split(sub).length -1 }   
+function countStr(str,sub) { return str.split(sub).length - 1 }   
     
 const letterList = 'abcdefghijklmnopqrstuvwxyz'  
 
