@@ -379,7 +379,7 @@ function getShallowScores(G, A, P, L, m) {
             }
             s += 1
         }
-        S.push(s/G.length)
+        S.push(s/A.length)
     }
     return S
 }
@@ -390,8 +390,7 @@ function getScore(g, a, G, A, P, L, m) {
     else {
         const [n_P, n_L] = newCriteria(g, a, P, L)
         let S = getScores(G, A, n_P, n_L, m, g)
-        const i = S.indexOf(Math.min(...S))
-        return 1 + getScore(G[i], a, G, A, P, L, m)
+        return 1 + Math.min(...S)
     }    
 }
     
@@ -402,7 +401,7 @@ function getScores(G, A, P, L, m, g=null) {
     for (const g of G) {
         let s = 0
         for (const a of A) { s += getScore(g, a, G, A, P, L, m) }
-        S.push(s/G.length) 
+        S.push(s/A.length) 
     }
     return S
 }
@@ -577,7 +576,7 @@ function createOptions(options, keys=null, parent=null) {
 
 function startOptions() {
     createOptions(options)
-    for (const [k,e] of Object.entries(changeEvents)) { changeOption(k,getOption(k)) }
+    for (const [k, e] of Object.entries(changeEvents)) { changeOption(k, getOption(k)) }
 }
     
     
@@ -614,8 +613,8 @@ function searchle() {
         let scores
         if (getOption('sort.score.deep')) { scores = getScores(words, pot_sol, pattern, limits, match) }
         else { scores = getShallowScores(words, pot_sol, pattern, limits, match) }
-        let wrdscrs = [words,scores]
-        wrdscrs = sortByCol(wrdscrs,1)
+        let wrdscrs = [words, scores]
+        wrdscrs = sortByCol(wrdscrs, 1)
         ans.push(wrdscrs[0])
         if (show) { ans.push(wrdscrs[1]) }
     }
@@ -632,7 +631,7 @@ activeTab('Info')
 // add list options options
 let cookies = getCookies()
 for (const list in wordlist['lists']) {
-    setFullOption(['lists', list], {value: 'Include', type: ['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left',})
+    setFullOption(['lists', list], {value: 'Include', type: ['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left'})
     getFullOption('sort.score.list').type.push(list)
 }
 if ('options' in cookies) { applyOptions(options, cookies.options) }
