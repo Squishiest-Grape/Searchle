@@ -254,7 +254,7 @@ function getInds(list='') {
             ans = setD(ans, avoid)
         }
         ans = [...ans]
-        let other_req = getOption(['lists','other_req'])
+        let other_req = getOption(['lists.other_req'])
         for (const req of other_req.split(/,|;|\n/)) {
             if (req) {
                 const ereq = req.split(/(<|>|<=|>=)/)
@@ -367,9 +367,8 @@ function getWords(words, pattern, limits, match, guess=null) {
 }
 
 function getShallowScores(G, A, P, L, m) {
-    console.log([G, A, P, L, m])
+    G = getWords(G, P, L, m)
     A = c_search(A, P, L)
-    G = getWords(A, P, L, m)
     let S = []
     for (const g of G) {
         let s = 0
@@ -397,8 +396,8 @@ function getScore(g, a, G, A, P, L, m) {
 }
     
 function getScores(G, A, P, L, m, g=null) {
+    G = getWords(G, P, L, m, g)
     A = c_search(A, P, L)
-    G = getWords(A, P, L, m, g)
     let S = []
     for (const g of G) {
         let s = 0
@@ -589,8 +588,8 @@ function startOptions() {
 function searchle() {
     let [pattern, limits] = getCriteria()
     let ans = []
-    const sort = getOption(['sort', 'order'])
-    const show = getOption(['sort', 'show'])
+    const sort = getOption(['sort.order'])
+    const show = getOption(['sort.show'])
     if (sort === 'Alphabetical') {
         const inds = search(getInds(), pattern, limits)
         const words = inds.map(i=>wordlist.words[i])
@@ -608,8 +607,8 @@ function searchle() {
         }
     } else if (sort === 'Score') {
         pattern = cleanPattern(pattern)
-        const match = getOption(['sort', 'score', 'match'])
-        let pot_sol = getInds(getOption(['sort', 'score', 'list'])).map(i=>wordlist.words[i])
+        const match = getOption(['sort.score.match'])
+        let pot_sol = getInds(getOption(['sort.score.list'])).map(i=>wordlist.words[i])
         let words = getInds().map(i=>wordlist.words[i])
         let scores
         if (getOption('sort.score.deep')) { scores = getScores(words, pot_sol, pattern, limits, match) }
@@ -633,7 +632,7 @@ activeTab('Info')
 let cookies = getCookies()
 for (const list in wordlist['lists']) {
     setFullOption(['lists', list], {value: 'Include', type: ['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left',})
-    getFullOption(['sort', 'score', 'list']).type.push(list)
+    getFullOption(['sort.score.list']).type.push(list)
 }
 if ('options' in cookies) { applyOptions(options, cookies.options) }
 setCookie('options', options)
