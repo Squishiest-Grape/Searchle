@@ -355,7 +355,7 @@ function newCriteria(guess, sol, pattern, limits) {
     return [n_pattern, n_limits]    
 }
 
-function getWords(words, match, pattern, limits, guess=null) {
+function getWords(words, pattern, limits, match, guess=null) {
     if (match === 'Full') { words = c_search(words, pattern, limits) }            
     else if (match === 'Partial') { words = c_s_search(words, pattern) } 
     else { words = [...words] }   
