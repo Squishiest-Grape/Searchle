@@ -355,36 +355,43 @@ function newCriteria(guess, sol, pattern, limits) {
     return [n_pattern, n_limits]    
 }
 
-function getWords(words, match, pattern, limits) {
+function getWords(words, match, pattern, limits, guess=null) {
     if (match === 'Full') { words = c_search(words, pattern, limits) }            
     else if (match === 'Partial') { words = c_s_search(words, pattern) } 
     else { words = [...words] }   
+    if (guess !== null) { 
+        const i = words.indexOf(guess)
+        if (i >= 0) { words.splice(i,1) }
+    }
     return words
 }
 
-function getShallowScores(words, pot_sol, pattern, limits) {
-    let ans = []
-    for (const guess of words) {
-        let score = 0
-        for (const sol of pot_sol) {
-            if (guess !== sol) {
-                const [n_pattern, n_limits] = newCriteria(guess, sol, pattern, limits)
-                score += c_search(pot_sol, n_pattern, n_limits).length                 
+function getShallowScores(G, A, P, L, m) {
+    A = c_search(A, P, L)
+    G = getWords(A, P, L, m)
+    let S = []
+    for (const g of G) {
+        let s = 0
+        for (const a of A) {
+            if (g !== a) {
+                const [n_P, n_L] = newCriteria(g, a, P, L)
+                s += c_search(A, n_P, n_L).length                 
             }
-            score += 1
+            s += 1
         }
-        ans.push(score/pot_sol.length)
+        S.push(s/G.length)
     }
-    return ans
+    return S
 }
 
 function getScore(g, a, G, A, P, L, m) {
-    if (G.length == 1) { return 1 }
+    if (g === a) { return 1 }
     else if (G.length == 2) { return 1.5 }
     else {
         const [n_P, n_L] = newCriteria(g, a, P, L)
         let S = getScores(G, A, n_P, n_L, m, g)
-        
+        const i = S.indexOf(Math.min(...S))
+        return 1 + getScore(G[i], a, G, A, P, L, m)
     }    
 }
     
@@ -603,12 +610,10 @@ function searchle() {
         pattern = cleanPattern(pattern)
         const match = getOption(['sort', 'score', 'match'])
         let pot_sol = getInds(getOption(['sort', 'score', 'list'])).map(i=>wordlist.words[i])
-        pot_sol = c_search(pot_sol, pattern, limits)
         let words = getInds().map(i=>wordlist.words[i])
-        words = getWords(words, match, pattern, limits)
         let scores
         if (getOption('sort.score.deep')) { scores = getScores(words, pot_sol, pattern, limits, match) }
-        else { scores = getShallowScores(words, pot_sol, pattern, limits) }
+        else { scores = getShallowScores(words, pot_sol, pattern, limits, match) }
         let wrdscrs = [words,scores]
         wrdscrs = sortByCol(wrdscrs,1)
         ans.push(wrdscrs[0])
