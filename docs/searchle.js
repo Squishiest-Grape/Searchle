@@ -370,7 +370,13 @@ function getShallowScores(G, A, P, L, m) {
     G = getWords(G, P, L, m)
     A = c_search(A, P, L)
     let S = []
-    for (const g of G) {
+    let p_old = 0
+    showPercent(0)
+    const n_G = G.length
+    for (let i=0; i<n_G; i++) {
+        const g = G[i]
+        const p = parseInt(i/G*100)
+        if (p!=p_old) { showPercent(p); p_old = p }
         let s = 0
         for (const a of A) {
             if (g !== a) {
@@ -579,6 +585,11 @@ function startOptions() {
     for (const [k, e] of Object.entries(changeEvents)) { changeOption(k, getOption(k)) }
 }
     
+function showPercent(p) {
+    p = Math.round(p)
+    document.getElementById('searchleResult').innerHTML = '█'.repeat(p) + '░'.repeat(100-p)
+}
+
     
 /*===================================================================================================================\\
 |                                                 Main Function
