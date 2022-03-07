@@ -371,6 +371,7 @@ function getShallowScores(G, A, P, L, m) {
     A = c_search(A, P, L)
     let S = []
     let p_old = 0
+    activeTab('Results')
     showPercent(0)
     const n_G = G.length
     for (let i=0; i<n_G; i++) {
