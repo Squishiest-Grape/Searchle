@@ -376,8 +376,12 @@ function getShallowScores(G, A, P, L, m) {
     const n_G = G.length
     for (let i=0; i<n_G; i++) {
         const g = G[i]
-        const p = parseInt(i/G*100)
-        if (p!=p_old) { showPercent(p); p_old = p }
+        const p = parseInt(i/n_G*100)
+        if (p!=p_old) {
+            showPercent(p)
+            console.log(`Reached ${p}%`)
+            p_old = p 
+        }
         let s = 0
         for (const a of A) {
             if (g !== a) {
