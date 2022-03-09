@@ -368,7 +368,7 @@ function getRegExp(guess, sol) {
             c.add(L)
         }
     }
-    r = `(?=${r})`
+    r = `(?=^${r}$)`
     for (const L of c) {
         const c_guess = countStr(guess,L) 
         const c_sol = countStr(sol,L)
@@ -378,6 +378,7 @@ function getRegExp(guess, sol) {
             r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` 
         }
     }
+    console.log(r)
     return new RegExp(r)
 }
 
