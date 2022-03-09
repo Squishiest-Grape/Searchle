@@ -65,12 +65,12 @@ if __name__ == '__main__':
     words.add_list('English Words', english_words_set)
 
     # add wordle lists
-    with open('Data/WordleSolutions.txt', 'r') as fs, \
-            open('Data/WordleGuesses.txt', 'r') as fg:
+    with open('wordle_solutions.txt', 'r') as fs, \
+            open('wordle_guesses.txt', 'r') as fg:
         words_s = fs.read().split('\n')
         words_g = fg.read().split('\n')
         words.add_list('Wordle Solutions', words_s)
         words.add_list('Wordle', words_s + words_g)
 
     # clean up
-    words.save('Data/Wordlist.json')
+    words.save('wordlist.json')
