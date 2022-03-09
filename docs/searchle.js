@@ -355,7 +355,7 @@ function newCriteria(guess, sol, pattern, limits) {
     return [n_pattern, n_limits]    
 }
 
-function getRegex(guess, sol) {
+function getRegExp(guess, sol) {
     let r = ''
     let c = new Set()
     const n = guess.length
@@ -378,7 +378,7 @@ function getRegex(guess, sol) {
             r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` 
         }
     }
-    return r
+    return new RegExp(r)
 }
 
 function getLooseRegex(guess, sol) {
@@ -424,6 +424,27 @@ function getWords(words, pattern, limits, match, guess=null) {
         if (i >= 0) { words.splice(i,1) }
     }
     return words
+}
+
+function newShallowScores(G, A) {
+    let S = []
+    let p_old = 0
+    const n_G = G.length
+    for (let i=0; i<n_G; i++) {
+        const g = G[i]
+        const p = parseInt(i/n_G*100)
+        if (p!=p_old) { console.log(`Reached ${p}%`); p_old = p }
+        let s = 0
+        for (const a of A) {
+            if (g !== a) {
+                const r = getRegExp(g,a)
+                s += A.reduce((s,w) => (r.test(w)) ? s+1 : s, 0)     
+            }
+            s += 1
+        }
+        S.push(s/A.length)
+    }
+    return S
 }
 
 
@@ -688,8 +709,11 @@ function searchle() {
         let words = getInds().map(i=>wordlist.words[i])
         words = getWords(words, pattern, limits, match)
         let scores
-        if (getOption('sort.score.deep')) { scores = getScores(words, pot_sol, pattern, limits, match) }
-        else { scores = getShallowScores(words, pot_sol, pattern, limits, match) }
+        if (getOption('sort.score.deep')) {
+            scores = getScores(words, pot_sol, pattern, limits, match)
+        } else { 
+            scores = newShallowScores(words, pot_sol)
+        }
         let wrdscrs = [words, scores]
         wrdscrs = sortByCol(wrdscrs, 1)
         ans.push(wrdscrs[0])
