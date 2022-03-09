@@ -387,8 +387,8 @@ function getLooseRegex(guess, sol) {
     let c = new Set()
     const n = guess.length
     for (let i=0; i<n; i++) {
-        const L = guess[c]
-        if (L === sol[c]) {
+        const L = guess[i]
+        if (L === sol[i]) {
             r += L
             rL += L
         } else { 
@@ -397,8 +397,8 @@ function getLooseRegex(guess, sol) {
             c.add(L)
         }
     }
-    r = `(?=${r})`
-    rL = `(?=${rL})`
+    r = `(?=^${r}$)`
+    rL = `(?=^${rL}$)`
     for (const L of c) {
         const c_guess = countStr(guess,L) 
         const c_sol = countStr(sol,L)
@@ -709,6 +709,7 @@ function searchle() {
         let pot_sol = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i])
         let words = getInds().map(i=>wordlist.words[i])
         words = getWords(words, pattern, limits, match)
+        pot_sol = c_search(pot_sol, pattern, limits)
         let scores
         if (getOption('sort.score.deep')) {
             scores = getScores(words, pot_sol, pattern, limits, match)
