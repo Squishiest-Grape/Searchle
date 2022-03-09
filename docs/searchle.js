@@ -439,7 +439,7 @@ function newShallowScores(G, A) {
         for (const a of A) {
             if (g !== a) {
                 const r = getRegExp(g,a)
-                s += A.reduce((c,w) => (c.test(w)) ? c+1 : c, 0)     
+                s += A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0)     
             }
             s += 1
         }
