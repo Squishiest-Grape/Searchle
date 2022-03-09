@@ -360,8 +360,8 @@ function getRegExp(guess, sol) {
     let c = new Set()
     const n = guess.length
     for (let i=0; i<n; i++) {
-        const L = guess[c]
-        if (L === sol[c]) {
+        const L = guess[i]
+        if (L === sol[i]) {
             r += L
         } else { 
             r += `[^${L}]`
@@ -378,7 +378,6 @@ function getRegExp(guess, sol) {
             r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` 
         }
     }
-    console.log(r)
     return new RegExp(r)
 }
 
