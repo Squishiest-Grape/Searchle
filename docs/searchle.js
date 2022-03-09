@@ -430,15 +430,16 @@ function newShallowScores(G, A) {
     let S = []
     let p_old = 0
     const n_G = G.length
+    console.log('Starting Search')
     for (let i=0; i<n_G; i++) {
         const g = G[i]
-        const p = parseInt(i/n_G*100)
-        if (p!=p_old) { console.log(`Reached ${p}%`); p_old = p }
+        const p = parseInt(i/n_G*1000)
+        if (p!=p_old) { console.log(`Reached ${p/10}%`); p_old = p }
         let s = 0
         for (const a of A) {
             if (g !== a) {
                 const r = getRegExp(g,a)
-                s += A.reduce((s,w) => (r.test(w)) ? s+1 : s, 0)     
+                s += A.reduce((c,w) => (c.test(w)) ? c+1 : c, 0)     
             }
             s += 1
         }
