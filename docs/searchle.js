@@ -355,6 +355,66 @@ function newCriteria(guess, sol, pattern, limits) {
     return [n_pattern, n_limits]    
 }
 
+function getRegex(guess, sol) {
+    let r = ''
+    let c = new Set()
+    const n = guess.length
+    for (let i=0; i<n; i++) {
+        const L = guess[c]
+        if (L === sol[c]) {
+            r += L
+        } else { 
+            r += `[^${L}]`
+            c.add(L)
+        }
+    }
+    r = `(?=${r})`
+    for (const L of c) {
+        const c_guess = countStr(guess,L) 
+        const c_sol = countStr(sol,L)
+        if (c_guess > c_sol) {
+            r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_sol}}$)`
+        } else {
+            r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` 
+        }
+    }
+    return r
+}
+
+function getLooseRegex(guess, sol) {
+    let r = ''
+    let rL = ''
+    let c = new Set()
+    const n = guess.length
+    for (let i=0; i<n; i++) {
+        const L = guess[c]
+        if (L === sol[c]) {
+            r += L
+            rL += L
+        } else { 
+            r += `[^${L}]`
+            rL += '.'
+            c.add(L)
+        }
+    }
+    r = `(?=${r})`
+    rL = `(?=${rL})`
+    for (const L of c) {
+        const c_guess = countStr(guess,L) 
+        const c_sol = countStr(sol,L)
+        if (c_guess > c_sol) {
+            const s = `(?=^[^${L}]*(?:${L}[^${L}]*){${c_sol}}$)`
+            r += s
+            rL += s
+        } else {
+            s = `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` 
+            r += s
+            rL += s
+        }
+    }
+    return r, rL
+}
+
 function getWords(words, pattern, limits, match, guess=null) {
     if (match === 'Full') { words = c_search(words, pattern, limits) }            
     else if (match === 'Partial') { words = c_s_search(words, pattern) } 
@@ -365,6 +425,7 @@ function getWords(words, pattern, limits, match, guess=null) {
     }
     return words
 }
+
 
 function getShallowScores(G, A, P, L, m) {
     G = getWords(G, P, L, m)
