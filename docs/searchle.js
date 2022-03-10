@@ -1,4 +1,4 @@
-async function searchleMain(document) {
+async function searchleMain() {
 
 /*===================================================================================================================\\
 |                                                 Settings
@@ -33,6 +33,8 @@ let options = {
 
 // get data
 const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json'
+
+
 const wordlist = await fetch(wordlistUrl).then(response => response.json())
 const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
 const helptext = await fetch(helptextUrl).then(response => response.text())
@@ -750,6 +752,8 @@ for (const e of document.getElementsByClassName('searchInp')) { e.addEventListen
 console.log(`Loaded Serachle ${version}`)
     
 }
+
+searchleMain()
 
 
 /*===================================================================================================================\\
