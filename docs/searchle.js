@@ -4,7 +4,7 @@ async function searchleMain() {
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.1.8'
+const version = 'v0.1.9'
 
 let options = { 
     sort: {
