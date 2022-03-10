@@ -698,9 +698,9 @@ function searchle() {
         const words = inds.map(i=>wordlist.words[i])
         ans.push(words)
         if (show) {
-            let max = wordlist.lists['Exquisite Corpus'][wordlist.lists['Exquisite Corpus'].length-1]
-            max = parseInt(1/wordlist.freq[max]) + 1
-            const freq = inds.map(i=>wordlist.freq[i]).map(f => (f>0) ? `1 / ${Math.round(1/f)}` : `1 / ${max}+`)
+            const min_freq = Math.min.apply(null, wordlist.freq.filter(Bollean))
+            const max_den = parseInt(1/wordlist.freq[max]) + 1
+            const freq = inds.map(i=>wordlist.freq[i]).map(f => (f>0) ? `1 / ${Math.round(1/f)}` : `1 / ${max_den}+`)
             ans.push(freq)
         }
     } else if (sort === 'Score') {
