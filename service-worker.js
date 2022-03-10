@@ -5,11 +5,11 @@ console.log('service bitch')
 
 // put the static assets and routes you want to cache here
 const filesToCache = [
-  'Searchle/docs/index.html',
-  'Searchle/docs/favicon.ico',
-  'Searchle/docs/help.txt',  
-  'Searchle/docs/searchle.js',
-  'Searchle/docs/wordlist.json',
+  'index.html',
+  'favicon.ico',
+  'help.txt',  
+  'searchle.js',
+  'wordlist.json',
 ]
 
 // the event handler for the activate event
