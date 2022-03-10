@@ -5,6 +5,7 @@ console.log('service bitch')
 
 // put the static assets and routes you want to cache here
 const filesToCache = [
+  '/',
   'index.html',
   'favicon.ico',
   'help.txt',
