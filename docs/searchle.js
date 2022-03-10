@@ -32,11 +32,11 @@ let options = {
 }
 
 // get data
-const wordlistUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/data/wordlist.json'
+const wordlistUrl = '/wordlist.json'
 
 
 const wordlist = await fetch(wordlistUrl).then(response => response.json())
-const helptextUrl = 'https://raw.githubusercontent.com/Squishiest-Grape/Searchle/main/docs/help.txt'
+const helptextUrl = '/help.txt'
 const helptext = await fetch(helptextUrl).then(response => response.text())
     
 
