@@ -32,9 +32,9 @@ let options = {
 }
 
 // get data
-const wordlistUrl = './wordlist.json'
+const wordlistUrl = 'wordlist.json'
 const wordlist = await fetch(wordlistUrl).then(response => response.json())
-const helptextUrl = './help.txt'
+const helptextUrl = 'help.txt'
 const helptext = await fetch(helptextUrl).then(response => response.text())
     
 
