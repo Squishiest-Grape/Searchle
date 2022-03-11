@@ -4,9 +4,9 @@ async function searchleMain() {
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.2.3'
+const version = 'v0.2.4'
 
-let options = { 
+let options = {
     sort: {
         label: 'Sorting Options:',
         subops: {
@@ -752,6 +752,22 @@ console.log(`Loaded Serachle ${version}`)
 }
 
 searchleMain()
+
+
+/*===================================================================================================================\\
+|                                                Service Worker
+\\===================================================================================================================*/
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(function(registration) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope)
+      }, function(err) {
+        console.log('ServiceWorker registration failed: ', err)
+      })
+    })
+  }
 
 
 /*===================================================================================================================\\
