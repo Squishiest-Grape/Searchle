@@ -1,11 +1,9 @@
 // give your cache a name
 const cacheName = 'searchle-cache'
 
-console.log('service bitch')
-
 // put the static assets and routes you want to cache here
 const filesToCache = [
-  '/',
+  '/Searchle/',
   '/Searchle/index.html',
   '/Searchle/favicon.ico',
   '/Searchle/help.txt',  
