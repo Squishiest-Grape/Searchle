@@ -26,10 +26,9 @@ self.addEventListener('install', e => {
 // the fetch event handler, to intercept requests and serve all 
 // static assets from the cache
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.open(cacheName)
-      .then(cache => caches.match(e.request)
-        .then(response => response || fetch(e.request))
-      )
+  e.respondWith(fetch(e.request)
+    .catch(()=>caches.open(cacheName)
+      .then(cache => caches.match(e.request))
+    )
   )
 })
