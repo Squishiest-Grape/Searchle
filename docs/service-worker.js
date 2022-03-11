@@ -5,12 +5,12 @@ console.log('service bitch')
 
 // put the static assets and routes you want to cache here
 const filesToCache = [
-  'index.html',
-  'favicon.ico',
-  'help.txt',  
-  'searchle.js',
-  'wordlist.json',
-  'service-worker.js'
+  '/',
+  '/Searchle/index.html',
+  '/Searchle/favicon.ico',
+  '/Searchle/help.txt',  
+  '/Searchle/searchle.js',
+  '/Searchle/wordlist.json',
 ]
 
 // the event handler for the activate event
@@ -29,7 +29,9 @@ self.addEventListener('install', e => {
 // static assets from the cache
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request)
-      .then(response => response || fetch(e.request))
+    caches.open(cacheName)
+      .then(cache => caches.match(e.request)
+        .then(response => response || fetch(e.request))
+      )
   )
 })
