@@ -4,7 +4,7 @@ async function searchleMain() {
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.2.1'
+const version = 'v0.2.2'
 
 let options = { 
     sort: {
@@ -32,9 +32,9 @@ let options = {
 }
 
 // get data
-const wordlistUrl = '/Searchle/wordlist.json'
+const wordlistUrl = 'wordlist.json'
 const wordlist = await fetch(wordlistUrl).then(response => response.json())
-const helptextUrl = '/Searchle/help.txt'
+const helptextUrl = 'help.txt'
 const helptext = await fetch(helptextUrl).then(response => response.text())
     
 

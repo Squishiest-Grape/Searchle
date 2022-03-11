@@ -3,12 +3,12 @@ const cacheName = 'searchle-cache'
 
 // put the static assets and routes you want to cache here
 const filesToCache = [
-  '/Searchle/',
-  '/Searchle/index.html',
-  '/Searchle/favicon.ico',
-  '/Searchle/help.txt',  
-  '/Searchle/searchle.js',
-  '/Searchle/wordlist.json',
+  '.',
+  'index.html',
+  'favicon.ico',
+  'help.txt',  
+  'searchle.js',
+  'wordlist.json',
 ]
 
 // the event handler for the activate event

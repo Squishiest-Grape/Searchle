@@ -1,7 +1,7 @@
 <head>
   <title>Searchle</title>
   <meta name=description content='A pattern search tool for the english language.'>
-  <link rel=icon type=image/x-icon href=/Searchle/favicon.ico>
+  <link rel=icon type=image/x-icon href=favicon.ico>
   <meta name=viewport content='width=device-width, initial-scale=1.0'>
   <meta name=google-site-verification content=f5bd9U2oFAs07cmYm-JiKIEBs4IqhlA7he984YM16Gc>
 </head>
@@ -101,12 +101,12 @@
   </table>
 </body>
 
-<script src=/Searchle/searchle.js></script>
+<script src=searchle.js></script>
 
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/Searchle/service-worker.js', {scope:'/Searchle/'})
+    navigator.serviceWorker.register('service-worker.js', {scope:'/Searchle/'})
       .then(function(registration) {
       console.log('ServiceWorker registration successful with scope: ', registration.scope)
     }, function(err) {
