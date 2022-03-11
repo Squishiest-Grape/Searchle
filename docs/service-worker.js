@@ -10,6 +10,7 @@ const filesToCache = [
   'help.txt',  
   'searchle.js',
   'wordlist.json',
+  'service-worker.js'
 ]
 
 // the event handler for the activate event
