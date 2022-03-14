@@ -453,7 +453,7 @@ function newShallowScores(G, A) {
     return S
 }
 
-function newGetScores(G, A, P, L, m) {
+function newGetScores(G, A) {
     let S = {}
     let p_old = 0
     const n_G = G.length
@@ -737,6 +737,8 @@ function searchle() {
     } else if (sort === 'Score') {
         const A = search(getInds(getOption('sort.score.list')), pattern, limits).map(i=>wordlist.words[i])
         const G = getWords(getInds(), pattern, limits, getOption('sort.score.match'))
+        console.log(G)
+        console.log(A)
         let scores
         if (getOption('sort.score.deep')) {
             scores = newGetScores(G, A)
