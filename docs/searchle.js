@@ -729,37 +729,40 @@ function searchle() {
 |                                                 Setup
 \\===================================================================================================================*/
 
+let cookies
+
 async function searchleStart() {
 
     // get data
     const wordlist = await fetch(wordlistUrl).then(response => response.json())
     const helptext = await fetch(helptextUrl).then(response => response.text())
 
+    // add info
+    document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n', '<br>')
+    activeTab('Info')
+
+    // add list options options
+    cookies = getCookies()
+    for (const list in wordlist['lists']) {
+        setFullOption(['lists', list], {value: 'Include', type: ['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left'})
+        getFullOption('sort.score.list').type.push(list)
+    }
+    if ('options' in cookies) { applyOptions(options, cookies.options) }
+    setCookie('options', options)
+    startOptions(options)
+
+    // attach button events
+    document.getElementById('searchleBtn').onclick = searchle  
+    for (const e of document.getElementsByClassName('tabBtn')) { e.onclick = tabClick }
+    for (const e of document.getElementsByClassName('searchInp')) { e.addEventListener('keyup', hitKey) }
+
+    // print info
+    console.log(`Loaded Serachle ${version}`)
+
 }
+
 searchleStart()
 
-// add info
-document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n', '<br>')
-activeTab('Info')
-
-// add list options options
-let cookies = getCookies()
-for (const list in wordlist['lists']) {
-    setFullOption(['lists', list], {value: 'Include', type: ['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left'})
-    getFullOption('sort.score.list').type.push(list)
-}
-if ('options' in cookies) { applyOptions(options, cookies.options) }
-setCookie('options', options)
-startOptions(options)
-
-// attach button events
-document.getElementById('searchleBtn').onclick = searchle  
-for (const e of document.getElementsByClassName('tabBtn')) { e.onclick = tabClick }
-for (const e of document.getElementsByClassName('searchInp')) { e.addEventListener('keyup', hitKey) }
-
-// print info
-console.log(`Loaded Serachle ${version}`)
-    
 
 /*===================================================================================================================\\
 |                                                Service Worker
@@ -767,12 +770,12 @@ console.log(`Loaded Serachle ${version}`)
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(function(registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope)
-      }, function(err) {
-        console.log('ServiceWorker registration failed: ', err)
-      })
+        navigator.serviceWorker.register('service-worker.js')
+            .then(function(registration) {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope)
+        }, function(err) {
+            console.log('ServiceWorker registration failed: ', err)
+        })
     })
 }
 
