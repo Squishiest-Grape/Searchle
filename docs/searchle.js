@@ -445,6 +445,15 @@ function newShallowScores(G, A) {
     return S
 }
 
+function newGetScores(G, A, P, L, m) {
+    let S = {}
+    for (const g of G) {
+        for (const a of A) {
+            S[g+a] = getRegExp(g,a)
+        }
+    }
+    console.log('finished check')
+}
 
 function getShallowScores(G, A, P, L, m) {
     G = getWords(G, P, L, m)
@@ -697,7 +706,7 @@ function searchle() {
         if (show) {
             const min_freq = wordlist.freq.reduce((m,f) => (f>0 && f<m)?f:m, 1)
             const max_den = parseInt(1/min_freq) + 1
-            const freq = inds.map(i=>wordlist.freq[i]).map(f => (f>0) ? `1 / ${Math.round(1/f)}` : `1 / ${max_den}+`)
+            const freq = inds.map(i=>wordlist.freq[i]).map(f => (f>0) ? `1/${Math.round(1/f)}` : `1/${max_den}+`)
             ans.push(freq)
         }
     } else if (sort === 'Score') {
@@ -709,7 +718,7 @@ function searchle() {
         pot_sol = c_search(pot_sol, pattern, limits)
         let scores
         if (getOption('sort.score.deep')) {
-            scores = getScores(words, pot_sol, pattern, limits, match)
+            scores = newGetScores(words, pot_sol, pattern, limits, match)
         } else { 
             scores = newShallowScores(words, pot_sol)
         }
@@ -719,23 +728,25 @@ function searchle() {
         if (show) { ans.push(wrdscrs[1]) }
     }
     const A = [...ans.keys()].slice(1)
-    ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('   -   ')).join('\n')
+    ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('  -  ')).join('\n')
     document.getElementById('searchleResult').innerHTML = ans
     activeTab('Results')
 } 
 
 
 /*===================================================================================================================\\
-|                                                 Setup
+|                                                     Setup
 \\===================================================================================================================*/
 
 let cookies
+let wordlist
+let helptext
 
 async function searchleStart() {
 
     // get data
-    const wordlist = await fetch(wordlistUrl).then(response => response.json())
-    const helptext = await fetch(helptextUrl).then(response => response.text())
+    wordlist = await fetch(wordlistUrl).then(response => response.json())
+    helptext = await fetch(helptextUrl).then(response => response.text())
 
     // add info
     document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n', '<br>')
