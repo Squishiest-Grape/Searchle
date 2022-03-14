@@ -427,7 +427,7 @@ function getWords(words, pattern, limits, match) {
     if (match === 'Full') { words = search(words, pattern, limits) }            
     else if (match === 'Partial') { words = search(words, pattern, {}) } 
     else { words = [...words] }   
-    words = words.map(i => wordlist[i])
+    words = words.map(i => wordlist.words[i])
     return words
 }
 
