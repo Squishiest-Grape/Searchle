@@ -447,7 +447,15 @@ function newShallowScores(G, A) {
 
 function newGetScores(G, A, P, L, m) {
     let S = {}
-    for (const g of G) {
+    const n_G = G.length
+    for (let i=0; i<n_G; i++) {
+        const g = G[i]
+        const p = parseInt(i/n_G*100)
+        if (p!=p_old) {
+            showPercent(p)
+            console.log(`Reached ${p}%`)
+            p_old = p 
+        }
         for (const a of A) {
             S[g+a] = getRegExp(g,a)
         }
@@ -689,7 +697,8 @@ function dispResult(ans) {
         const A = [...ans.keys()].slice(1)
         ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('  -  '))
     }
-    document.getElementById('searchleResult').innerHTML = ans.join('\n')
+    ans = ans.join('\n')
+    document.getElementById('searchleResult').innerHTML = ans
     activeTab('Results')
 }
 
