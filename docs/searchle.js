@@ -735,10 +735,8 @@ function searchle() {
             ans.push(freq)
         }
     } else if (sort === 'Score') {
-        const A = search(getInds(getOption('sort.score.list')), pattern, limits).map(i=>wordlist.words[i])
         const G = getWords(getInds(), pattern, limits, getOption('sort.score.match'))
-        console.log(G)
-        console.log(A)
+        const A = search(getInds(getOption('sort.score.list')), pattern, limits).map(i=>wordlist.words[i])
         let scores
         if (getOption('sort.score.deep')) {
             scores = newGetScores(G, A)
@@ -789,6 +787,8 @@ async function searchleStart() {
 
     // print info
     console.log(`Loaded Serachle ${version}`)
+
+    console.log(getRegExp('point','racon'))
 
 }
 
