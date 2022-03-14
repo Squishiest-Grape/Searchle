@@ -447,6 +447,7 @@ function newShallowScores(G, A) {
 
 function newGetScores(G, A, P, L, m) {
     let S = {}
+    let p_old = 0
     const n_G = G.length
     for (let i=0; i<n_G; i++) {
         const g = G[i]
@@ -696,9 +697,10 @@ function dispResult(ans) {
     if (getOption('sort.show') && ans.length>1) {
         const A = [...ans.keys()].slice(1)
         ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('  -  '))
+    } else {
+        ans = ans[0]
     }
-    ans = ans.join('\n')
-    document.getElementById('searchleResult').innerHTML = ans
+    document.getElementById('searchleResult').innerHTML = ans.join('\n')
     activeTab('Results')
 }
 
