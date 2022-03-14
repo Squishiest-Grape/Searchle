@@ -684,6 +684,15 @@ function showPercent(p) {
     document.getElementById('searchleResult').innerHTML = '█'.repeat(p) + '░'.repeat(100-p)
 }
 
+function dispResult(ans) {
+    if (getOption('sort.show') && ans.length>1) {
+        const A = [...ans.keys()].slice(1)
+        ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('  -  '))
+    }
+    document.getElementById('searchleResult').innerHTML = ans.join('\n')
+    activeTab('Results')
+}
+
     
 /*===================================================================================================================\\
 |                                                 Main Function
@@ -693,7 +702,6 @@ function searchle() {
     let [pattern, limits] = getCriteria()
     let ans = []
     const sort = getOption('sort.order')
-    const show = getOption('sort.show')
     if (sort === 'Alphabetical') {
         const inds = search(getInds(), pattern, limits)
         const words = inds.map(i=>wordlist.words[i])
@@ -703,7 +711,7 @@ function searchle() {
         const inds = search(getInds(), pattern, limits)
         const words = inds.map(i=>wordlist.words[i])
         ans.push(words)
-        if (show) {
+        if (getOption('sort.show')) {
             const min_freq = wordlist.freq.reduce((m,f) => (f>0 && f<m)?f:m, 1)
             const max_den = parseInt(1/min_freq) + 1
             const freq = inds.map(i=>wordlist.freq[i]).map(f => (f>0) ? `1/${Math.round(1/f)}` : `1/${max_den}+`)
@@ -719,18 +727,15 @@ function searchle() {
         let scores
         if (getOption('sort.score.deep')) {
             scores = newGetScores(words, pot_sol, pattern, limits, match)
+            ans.push(pot_sol)
         } else { 
             scores = newShallowScores(words, pot_sol)
+            let wrdscrs = [words, scores]
+            wrdscrs = sortByCol(wrdscrs, 1)
+            ans.push(...wrdscrs)
         }
-        let wrdscrs = [words, scores]
-        wrdscrs = sortByCol(wrdscrs, 1)
-        ans.push(wrdscrs[0])
-        if (show) { ans.push(wrdscrs[1]) }
     }
-    const A = [...ans.keys()].slice(1)
-    ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('  -  ')).join('\n')
-    document.getElementById('searchleResult').innerHTML = ans
-    activeTab('Results')
+    dispResult(ans)
 } 
 
 
