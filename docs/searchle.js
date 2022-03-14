@@ -1,5 +1,3 @@
-async function searchleMain() {
-
 /*===================================================================================================================\\
 |                                                 Settings
 \\===================================================================================================================*/
@@ -31,12 +29,11 @@ let options = {
     },
 }
 
-// get data
 const wordlistUrl = 'wordlist.json'
-const wordlist = await fetch(wordlistUrl).then(response => response.json())
 const helptextUrl = 'help.txt'
-const helptext = await fetch(helptextUrl).then(response => response.text())
-    
+
+let ready = false 
+
 
 /*===================================================================================================================\\
 |                                                  Parse Functions
@@ -727,6 +724,20 @@ function searchle() {
     activeTab('Results')
 } 
 
+
+/*===================================================================================================================\\
+|                                                 Setup
+\\===================================================================================================================*/
+
+async function searchleStart() {
+
+    // get data
+    const wordlist = await fetch(wordlistUrl).then(response => response.json())
+    const helptext = await fetch(helptextUrl).then(response => response.text())
+
+}
+searchleStart()
+
 // add info
 document.getElementById('boxInfo').innerHTML = helptext.replaceAll('\n', '<br>')
 activeTab('Info')
@@ -749,10 +760,6 @@ for (const e of document.getElementsByClassName('searchInp')) { e.addEventListen
 // print info
 console.log(`Loaded Serachle ${version}`)
     
-}
-
-searchleMain()
-
 
 /*===================================================================================================================\\
 |                                                Service Worker
@@ -767,7 +774,7 @@ if ('serviceWorker' in navigator) {
         console.log('ServiceWorker registration failed: ', err)
       })
     })
-  }
+}
 
 
 /*===================================================================================================================\\
