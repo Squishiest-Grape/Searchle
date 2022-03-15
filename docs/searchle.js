@@ -463,7 +463,7 @@ function newGetScores(G, A) {
         const p = parseInt(i/n_G*1000)
         if (p!=p_old) { console.log(`Reached ${p/10}%`); p_old = p }
         for (const a of A) {
-            S[g+a] = getRegExp(g,a)
+            const r = getRegExp(g,a)
         }
     }
     console.log(`Finished in ${(Date.now()-t)/1000}`)
