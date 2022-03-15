@@ -137,7 +137,7 @@ function pattern2regex(pattern, limits, loose=false) {
         }
         if (num != null) {
             if (Array.isArray(num)) {
-                if (isNaN(num[1])) { ans += '{'+String(num[0])+',}' }
+                if (isNaN(num[1])) { r += '{'+String(num[0])+',}' }
                 else { r += '{'+String(num[0])+','+String(num[1])+'}' }                    
             } else {
                 r += '{'+String(num)+'}'
@@ -149,8 +149,10 @@ function pattern2regex(pattern, limits, loose=false) {
         let [min, max] = limits[L]
         min = String(min)
         max = isNaN(max) ? '' : String(max)
-        const Li = '(?:' + [...L].map(c=>`[^${c}]`).join('') + ')*'
-        r += `(?=^${Li}(?:${L}${Li}){${min},${max}}$)` 
+        if (L.length <= 1) { r + `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
+        else {
+            throw 'String limits not implimented'    
+        }
     }
     return new RegExp(r)
 }
