@@ -739,7 +739,7 @@ function searchle() {
         const A = search(getInds(getOption('sort.score.list')), pattern, limits).map(i=>wordlist.words[i])
         let scores
         if (getOption('sort.score.deep')) {
-            // scores = newGetScores(G, A)
+            scores = newGetScores(G, A)
             ans.push(G)
         } else { 
             scores = newShallowScores(G, A)
