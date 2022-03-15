@@ -41,8 +41,6 @@ let ready = false
 
 // main parser
 function parse(str) {
-    str = str.toLowerCase()
-    str = replace(str,' ,','')
     let ANS = []
     let val = null
     let num = null
@@ -58,44 +56,56 @@ function parse(str) {
         if ('"\''.includes(mode)) {
             if (cha == mode) { mode = 'done' }
             else { val += cha }
-        // handle groups
-        } else if ('(['.includes(mode)) {
-            if (cha == mode ) { depth -= 1 }
-            if ((mode=='[' && cha==']')||(mode=='(' && cha==')')) { depth += 1 }
-            if (depth != 0) { val += cha }
-            else { 
-                val = parse(val)
-                mode = 'done' 
-            }                
         } else {
-            // starting strings and groups
-            if ('"\'[('.includes(cha)) {
-                val = ''
-                mode = cha        
-                if ('(['.includes(cha)){ depth = -1 }
-            // handle numbers
-            } else if ('1234567890-+'.includes(cha)) {
-                mode = 'num'
-                if ('1234567890'.includes(cha)) {
-                    if (num == null) { num = cha }
-                    else if (typeof num == 'string') { num += cha }
-                    else if (Array.isArray(num)) { num[num.length-1] = num[num.length-1] + cha }
-                } else if ('-+'.includes(cha)) { 
-                    num = [num,'']
-                }
-            // handle inverse
-            } else if ('!~^'.includes(cha)) {
-                inv = !inv
-            // handle other chcarters
+            // for non-string search, enforce lowercase and ignore spaces
+            if (' ,'.includes(cha)) { i_str += 1; continue }
+            cha = cha.toLowerCase()
+            // handle groups
+            if ('(['.includes(mode)) {
+                if (cha == mode ) { depth -= 1 }
+                if ((mode=='[' && cha==']')||(mode=='(' && cha==')')) { depth += 1 }
+                if (depth != 0) { val += cha }
+                else { 
+                    val = parse(val)
+                    mode = 'done' 
+                }                
             } else {
-                mode = 'done'
-                if (!'#*_?.'.includes(cha)) { val = cha }        
+                // starting strings and groups
+                if ('"\'[('.includes(cha)) {
+                    val = ''
+                    mode = cha        
+                    if ('(['.includes(cha)){ depth = -1 }
+                // handle numbers
+                } else if ('1234567890-+'.includes(cha)) {
+                    mode = 'num'
+                    if ('1234567890'.includes(cha)) {
+                        if (num == null) { num = cha }
+                        else if (typeof num == 'string') { num += cha }
+                        else if (Array.isArray(num)) { num[num.length-1] = num[num.length-1] + cha }
+                    } else if ('-+'.includes(cha)) { 
+                        num = [num,'']
+                    }
+                // handle inverse
+                } else if ('!~^'.includes(cha)) {
+                    inv = !inv
+                // handle other chcarters
+                } else {
+                    mode = 'done'
+                    if (!'#*_?.'.includes(cha)) { val = cha }        
+                }
             }
         }
         // handle saving new value
         if (mode == 'done') {
             if (Array.isArray(num)) { num = num.map(i => parseInt(i)) }
             else if (num != null) { num = parseInt(num) }
+            // handle cleaning non-special strings
+            if (typeof val === 'string' && val.length>1) {
+                if (RegExp('^[A-Za-z ,]*$').test(val)) {
+                    val = val.toLowerCase()
+                    val = val.replace(' ','').replace(',','')
+                }
+            }
             ANS.push([num,val,inv])
             mode = null
             val = null
@@ -129,13 +139,13 @@ function pattern2regex(pattern, limits, loose=false) {
                 else { r += '(?:' + val.join('|') + ')' }
             }
         } else {
-            if (val == null) { val = '.' }
+            if (val === null) { val = '.' }
             if (inv) {
                 if (loose) { r += '.' }
                 else { r += '[^' + val + ']' }
             } else { r += val }                
         }
-        if (num != null) {
+        if (num !== null) {
             if (Array.isArray(num)) {
                 if (isNaN(num[1])) { r += '{'+String(num[0])+',}' }
                 else { r += '{'+String(num[0])+','+String(num[1])+'}' }                    
@@ -148,7 +158,7 @@ function pattern2regex(pattern, limits, loose=false) {
     for (const L in limits) {
         let [min, max] = limits[L]
         min = String(min)
-        max = isNaN(max) ? '' : String(max)
+        max = (max===Infinity) ? '' : String(max)
         if (L.length <= 1) { r + `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
         else {
             throw 'String limits not implimented'    
@@ -199,12 +209,9 @@ function guess2looseregex(guess, sol) {
 |                                                Search Functions
 \\===================================================================================================================*/
     
-function combRange(r1,r2) {
-    let r = [r1[0],r1[1]]
-    if (r2[0] > r[0]) { r[0] = r2[0] }
-    if (r[1] == NaN || r2[1] < r[1]) { r[1] = r2[1] }
-    return r
-}
+function minRange(r1,r2) { return [Math.max(r1[0],r2[0]),Math.min(r1[1],r2[1])] }
+
+function addRange(r1,r2) { return [r1[0]+r2[0],r1[1]+r2[1]] }
 
 function getCriteria() {
     let limits = {}
@@ -213,10 +220,10 @@ function getCriteria() {
         let [num,val,inv] = requires[i]
         if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
         if (inv) { throw 'Inverse not implimented in requires' }
-        if (val == null) { throw 'Wildcards not implimented in requires' }
-        if (num == null) { num = 1 }
-        if (!Array.isArray(num)) { num = [num,NaN] }
-        if (val in limits) { limits[val] = combRange(val,num) }
+        if (val === null) { throw 'Wildcards not implimented in requires' }
+        if (num === null) { num = 1 }
+        if (!Array.isArray(num)) { num = [num,Infinity] }
+        if (val in limits) { limits[val] = addRange(limits[val],num) }
         else { limits[val] = num }
     }
     const avoids = parse(document.getElementById('searchleAvoids').value)
@@ -224,17 +231,17 @@ function getCriteria() {
         let [num,val,inv] = avoids[i]
         if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
         if (inv) { throw 'Inverse not implimented in avoids' }
-        if (val == null) { throw 'Wildcards not implimented in avoids' }
-        if (num == null) { num = [0,0] }
+        if (val === null) { throw 'Wildcards not implimented in avoids' }
+        if (num === null) { num = [0,0] }
         else if (Array.isArray(num)) {
-            if (num[1] != NaN) { throw 'Multi-range not implimented' }
+            if (num[1] !== Infinity) { throw 'Multi-range not implimented' }
             num = [0,num[0]-1]
         }
         else {
             num = [0,num-1]
         }
         num[1] = Math.max(0,num[1])       
-        if (val in limits) { limits[val] = combRange(val,num) }
+        if (val in limits) { limits[val] = combRange(limits[val],num) }
         else { limits[val] = num }
     }
     let pattern = document.getElementById('searchlePattern').value
@@ -537,6 +544,7 @@ function dispResult(ans) {
 
 function searchle() {
     const [pattern, limits] = getCriteria()
+    console.log([pattern,limits])
     const r = pattern2regex(pattern, limits)
     let ans = []
     const sort = getOption('sort.order')
