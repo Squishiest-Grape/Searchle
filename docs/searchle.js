@@ -145,40 +145,58 @@ function pattern2regex(pattern,ignoreGroup=false) {
     return new RegExp('^'+ans+'$')
 }
 
-function c_pattern2regex(c_pattern,ignoreGroups=false) {
-    let ans = ''
-    for (const c of c_pattern) {
-        if (c.length==1) { ans += c } 
-        else { 
-            if (ignoreGroups) { ans += '.' }
-            else { ans += '[' + c + ']'}
-        }
-    } 
-    return new RegExp('^'+ans+'$')
-}
-
-function cleanPattern(pattern) {
-    let c_pattern = []
+function newpattern2regex(pattern, limits) {
+    let r = ''
     for (let [num,val,inv] of pattern) {
-        if (num === null) { num = 1 }
-        if (Array.isArray(num)) {
-            if (num[0] === num[1]) { num = num[0] }
-            else { throw 'Unable to clean pattern for number range' }
+        if (Array.isArray(val)) {
+            if (val.some(v=>v.length>1)) { throw 'Inverse substrings not implimented' }
+            r += '[' + (inv) ? '^' : '' + val.join('') + ']' 
+        } else {
+            if (val == null) { val = '.' }
+            if (inv) {
+                if (ignoreGroup) { r += '.' }
+                else { r += '[^' + val + ']' }
+            } else { r += val }                
         }
-        for (let c=0; c<num; c++) {
-            let V = letterList               
-            if (val !== null) {
-                if (!Array.isArray(val)) { val = [val] }
-                for (const v of val) { if (v.length != 1) { throw `Unable to clean pattern for '${v}'` } }
-                if (inv) { for (const v of val) { V = V.replace(v,'') } }
-                else { V = [...new Set(val)].join('') }
+        if (num != null) {
+            if (Array.isArray(num)) {
+                if (isNaN(num[1])) { ans += '{'+String(num[0])+',}' }
+                else { r += '{'+String(num[0])+','+String(num[1])+'}' }                    
+            } else {
+                r += '{'+String(num)+'}'
             }
-            c_pattern.push(V)
         }
     }
-    return c_pattern
+    r = `(?=^${r}$)`
+    for (const L in limits) {
+        let [min, max] = limits[L]
+        min = String(min)
+        max = isNaN(max) ? '' : String(max)
+        const Li = '(?:' + L.map(c=>`[^${c}]`).join('') + ')*'
+        r += `(?=^${Li}(?:${L}${Li}){${min},${max}}$)` 
+    }
+    return new RegExp(r)
 }
-    
+
+function getRegExp(guess, sol) {
+    let r = ''
+    let c = new Set()
+    const n = guess.length
+    for (let i=0; i<n; i++) {
+        const L = guess[i]
+        if (L === sol[i]) { r += L }
+        else { r += `[^${L}]`; c.add(L) }
+    }
+    r = `(?=^${r}$)`
+    for (const L of c) {
+        const c_guess = countStr(guess,L) 
+        const c_sol = countStr(sol,L)
+        if (c_guess > c_sol) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_sol}}$)` }
+        else { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` }
+    }
+    return new RegExp(r)
+}
+
     
 /*===================================================================================================================\\
 |                                                Search Functions
@@ -295,133 +313,42 @@ function search(inds, pattern, limits) {
     return ans
 }
 
-// function c_search(words, c_pattern, limits) {   
-//     let r = ''
-//     for (const c of c_pattern) {
-//         if (c.length==1) { r += c } 
-//         else { r += '[' + c + ']' }
-//     } 
-//     r = new RegExp('^'+r+'$')
-//     let ans = []
-//     for (const word of words) {
-//         if (r.test(word)) {
-//             let good = true
-//             for (const L in limits) {
-//                 const c = countStr(word, L)
-//                 if (c < limits[L][0] || c > limits[L][1]) { good = false; break }
-//             }
-//             if (good) { ans.push(word) } 
-//         }
-//     }
-//     return ans
-// }
-    
-// function c_s_search(words, c_pattern) {
-//     let r = ''
-//     for (const c of c_pattern) {
-//         if (c.length==1) { r += c }
-//         else { r += '.' }
-//     } 
-//     r = new RegExp('^'+r+'$')
-//     return words.filter(w=>r.test(w))
-// }
-    
-// function newCriteria(guess, sol, pattern, limits) {
-//     let n_pattern = [...pattern]
-//     let n_limits = {}
-//     for (const [k,v] of Object.entries(limits)) { n_limits[k] = [...v] }
-//     let check = new Set()
-//     for (let c=0; c<guess.length; c++) {
-//         const L = guess[c]
-//         if (L === sol[c]) {
-//             n_pattern[c] = L
-//         } else { 
-//             n_pattern[c] = n_pattern[c].replace(L,'')
-//             check.add(L)
-//         }
-//     }
-//     for (const L of check) {
-//         const cG = countStr(guess,L) 
-//         const cS = countStr(sol,L)
-//         if (cG > cS) { n_limits[L] = [cS,cS] }
-//         else {
-//             if (L in n_limits) { n_limits[L] = [cG, n_limits[L][1]] }
-//             else { n_limits[L] = [cG, NaN] }
-//         }
-//     }
-//     return [n_pattern, n_limits]    
-// }
-
 function getRegExp(guess, sol) {
     let r = ''
     let c = new Set()
     const n = guess.length
     for (let i=0; i<n; i++) {
         const L = guess[i]
-        if (L === sol[i]) {
-            r += L
-        } else { 
-            r += `[^${L}]`
-            c.add(L)
-        }
+        if (L === sol[i]) { r += L }
+        else { r += `[^${L}]`; c.add(L) }
     }
     r = `(?=^${r}$)`
     for (const L of c) {
         const c_guess = countStr(guess,L) 
         const c_sol = countStr(sol,L)
-        if (c_guess > c_sol) {
-            r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_sol}}$)`
-        } else {
-            r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` 
-        }
+        if (c_guess > c_sol) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_sol}}$)` }
+        else { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` }
     }
     return new RegExp(r)
 }
 
 function getLooseRegex(guess, sol) {
     let r = ''
-    let rL = ''
     let c = new Set()
     const n = guess.length
     for (let i=0; i<n; i++) {
         const L = guess[i]
-        if (L === sol[i]) {
-            r += L
-            rL += L
-        } else { 
-            r += `[^${L}]`
-            rL += '.'
-            c.add(L)
-        }
+        if (L === sol[i]) { r += L }
+        else { r += '.'; c.add(L) }
     }
     r = `(?=^${r}$)`
-    rL = `(?=^${rL}$)`
     for (const L of c) {
-        const c_guess = countStr(guess,L) 
+        const c_guess = countStr(guess,L)
         const c_sol = countStr(sol,L)
-        if (c_guess > c_sol) {
-            const s = `(?=^[^${L}]*(?:${L}[^${L}]*){${c_sol}}$)`
-            r += s
-            rL += s
-        } else {
-            s = `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` 
-            r += s
-            rL += s
-        }
+        if (c_guess <= c_sol) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` }
     }
-    return r, rL
+    return new RegExp(r)
 }
-
-// function getWords(words, pattern, limits, match, guess=null) {
-//     if (match === 'Full') { words = c_search(words, pattern, limits) }            
-//     else if (match === 'Partial') { words = c_s_search(words, pattern) } 
-//     else { words = [...words] }   
-//     if (guess !== null) { 
-//         const i = words.indexOf(guess)
-//         if (i >= 0) { words.splice(i,1) }
-//     }
-//     return words
-// }
 
 function getWords(words, pattern, limits, match) {
     if (match === 'Full') { words = search(words, pattern, limits) }            
@@ -431,15 +358,9 @@ function getWords(words, pattern, limits, match) {
     return words
 }
 
-function newShallowScores(G, A) {
+function getShallowScores(G, A) {
     let S = []
-    let p_old = 0
-    const n_G = G.length
-    console.log('Starting Search')
-    for (let i=0; i<n_G; i++) {
-        const g = G[i]
-        const p = parseInt(i/n_G*1000)
-        if (p!=p_old) { console.log(`Reached ${p/10}%`); p_old = p }
+    for (const g of G) {
         let s = 0
         for (const a of A) {
             if (g !== a) {
@@ -453,73 +374,38 @@ function newShallowScores(G, A) {
     return S
 }
 
-function newGetScores(G, A) {
-    let S = {}
-    let p_old = 0
-    const n_G = G.length
-    const t = Date.now()
-    for (let i=0; i<n_G; i++) {
-        const g = G[i]
-        const p = parseInt(i/n_G*1000)
-        if (p!=p_old) { console.log(`Reached ${p/10}%`); p_old = p }
-        for (const a of A) {
-            const r = getRegExp(g,a)
-        }
-    }
-    console.log(`Finished in ${(Date.now()-t)/1000}`)
-}
-
-function getShallowScores(G, A, P, L, m) {
-    G = getWords(G, P, L, m)
-    A = c_search(A, P, L)
+function getScores(G, A, m) {
     let S = []
-    let p_old = 0
-    activeTab('Results')
-    showPercent(0)
-    const n_G = G.length
-    for (let i=0; i<n_G; i++) {
-        const g = G[i]
-        const p = parseInt(i/n_G*100)
-        if (p!=p_old) {
-            showPercent(p)
-            console.log(`Reached ${p}%`)
-            p_old = p 
-        }
+    for (const g of G) {
         let s = 0
-        for (const a of A) {
-            if (g !== a) {
-                const [n_P, n_L] = newCriteria(g, a, P, L)
-                s += c_search(A, n_P, n_L).length                 
-            }
-            s += 1
-        }
+        for (const a of A) { s += getScore(g, a, G, A, m) }
         S.push(s/A.length)
     }
     return S
 }
 
-function getScore(g, a, G, A, P, L, m) {
-    if (g === a) { return 1 }
-    else if (G.length == 2) { return 1.5 }
+function getScore(g, a, G, A, m) {
+    if (g===a) { return 1 }
     else {
-        const [n_P, n_L] = newCriteria(g, a, P, L)
-        let S = getScores(G, A, n_P, n_L, m, g)
-        return 1 + Math.min(...S)
-    }    
-}
-    
-function getScores(G, A, P, L, m, g=null) {
-    G = getWords(G, P, L, m, g)
-    A = c_search(A, P, L)
-    let S = []
-    for (const g of G) {
-        let s = 0
-        for (const a of A) { s += getScore(g, a, G, A, P, L, m) }
-        S.push(s/A.length) 
+        const r = getRegExp(g,a)
+        const A_ = A.filter(w=>r.test(w))
+        if (A_.length === A.length) { return NaN }
+        let G_
+        if (m==='Full') {
+            G_ = G.filter(w=>r.test(w))
+        } else if (m==='Partial') {
+            const r_ = getLooseRegex(g,a)
+            G_ = G.filter(w=>r_.test(w))
+        } else {
+            G_ = [...G]
+        }
+        const S = getScores(G_, A_, m)
+        const i_min = S.reduce((Li,N,i) => S[Li]>=N ? Li : i, 0)
+        const g_ = G_[i_min]
+        return getScore(g_, a, G_, A_, m) + 1
     }
-    return S
 }
-    
+
     
 /*===================================================================================================================\\
 |                                                Option Functions
@@ -737,15 +623,11 @@ function searchle() {
         const G = getWords(getInds(), pattern, limits, getOption('sort.score.match'))
         const A = search(getInds(getOption('sort.score.list')), pattern, limits).map(i=>wordlist.words[i])
         let scores
-        if (getOption('sort.score.deep')) {
-            scores = newGetScores(G, A)
-            ans.push(G)
-        } else { 
-            scores = newShallowScores(G, A)
-            let wrdscrs = [G, scores]
-            wrdscrs = sortByCol(wrdscrs, 1)
-            ans.push(...wrdscrs)
-        }
+        if (getOption('sort.score.deep')) { scores = getScores(G, A, getOption('sort.score.match')) }
+        else { scores = getShallowScores(G, A) }
+        let wrdscrs = [G, scores]
+        wrdscrs = sortByCol(wrdscrs, 1)
+        ans.push(...wrdscrs)
     }
     dispResult(ans)
 } 
