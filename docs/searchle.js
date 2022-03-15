@@ -457,17 +457,16 @@ function newGetScores(G, A) {
     let S = {}
     let p_old = 0
     const n_G = G.length
+    const t = Date.now()
     for (let i=0; i<n_G; i++) {
         const g = G[i]
         const p = parseInt(i/n_G*1000)
         if (p!=p_old) { console.log(`Reached ${p/10}%`); p_old = p }
         for (const a of A) {
-            console.log(g+a)
-            S[g+a] = getRegExp(g,a)
-            console.log('end')
+            const r = getRegExp(g,a)
         }
     }
-    console.log('finished check')
+    console.log(`Finished in ${(Date.now()-t)/1000}`)
 }
 
 function getShallowScores(G, A, P, L, m) {
