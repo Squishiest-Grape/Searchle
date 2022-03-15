@@ -149,7 +149,7 @@ function pattern2regex(pattern, limits, loose=false) {
         let [min, max] = limits[L]
         min = String(min)
         max = isNaN(max) ? '' : String(max)
-        const Li = '(?:' + L.map(c=>`[^${c}]`).join('') + ')*'
+        const Li = '(?:' + [...L].map(c=>`[^${c}]`).join('') + ')*'
         r += `(?=^${Li}(?:${L}${Li}){${min},${max}}$)` 
     }
     return new RegExp(r)
@@ -566,7 +566,8 @@ function searchle() {
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
         let scores
         if (getOption('sort.score.deep')) { 
-            scores = getScores(G, A, getOption('sort.score.match')) 
+            // scores = getScores(G, A, m) 
+            scores = A.map((w,i)=>i)
         } else { 
             scores = getShallowScores(G, A)
         }
