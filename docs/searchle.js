@@ -113,48 +113,25 @@ function parse(str) {
     return ANS
 }
 
-// parse to string
-function pattern2regex(pattern,ignoreGroup=false) {
-    let ans = ''
-    for (let [num,val,inv] of pattern) {
-        if (Array.isArray(val)) {
-            if (ignoreGroup) {
-                ans += '.'
-            } else {
-                ans += '['
-                if (inv) { ans += '^' }
-                ans += val.map(v=>pattern2regex([v])).join('|')
-                ans += ']' 
-            }
-        } else {
-            if (val == null) { val = '.' }
-            if (inv) {
-                if (ignoreGroup) { ans += '.' }
-                else { ans += '[^' + val + ']' }
-            } else { ans += val }                
-        }
-        if (num != null) {
-            if (Array.isArray(num)) {
-                if (isNaN(num[1])) { ans += '{'+String(num[0])+',}' }
-                else { ans += '{'+String(num[0])+','+String(num[1])+'}' }                    
-            } else {
-                ans += '{'+String(num)+'}'
-            }
-        }
-    }
-    return new RegExp('^'+ans+'$')
-}
-
-function newpattern2regex(pattern, limits) {
+function pattern2regex(pattern, limits, loose=false) {
     let r = ''
     for (let [num,val,inv] of pattern) {
         if (Array.isArray(val)) {
-            if (val.some(v=>v.length>1)) { throw 'Inverse substrings not implimented' }
-            r += '[' + (inv) ? '^' : '' + val.join('') + ']' 
+            if (inv || loose) {
+                if (val.some(v=>v.length>1)) {
+                    throw 'Inverse or loose substrings not implimented'
+                }
+            }
+            if (loose) {  
+                r += '.'
+            } else {
+                if (inv) { r += '[^' + val.join('') + ']' }
+                else { r += '(?:' + val.join('|') + ')' }
+            }
         } else {
             if (val == null) { val = '.' }
             if (inv) {
-                if (ignoreGroup) { r += '.' }
+                if (loose) { r += '.' }
                 else { r += '[^' + val + ']' }
             } else { r += val }                
         }
@@ -178,7 +155,7 @@ function newpattern2regex(pattern, limits) {
     return new RegExp(r)
 }
 
-function getRegExp(guess, sol) {
+function guess2regex(guess, sol) {
     let r = ''
     let c = new Set()
     const n = guess.length
@@ -193,6 +170,24 @@ function getRegExp(guess, sol) {
         const c_sol = countStr(sol,L)
         if (c_guess > c_sol) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_sol}}$)` }
         else { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` }
+    }
+    return new RegExp(r)
+}
+
+function guess2looseregex(guess, sol) {
+    let r = ''
+    let c = new Set()
+    const n = guess.length
+    for (let i=0; i<n; i++) {
+        const L = guess[i]
+        if (L === sol[i]) { r += L }
+        else { r += '.'; c.add(L) }
+    }
+    r = `(?=^${r}$)`
+    for (const L of c) {
+        const c_guess = countStr(guess,L)
+        const c_sol = countStr(sol,L)
+        if (c_guess <= c_sol) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` }
     }
     return new RegExp(r)
 }
@@ -296,75 +291,13 @@ function getInds(list='') {
     }
 }
 
-function search(inds, pattern, limits) {
-    const r = pattern2regex(pattern)
-    let ans = [] 
-    for (const i of inds) {
-        const word = wordlist.words[i]
-        if (r.test(word)) {
-            let good = true
-            for (const part in limits) {
-                let c = (word.match(new RegExp(part, 'g')) || []).length
-                if (c < limits[part][0] || c > limits[part][1]) { good = false; break }
-            }
-            if (good) { ans.push(i) } 
-        }
-    }
-    return ans
-}
-
-function getRegExp(guess, sol) {
-    let r = ''
-    let c = new Set()
-    const n = guess.length
-    for (let i=0; i<n; i++) {
-        const L = guess[i]
-        if (L === sol[i]) { r += L }
-        else { r += `[^${L}]`; c.add(L) }
-    }
-    r = `(?=^${r}$)`
-    for (const L of c) {
-        const c_guess = countStr(guess,L) 
-        const c_sol = countStr(sol,L)
-        if (c_guess > c_sol) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_sol}}$)` }
-        else { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` }
-    }
-    return new RegExp(r)
-}
-
-function getLooseRegex(guess, sol) {
-    let r = ''
-    let c = new Set()
-    const n = guess.length
-    for (let i=0; i<n; i++) {
-        const L = guess[i]
-        if (L === sol[i]) { r += L }
-        else { r += '.'; c.add(L) }
-    }
-    r = `(?=^${r}$)`
-    for (const L of c) {
-        const c_guess = countStr(guess,L)
-        const c_sol = countStr(sol,L)
-        if (c_guess <= c_sol) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` }
-    }
-    return new RegExp(r)
-}
-
-function getWords(words, pattern, limits, match) {
-    if (match === 'Full') { words = search(words, pattern, limits) }            
-    else if (match === 'Partial') { words = search(words, pattern, {}) } 
-    else { words = [...words] }   
-    words = words.map(i => wordlist.words[i])
-    return words
-}
-
 function getShallowScores(G, A) {
     let S = []
     for (const g of G) {
         let s = 0
         for (const a of A) {
             if (g !== a) {
-                const r = getRegExp(g,a)
+                const r = guess2regex(g,a)
                 s += A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0) 
             }
             s += 1
@@ -387,14 +320,14 @@ function getScores(G, A, m) {
 function getScore(g, a, G, A, m) {
     if (g===a) { return 1 }
     else {
-        const r = getRegExp(g,a)
+        const r = guess2regex(g,a)
         const A_ = A.filter(w=>r.test(w))
         if (A_.length === A.length) { return NaN }
         let G_
         if (m==='Full') {
             G_ = G.filter(w=>r.test(w))
         } else if (m==='Partial') {
-            const r_ = getLooseRegex(g,a)
+            const r_ = guess2looseregex(g,a)
             G_ = G.filter(w=>r_.test(w))
         } else {
             G_ = [...G]
@@ -601,16 +534,16 @@ function dispResult(ans) {
 \\===================================================================================================================*/
 
 function searchle() {
-    let [pattern, limits] = getCriteria()
+    const [pattern, limits] = getCriteria()
+    const r = pattern2regex(pattern, limits)
     let ans = []
     const sort = getOption('sort.order')
     if (sort === 'Alphabetical') {
-        const inds = search(getInds(), pattern, limits)
-        const words = inds.map(i=>wordlist.words[i])
+        const words = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
         words.sort()
         ans.push(words)
     } else if (sort === 'Frequency') {
-        const inds = search(getInds(), pattern, limits)
+        const inds = getInds().filter(i=>r.test(wordlist.words[i]))
         const words = inds.map(i=>wordlist.words[i])
         ans.push(words)
         if (getOption('sort.show')) {
@@ -620,11 +553,23 @@ function searchle() {
             ans.push(freq)
         }
     } else if (sort === 'Score') {
-        const G = getWords(getInds(), pattern, limits, getOption('sort.score.match'))
-        const A = search(getInds(getOption('sort.score.list')), pattern, limits).map(i=>wordlist.words[i])
+        const m = getOption('sort.score.match')
+        let G 
+        if (m==='Full') { 
+            G = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
+        } else if (m==='Partial') {
+            const r_ = pattern2regex(pattern, limits, true)
+            G = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
+        } else { 
+            G = getInds().map(i=>wordlist.words[i])
+        }
+        const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
         let scores
-        if (getOption('sort.score.deep')) { scores = getScores(G, A, getOption('sort.score.match')) }
-        else { scores = getShallowScores(G, A) }
+        if (getOption('sort.score.deep')) { 
+            scores = getScores(G, A, getOption('sort.score.match')) 
+        } else { 
+            scores = getShallowScores(G, A)
+        }
         let wrdscrs = [G, scores]
         wrdscrs = sortByCol(wrdscrs, 1)
         ans.push(...wrdscrs)
