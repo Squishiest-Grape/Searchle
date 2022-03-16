@@ -100,7 +100,7 @@ function parse(str) {
             if (Array.isArray(num)) { num = num.map(i => parseInt(i)) }
             else if (num !== null) { num = parseInt(num) }
             // handle cleaning non-special strings
-            if (typeof val === 'string' && val.length>1) {
+            if (typeof val==='string' && val.length>1) {
                 if (RegExp('^[A-Za-z ,]*$').test(val)) {
                     val = val.toLowerCase()
                     val = val.replace(' ','').replace(',','')
@@ -161,7 +161,9 @@ function val2regex(val, num, inv, loose) {
     }
     if (num !== null) {
         if (Array.isArray(num)) {
-            if (num[1]===Infinity) { r += '{'+String(num[0])+',}' }
+            if (num[1]===Infinity || isNaN(max) || num[1]===null) { 
+                r += '{'+String(num[0])+',}'
+            }
             else { r += '{'+String(num[0])+','+String(num[1])+'}' }                    
         } else {
             r += '{'+String(num)+'}'
@@ -177,7 +179,7 @@ function pattern2regex(pattern, limits, loose=false) {
     for (const L in limits) {
         let [min, max] = limits[L]
         min = String(min)
-        max = (max===Infinity) ? '' : String(max)
+        max = (max===Infinity || isNaN(max) || max===null) ? '' : String(max)
         if (L.length <= 1) { r + `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
         else { r += `(?:(?!${L}).)*(?:${L}(?:(?!${L}).)*)` }
     }
@@ -259,7 +261,7 @@ function getCriteria() {
             num = [0,num-1]
         }
         num[1] = Math.max(0,num[1])       
-        if (val in limits) { limits[val] = combRange(limits[val],num) }
+        if (val in limits) { limits[val] = minRange(limits[val],num) }
         else { limits[val] = num }
     }
     let pattern = document.getElementById('searchlePattern').value
