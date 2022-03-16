@@ -135,7 +135,9 @@ function val2regex(val, num, inv, loose) {
                         )
                     )
         })) {
-            r += '[' + (inv)?'^':'' + val.map(([v,n,i])=>v).join('') + ']'
+            r += '['
+            if (inv) { r += '^' }
+            r += val.map(([v,n,i])=>v).join('') + ']'
         } else {
             if (inv) { throw 'Complex Inverse Grouping not Implimented' }
             val = val.map(([v,n,i])=> val2regex(v,n,i,loose) )
