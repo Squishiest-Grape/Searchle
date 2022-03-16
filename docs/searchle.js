@@ -126,19 +126,19 @@ function parse(str) {
 function val2regex(val, num, inv, loose) {
     let r = ''
     if (Array.isArray(val)) {
-        if (val.every(([val,num,inv]) => {
-            return (!Array.isArray(val) 
-                    && val.length===1 
-                    && (num===null 
-                        || num===1 
-                        || (Array.isArray(num) && num[0]===1 && num[1]===1)
+        if (val.every(([v,n,i]) => {
+            return (!Array.isArray(v) 
+                    && v.length===1 
+                    && (n===null 
+                        || n===1 
+                        || (Array.isArray(n) && n[0]===1 && n[1]===1)
                         )
                     )
         })) {
-            r += '[' + (inv)?'^':'' + val.map(([val,num,inv])=>val).join('') + ']'
+            r += '[' + (inv)?'^':'' + val.map(([v,n,i])=>v).join('') + ']'
         } else {
             if (inv) { throw 'Complex Inverse Grouping not Implimented' }
-            val = val.map(([val,num,inv])=> val2regex(val,num,inv,loose) )
+            val = val.map(([v,n,i])=> val2regex(v,n,i,loose) )
             r += '(?:' + val.join('|') + ')'
         }
     } else {
