@@ -135,10 +135,10 @@ function val2regex(val, num, inv, loose) {
                         )
                     )
         })) {
-            r += '[' (inv)?'^':'' + val.map([val,num,inv]=>val).join('') + ']'
+            r += '[' (inv)?'^':'' + val.map(([val,num,inv])=>val).join('') + ']'
         } else {
             if (inv) { throw 'Complex Inverse Grouping not Implimented' }
-            val = val.map( [val,num,inv] => val2regex(val,num,inv, loose) )
+            val = val.map(([val,num,inv])=> val2regex(val,num,inv,loose) )
             r += '(?:' + val.join('|') + ')'
         }
     } else {
@@ -170,7 +170,7 @@ function val2regex(val, num, inv, loose) {
 
 function pattern2regex(pattern, limits, loose=false) {
     let r = ''
-    for (let [num,val,inv] of pattern) { r += val2regex(num, val, inv, loose) }
+    for (const [num, val, inv] of pattern) { r += val2regex(num, val, inv, loose) }
     r = `(?=^${r}$)`
     for (const L in limits) {
         let [min, max] = limits[L]
