@@ -293,6 +293,7 @@ function getInds(list='') {
             ans = setD(ans, avoid)
         }
         ans = [...ans]
+        ans.sort().reverse()
         let other_req = getOption('lists.other_req')
         for (const req of other_req.split(/,|;|\n/)) {
             if (req) {
