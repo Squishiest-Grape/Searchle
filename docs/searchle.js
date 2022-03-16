@@ -271,6 +271,7 @@ function getCriteria() {
 
 function getInds(list='') {
     if (list==='') {
+        // group lists by setting
         let opts = {}
         for (const [key,opt] of Object.entries(options.lists.subops)) {
             if (key in wordlist.lists) {
@@ -293,7 +294,6 @@ function getInds(list='') {
             ans = setD(ans, avoid)
         }
         ans = [...ans]
-        ans.sort().reverse()
         let other_req = getOption('lists.other_req')
         for (const req of other_req.split(/,|;|\n/)) {
             if (req) {
@@ -315,6 +315,9 @@ function getInds(list='') {
                 } else { throw `Unknown requirement ${req}` }
             }
         }
+        console.log(ans)
+        ans.sort().reverse()
+        console.log(ans)
         return ans
     } else {
         return wordlist.lists[list]
@@ -575,10 +578,7 @@ function searchle() {
         ans.push(words)
     } else if (sort === 'Frequency') {
         const inds = getInds().filter(i=>r.test(wordlist.words[i]))
-        console.log(getInds())
-        console.log(inds)
         const words = inds.map(i=>wordlist.words[i])
-        console.log(words)
         ans.push(words)
         if (getOption('sort.show')) {
             const min_freq = wordlist.freq.reduce((m,f) => (f>0 && f<m)?f:m, 1)
