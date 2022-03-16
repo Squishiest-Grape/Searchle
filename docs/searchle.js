@@ -126,8 +126,15 @@ function parse(str) {
 function val2regex(val, num, inv, loose) {
     let r = ''
     if (Array.isArray(val)) {
-        if (val.every([val,num,inv] => !Array.isArray(val) && val.length===1 && (num===null 
-                          || num===1 || (Array.isArray(num) && num[0]===1 && num[1]===1) ))){
+        if (val.every(([val,num,inv]) => {
+            return (!Array.isArray(val) 
+                    && val.length===1 
+                    && (num===null 
+                        || num===1 
+                        || (Array.isArray(num) && num[0]===1 && num[1]===1)
+                        )
+                    )
+        })) {
             r += '[' (inv)?'^':'' + val.map([val,num,inv]=>val).join('') + ']'
         } else {
             if (inv) { throw 'Complex Inverse Grouping not Implimented' }
