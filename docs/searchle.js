@@ -575,7 +575,10 @@ function searchle() {
         ans.push(words)
     } else if (sort === 'Frequency') {
         const inds = getInds().filter(i=>r.test(wordlist.words[i]))
+        console.log(getInds())
+        console.log(inds)
         const words = inds.map(i=>wordlist.words[i])
+        console.log(words)
         ans.push(words)
         if (getOption('sort.show')) {
             const min_freq = wordlist.freq.reduce((m,f) => (f>0 && f<m)?f:m, 1)
