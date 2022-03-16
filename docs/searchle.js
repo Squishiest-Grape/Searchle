@@ -315,9 +315,7 @@ function getInds(list='') {
                 } else { throw `Unknown requirement ${req}` }
             }
         }
-        console.log(ans)
-        ans.sort().reverse()
-        console.log(ans)
+        ans.sort((a,b)=>b-a)
         return ans
     } else {
         return wordlist.lists[list]
