@@ -179,6 +179,7 @@ function pattern2regex(pattern, limits, loose=false) {
         if (L.length <= 1) { r + `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
         else { r += `(?:(?!${L}).)*(?:${L}(?:(?!${L}).)*)` }
     }
+    console.log(r)
     return new RegExp(r)
 }
 
