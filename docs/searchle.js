@@ -180,7 +180,7 @@ function pattern2regex(pattern, limits, loose=false) {
         let [min, max] = limits[L]
         min = String(min)
         max = (max===Infinity || isNaN(max) || max===null) ? '' : String(max)
-        if (L.length <= 1) { r + `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
+        if (L.length <= 1) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
         else { r += `(?:(?!${L}).)*(?:${L}(?:(?!${L}).)*)` }
     }
     console.log(r)
@@ -432,7 +432,7 @@ function hitKey(e) { if (e.keyCode == 13) { searchle() } }
 function activeTab(name) {
     for (let e of document.getElementsByClassName('box')) { e.style.display = 'none' }
     for (let e of document.getElementsByClassName('tabBtn')) { e.className = e.className.replace(' active','') }
-    document.getElementById('box'+name).style.display = 'block';
+    document.getElementById('box'+name).style.display = 'block'
     for (let e of document.getElementsByClassName('tabBtn')) {
         if (e.innerHTML == name) { e.className += ' active' }
     }
@@ -474,7 +474,7 @@ function createOption(option, keys, parent) {
                     element.appendChild(E) 
                 }
                 element.value = option.value
-                element.onchange = (e) => changeOption(id, e.srcElement.value)  
+                element.onchange = (e) => changeOption(id, e.target.value)  
             } else {
                 throw `Unable to parse option wtih type ${option.type}`
             }
@@ -483,17 +483,17 @@ function createOption(option, keys, parent) {
                 element = document.createElement('input', {id: id})
                 element.type = 'checkbox'
                 element.checked = option.value 
-                element.onchange = (e) => changeOption(id, e.srcElement.checked)
+                element.onchange = (e) => changeOption(id, e.target.checked)
             } else if (typeof option.value === 'string') {
                 element = document.createElement('input', {id: id})
                 element.type = 'text'
                 element.value = option.value 
-                element.onchange = (e) => changeOption(id, e.srcElement.value) 
+                element.onchange = (e) => changeOption(id, e.target.value) 
             } else if (typeof option.value === 'number') {
                 element = document.createElement('input', {id: id})
                 element.type = 'number'
                 element.value = option.value
-                element.onchange = (e) => changeOption(id, e.srcElement.value)  
+                element.onchange = (e) => changeOption(id, e.target.value)  
             } else {
                 throw `Unable to parse option wtih value ${option.value}`
             }
