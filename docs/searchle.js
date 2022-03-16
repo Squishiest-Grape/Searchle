@@ -161,7 +161,7 @@ function val2regex(val, num, inv, loose) {
     }
     if (num !== null) {
         if (Array.isArray(num)) {
-            if (num[1]===Infinity || isNaN(max) || num[1]===null) { 
+            if (num[1]===Infinity || isNaN(num[1]) || num[1]===null) { 
                 r += '{'+String(num[0])+',}'
             }
             else { r += '{'+String(num[0])+','+String(num[1])+'}' }                    
