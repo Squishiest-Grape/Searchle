@@ -54,7 +54,7 @@ function parse(str) {
         let cha = str[i_str] 
         // handle strings
         if ('"\''.includes(mode)) {
-            if (cha == mode) { mode = 'done' }
+            if (cha === mode) { mode = 'done' }
             else { val += cha }
         } else {
             // for non-string search, enforce lowercase and ignore spaces
@@ -62,9 +62,9 @@ function parse(str) {
             cha = cha.toLowerCase()
             // handle groups
             if ('(['.includes(mode)) {
-                if (cha == mode ) { depth -= 1 }
-                if ((mode=='[' && cha==']')||(mode=='(' && cha==')')) { depth += 1 }
-                if (depth != 0) { val += cha }
+                if (cha === mode ) { depth -= 1 }
+                if ((mode==='[' && cha===']')||(mode==='(' && cha===')')) { depth += 1 }
+                if (depth !== 0) { val += cha }
                 else { 
                     val = parse(val)
                     mode = 'done' 
@@ -79,8 +79,8 @@ function parse(str) {
                 } else if ('1234567890-+'.includes(cha)) {
                     mode = 'num'
                     if ('1234567890'.includes(cha)) {
-                        if (num == null) { num = cha }
-                        else if (typeof num == 'string') { num += cha }
+                        if (num === null) { num = cha }
+                        else if (typeof num === 'string') { num += cha }
                         else if (Array.isArray(num)) { num[num.length-1] = num[num.length-1] + cha }
                     } else if ('-+'.includes(cha)) { 
                         num = [num,'']
@@ -98,7 +98,7 @@ function parse(str) {
         // handle saving new value
         if (mode == 'done') {
             if (Array.isArray(num)) { num = num.map(i => parseInt(i)) }
-            else if (num != null) { num = parseInt(num) }
+            else if (num !== null) { num = parseInt(num) }
             // handle cleaning non-special strings
             if (typeof val === 'string' && val.length>1) {
                 if (RegExp('^[A-Za-z ,]*$').test(val)) {
@@ -106,7 +106,7 @@ function parse(str) {
                     val = val.replace(' ','').replace(',','')
                 }
             }
-            ANS.push([num,val,inv])
+            ANS.push([val,num,inv])
             mode = null
             val = null
             num = null
@@ -117,52 +117,60 @@ function parse(str) {
     // handle partial completion for numbers
     if (num != null) {
         if (Array.isArray(num)) { num = num.map(i => parseInt(i)) }
-        else if (num != null) { num = parseInt(num) }
-        ANS.push([num,null,inv])
+        else if (num !== null) { num = parseInt(num) }
+        ANS.push([null,num,inv])
     }
     return ANS
 }
 
-function pattern2regex(pattern, limits, loose=false) {
+function val2regex(val, num, inv, loose) {
     let r = ''
-    for (let [num,val,inv] of pattern) {
-        if (Array.isArray(val)) {
-            if (inv || loose) {
-                if (val.some(v=>v.length>1)) {
-                    throw 'Inverse or loose substrings not implimented'
-                }
-            }
-            if (loose) {  
-                r += '.'
-            } else {
-                if (inv) { r += '[^' + val.join('') + ']' }
-                else { r += '(?:' + val.join('|') + ')' }
-            }
+    if (Array.isArray(val)) {
+        if (val.every([val,num,inv] => !Array.isArray(val) && val.length===1 && (num===null 
+                          || num===1 || (Array.isArray(num) && num[0]===1 && num[1]===1) ))){
+            r += '[' (inv)?'^':'' + val.map([val,num,inv]=>val).join('') + ']'
         } else {
-            if (val === null) { val = '.' }
-            if (inv) {
+            if (inv) { throw 'Complex Inverse Grouping not Implimented' }
+            val = val.map( [val,num,inv] => val2regex(val,num,inv, loose) )
+            r += '(?:' + val.join('|') + ')'
+        }
+    } else {
+        if (val === null) { val = '.' }
+        if (inv) {
+            if (val.length==1) {
                 if (loose) { r += '.' }
                 else { r += '[^' + val + ']' }
-            } else { r += val }                
-        }
-        if (num !== null) {
-            if (Array.isArray(num)) {
-                if (isNaN(num[1])) { r += '{'+String(num[0])+',}' }
-                else { r += '{'+String(num[0])+','+String(num[1])+'}' }                    
             } else {
-                r += '{'+String(num)+'}'
+                if (loose) { r += '.' }
+                else { r += '(?:(?!'+val+').)' }
+                if (num === null) { r += '{'+String(val.length)+'}' }
             }
+        } else {
+            if (num === null || val.length==1) { r += val }
+            else { r += '(?:'+val+')' }
+        }        
+    }
+    if (num !== null) {
+        if (Array.isArray(num)) {
+            if (num[1]===Infinity) { r += '{'+String(num[0])+',}' }
+            else { r += '{'+String(num[0])+','+String(num[1])+'}' }                    
+        } else {
+            r += '{'+String(num)+'}'
         }
     }
+    return r
+}
+
+function pattern2regex(pattern, limits, loose=false) {
+    let r = ''
+    for (let [num,val,inv] of pattern) { r += val2regex(num, val, inv, loose) }
     r = `(?=^${r}$)`
     for (const L in limits) {
         let [min, max] = limits[L]
         min = String(min)
         max = (max===Infinity) ? '' : String(max)
         if (L.length <= 1) { r + `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
-        else {
-            throw 'String limits not implimented'    
-        }
+        else { r += `(?:(?!${L}).)*(?:${L}(?:(?!${L}).)*)` }
     }
     return new RegExp(r)
 }
@@ -217,7 +225,7 @@ function getCriteria() {
     let limits = {}
     const requires = parse(document.getElementById('searchleRequires').value)
     for (let i=0; i<requires.length; i++) {
-        let [num,val,inv] = requires[i]
+        let [val,num,inv] = requires[i]
         if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
         if (inv) { throw 'Inverse not implimented in requires' }
         if (val === null) { throw 'Wildcards not implimented in requires' }
@@ -228,7 +236,7 @@ function getCriteria() {
     }
     const avoids = parse(document.getElementById('searchleAvoids').value)
     for (let i=0; i<avoids.length; i++) {
-        let [num,val,inv] = avoids[i]
+        let [val,num,inv] = avoids[i]
         if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
         if (inv) { throw 'Inverse not implimented in avoids' }
         if (val === null) { throw 'Wildcards not implimented in avoids' }
