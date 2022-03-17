@@ -297,7 +297,7 @@ function getInds(list='') {
         let other_req = getOption('lists.other_req')
         for (const req of other_req.split(/,|;|\n/)) {
             if (req) {
-                const ereq = req.split(/(<|>|<=|>=)/)
+                const ereq = ordsplit(req,['==','!=','~=','>=','<=','>','<','='])
                 if (ereq.length == 3) {
                     let [k,e,v] = ereq.map(s=>s.trim().toLowerCase())
                     if ('f p c freq frequency perecent percentile count'.split(' ').includes(v)) {
@@ -305,6 +305,8 @@ function getInds(list='') {
                         if (e.includes('>')) { e = e.replace('>','<') }
                         else { e = e.replace('<','>') }
                     }
+                    if (e==='~=') { e = '!=' }
+                    if (e==='=') { e = '==' }
                     v = eval(v)
                     if ('p percent percentile'.split(' ').includes(k)) { k='c'; v = wordlist.words.length * v / 100 }
                     if ('c count'.split(' ').includes(k)) { k='f'; v = wordlist.freq[Math.round(v)] }
@@ -677,15 +679,29 @@ function replace(str,old_chars,new_cha) {
     return str
 }
 
+function delimsplit(str,substr) {
+    if (Array.isArray(substr)) { substr = `(?:${substr.join('|')})` }
+    return new RegExp(`(?=${substr})|(?<=${substr})`,'g')
+}
+
+function ordsplit(str,substrs) {
+    for (const substr of substrs) {
+        if (str.includes(substr)) {
+            return str.split(substr)
+                .map(s=>ordsplit(s,substrs))
+                .reduce((a,s)=>a.concat([substr,...s]))
+        }
+    }
+    return [str]
+}
+
+function countStr(str,sub) { return str.split(sub).length - 1 }   
+
 function setU(s1,s2) { return new Set([...s1,...s2]) }
 
 function setI(s1,s2) { s2 = new Set(s2); return new Set([...s1].filter(e=>s2.has(e))) }
 
 function setD(s1,s2) { s2 = new Set(s2); return new Set([...s1].filter(e=>!s2.has(e))) }
-
-function countStr(str,sub) { return str.split(sub).length - 1 }   
-    
-const letterList = 'abcdefghijklmnopqrstuvwxyz'  
 
 function sortByCol(arrays, ind, reverse=false) {
     let inds = [...arrays[0].keys()]        
