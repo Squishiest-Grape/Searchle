@@ -725,7 +725,9 @@ function getCookies() {
     let cookies = {}
     for (const str of rawCookies.split(';')) {
         if (str) {
-            const [key,val] = str.split('=')
+            const strs = str.split('=')
+            const key = strs[0]
+            const val = strs.slice(1).join('=')
             try {
                 cookies[key.trim()] = JSON.parse(val.trim())
             } catch (error) { console.log(`Error parsing cookie ${key}`); console.log(error) }
