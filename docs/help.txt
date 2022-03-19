@@ -32,7 +32,7 @@ Groups are like wildcards, but they can only be from letters in the group
 
 Inversions are like wildcards, but they can only be letters that don't match the following letter
 
-Numbers or ranges can be used to specify a number of letters. Un-numbered letters are assumed to have a number of 1. You can put a number directly into the pattern box to 
+Numbers or ranges can be used to specify a number of letters. Un-numbered letters are assumed to have a number of 1
 
 Only the pattern box is order dependent while the require and avoid boxes can have letters in any order
 
