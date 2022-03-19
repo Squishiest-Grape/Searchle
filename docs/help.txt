@@ -1,4 +1,5 @@
-~ Welcome to Searchle! ~
+
+Welcome to Searchle!
 
 Searchle is a generic word search tool that can help with anything from crosswords to wordle
 
@@ -21,7 +22,9 @@ L means a letter
 Ls means letters
 
 
-~ Other Notes ~
+Other Notes:
+
+Capitalization, spaces, and commas, are ignored
 
 Anywhere that you can use a letter, you can instead use a wildcard, group, inversion, or string
 
@@ -29,12 +32,18 @@ Groups are like wildcards, but they can only be from letters in the group
 
 Inversions are like wildcards, but they can only be letters that don't match the following letter
 
-Numbers or ranges can be used to specify a number of letters. Un-numbered letters are assumed to have a number of 1
+Numbers or ranges can be used to specify a number of letters. Un-numbered letters are assumed to have a number of 1. You can put a number dirrectly into the pattern box to 
+
+Only the pattern box is order dependent while the require and avoid boxes can have letters in any order
 
 Letters in the require box specify the allowable count of that letter in the final word. Unless specified as a range, the count is assumed to be at least the number given
 
 Letters in the avoid box specify that the allowable count is less than the number given
 
+You can simply use a number or range in the pattern tool instead of a full pattern
+
 Strings are like letters, but longer
 
-Capitalization, spaces, and commas, are ignored
+You can actually pass regular expressions directly using a string noting that edges will be bound
+
+After loading the page once, you should be able to use searchle offline
