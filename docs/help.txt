@@ -1,14 +1,18 @@
+~ Welcome to Searchle! ~
 
-_ Welcome to Searchle! _
-- Searchle is a generic word search tool that can help with anything from crosswords to wordle
-- Use the pattern box to specify partial words using wildcard characters for unknown letters
-- You can use grouping or inverters instead of the wildcard characters for more specificity
-- You can use the require and avoid boxes to specify allowable letter counts
+Searchle is a generic word search tool that can help with anything from crosswords to wordle
+
+Use the pattern box to specify partial words using wildcard characters for unknown letters
+
+You can use grouping or inverters instead of the wildcard characters for more specificity
+
+You can use the require and avoid boxes to specify allowable letter counts
+
 
 _______ Syntax _______
 Wildcards: ? # * _ or .
 Groupings: [Ls] or (Ls)
-Inverters: ~L !L or ^L
+Inversion: ~L !L or ^L
 String:    'Ls' or "Ls"
 Number:    #L
 Range:     #-#L or #+L
@@ -16,12 +20,21 @@ Range:     #-#L or #+L
 L means a letter
 Ls means letters
 
-________ Notes ________
-- Anywhere that you can use a letter, you can instead use a wildcard, group, inversion, or string
-- Groups are like wildcards, but they can only be from letters in the group
-- Inversions are like wildcards, but they can only be letters that don't match the following letter
-- Numbers or ranges can be used to specify a number of letters. Un-numbered letters are assumed to have a number of 1
-- Letters in the require box specify the allowable count of that letter in the final word. Unless specified as a range, the count is assumed to be at least the number given
-- Letters in the avoid box specify that the allowable count is less than the number given
-- Strings are like letters, but longer
-- Spaces, commas, and capitalization is ignored except in strings
+
+~ Other Notes ~
+
+Anywhere that you can use a letter, you can instead use a wildcard, group, inversion, or string
+
+Groups are like wildcards, but they can only be from letters in the group
+
+Inversions are like wildcards, but they can only be letters that don't match the following letter
+
+Numbers or ranges can be used to specify a number of letters. Un-numbered letters are assumed to have a number of 1
+
+Letters in the require box specify the allowable count of that letter in the final word. Unless specified as a range, the count is assumed to be at least the number given
+
+Letters in the avoid box specify that the allowable count is less than the number given
+
+Strings are like letters, but longer
+
+Capitalization, spaces, and commas, are ignored
