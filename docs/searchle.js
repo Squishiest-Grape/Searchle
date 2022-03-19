@@ -600,6 +600,8 @@ function searchle() {
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
         let scores
         if (getOption('sort.score.deep')) { 
+            dispResult([['Deep search not implemented']])
+            return            
             // scores = getScores(G, A, m) 
             scores = A.map((w,i)=>i)
         } else { 
