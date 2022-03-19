@@ -431,7 +431,7 @@ function applyOptions(oldOptions,newOptions) {
 |                                                 HTML Functions
 \\===================================================================================================================*/
     
-function hitKey(e) { if (e.keyCode == 13) { searchle() } }
+function hitKey(e) { if (e.keyCode == 13) { searchleClick() } }
 
 function activeTab(name) {
     for (let e of document.getElementsByClassName('box')) { e.style.display = 'none' }
@@ -600,8 +600,7 @@ function searchle() {
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
         let scores
         if (getOption('sort.score.deep')) { 
-            dispResult([['Deep search not implemented']])
-            return            
+            throw 'Deep search not implemented'
             // scores = getScores(G, A, m) 
             scores = A.map((w,i)=>i)
         } else { 
@@ -611,8 +610,18 @@ function searchle() {
         wrdscrs = sortByCol(wrdscrs, 1)
         ans.push(...wrdscrs)
     }
-    dispResult(ans)
+    return ans
 } 
+
+function searchleClick() {
+    try {
+        const ans = searchle()
+        dispResult(ans)
+    } catch (error) {
+        document.getElementById('searchleResult').innerHTML = String(error)
+        activeTab('Results')
+    }
+}
 
 
 /*===================================================================================================================\\
@@ -644,7 +653,7 @@ async function searchleStart() {
     startOptions(options)
 
     // attach button events
-    document.getElementById('searchleBtn').onclick = searchle  
+    document.getElementById('searchleBtn').onclick = searchleClick
     for (const e of document.getElementsByClassName('tabBtn')) { e.onclick = tabClick }
     for (const e of document.getElementsByClassName('searchInp')) { e.addEventListener('keyup', hitKey) }
 
