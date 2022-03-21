@@ -123,25 +123,92 @@ function parse(str) {
     return ANS
 }
 
+function cleannums(nums) {
+    return nums.map(num => {
+        if (!Array.isArray(num)) { 
+            if (num===null) { num===1 }
+            num = [num,num]
+        }
+        num = num.map(n => (isNaN(n) || n===null)? Infinity : n)
+        return num
+    })
+}
+
+function cleannum(num) {
+    if (Array.isArray(num)) {
+        num = num.map(n => (isNaN(n) || n===null)? Infinity : n)
+        if (num[0]===num[1]) { num = num[0] }
+    }
+    if (num===1) { num = null }
+    return num
+}
+
+function mulnums(nums) {
+    let ans = cleannums(nums)
+    ans = ans.reduce((a,b)=>[a[0]*b[0],a[1]*b[1]])
+    return cleannum(ans)
+}
+
+function rangenums(nums) {
+    let ans = cleannums(nums)
+    ans = ans.reduce((a,b)=>[Math.min(a[0],b[0]),Math.max(a[1],b[1])])
+    return cleannum(ans)
+}
+
+function countval(val,num,inv) {
+    if (Array.isArray(val)) {
+        val = val.map(v=>countval(...v))
+        return mulnums([rangenums(val),num])
+    } else {
+        return mulnums([val.length,num])
+    }
+}
+
+function num2regex(num) {
+    let r = ''
+    if (num !== null) {
+        if (Array.isArray(num)) {
+            if (num[1]===Infinity) { r += '{'+String(num[0])+',}' }
+            else { r += '{'+String(num[0])+','+String(num[1])+'}' }                    
+        } else { r += '{'+String(num)+'}' }
+    }
+    return r
+}
+
 function val2regex(val, num, inv, loose) {
     let r = ''
+    num = cleannum(num)
     if (Array.isArray(val)) {
-        if (val.every(([v,n,i]) => {
-            return (!Array.isArray(v) 
-                    && v.length===1 
-                    && (n===null 
-                        || n===1 
-                        || (Array.isArray(n) && n[0]===1 && n[1]===1)
-                        )
-                    )
-        })) {
-            r += '['
-            if (inv) { r += '^' }
-            r += val.map(([v,n,i])=>v).join('') + ']'
+        if (val.length===1) {
+            v,n,i = val[0]
+            return val2regex(v,mulnums(num,n),!(num^n))
         } else {
-            if (inv) { throw 'Complex Inverse Grouping not Implimented' }
-            val = val.map(([v,n,i])=> val2regex(v,n,i,loose) )
-            r += '(?:' + val.join('|') + ')'
+            if (val.every(([v,n,i]) => {
+                return (!Array.isArray(v) 
+                        && v.length===1
+                        && !i
+                        && (n===null 
+                            || n===1 
+                            || (Array.isArray(n) && n[0]===1 && n[1]===1)
+                            )
+                        )
+            })) {
+                r += '['
+                if (inv) { r += '^' }
+                r += val.map(([v,n,i])=>v).join('') + ']'
+            } else {
+                if (inv) { 
+                    let L = countval(val,1,inv)
+                    val = val.map(([v,n,i])=> val2regex(v,n,i,loose))
+                    val = '(?:(?!' + val.join('|') + ').)'
+                    val += num2regex(L)
+                    if (L!==null && num!==null) { val = '(?:' + val + ')' }
+                    r += val
+                } else {
+                    val = val.map(([v,n,i])=> val2regex(v,n,i,loose) )
+                    r += '(?:' + val.join('|') + ')'
+                }
+            }
         }
     } else {
         if (val === null) { val = '.' }
@@ -150,26 +217,19 @@ function val2regex(val, num, inv, loose) {
                 if (loose) { r += '.' }
                 else { r += '[^' + val + ']' }
             } else {
-                if (loose) { r += '.' }
-                else { r += '(?:(?!'+val+').)' }
-                if (num === null) { r += '{'+String(val.length)+'}' }
+                const L = val.length
+                if (loose) { val = '.' }
+                else { val = '(?:(?!'+val+').)' }
+                if (L!==1) { val += '{'+L+'}' }
+                if (num !== null) { val = '(?:'+val+')' }
+                r += val
             }
         } else {
             if (num === null || val.length==1) { r += val }
             else { r += '(?:'+val+')' }
         }        
     }
-    if (num !== null) {
-        if (Array.isArray(num)) {
-            if (num[1]===Infinity || isNaN(num[1]) || num[1]===null) { 
-                r += '{'+String(num[0])+',}'
-            }
-            else { r += '{'+String(num[0])+','+String(num[1])+'}' }                    
-        } else {
-            r += '{'+String(num)+'}'
-        }
-    }
-    return r
+    return r + num2regex(num)
 }
 
 function pattern2regex(pattern, limits, loose=false) {
@@ -180,8 +240,11 @@ function pattern2regex(pattern, limits, loose=false) {
         let [min, max] = limits[L]
         min = String(min)
         max = (max===Infinity || isNaN(max) || max===null) ? '' : String(max)
-        if (L.length <= 1) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
-        else { r += `(?:(?!${L}).)*(?:${L}(?:(?!${L}).)*)` }
+        if (L.length <= 1) {
+            r += `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)`
+        } else {
+            r += `(?=^(?:(?!${L}).)*(?:${L}(?:(?!${L}).)*){${min},${max}}$)`
+        }
     }
     console.log(r)
     return new RegExp(r)
