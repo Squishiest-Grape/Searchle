@@ -180,8 +180,8 @@ function val2regex(val, num, inv, loose) {
     num = cleannum(num)
     if (Array.isArray(val)) {
         if (val.length===1) {
-            v,n,i = val[0]
-            return val2regex(v,mulnums(num,n),!(num^n))
+            const [v,n,i] = val[0]
+            return val2regex(v,mulnums([num,n]),!(num^n))
         } else {
             if (val.every(([v,n,i]) => {
                 return (!Array.isArray(v) 
