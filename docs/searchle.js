@@ -675,8 +675,6 @@ function searchle() {
 } 
 
 function searchleClick() {
-    // const ans = searchle()
-    // dispResult(ans)
     try {
         const ans = searchle()
         dispResult(ans)
