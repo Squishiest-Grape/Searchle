@@ -240,7 +240,7 @@ function pattern2regex(pattern, limits, loose=false) {
         if (max===0 && L.length<=1) {
             r += `(?=^[^${L}]*$)`
         } else if (max===Infinity) {
-            if (min!==0) { r += '(?=(?:'+L+'.*){'+String(min)+'})' }
+            if (min!==0) { r += '(?=.*(?:'+L+'.*){'+String(min)+'})' }
         } else {
             min = String(min)
             max = String(max)
