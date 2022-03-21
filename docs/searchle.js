@@ -127,7 +127,7 @@ function cleannums(nums) {
     let ans = []
     for (let num of nums) {
         if (!Array.isArray(num)) { 
-            if (num===null) { num===1 }
+            if (num===null) { num = 1 }
             num = [num,num]
         }
         num = num.map(n => (isNaN(n) || n===null)? Infinity : n)
@@ -146,13 +146,8 @@ function cleannum(num) {
 }
 
 function mulnums(nums) {
-    console.log('mulnums:')
-    console.log(nums)
     let ans = cleannums(nums)
-    console.log(ans)
     ans = ans.reduce((a,b)=>[a[0]*b[0],a[1]*b[1]])
-    console.log(nums)
-    console.log(cleannum(ans))
     return cleannum(ans)
 }
 
