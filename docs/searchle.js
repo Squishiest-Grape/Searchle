@@ -677,13 +677,15 @@ function searchle() {
 } 
 
 function searchleClick() {
-    try {
-        const ans = searchle()
-        dispResult(ans)
-    } catch (error) {
-        document.getElementById('searchleResult').innerHTML = String(error)
-        activeTab('Results')
-    }
+    const ans = searchle()
+    dispResult(ans)
+    // try {
+    //     const ans = searchle()
+    //     dispResult(ans)
+    // } catch (error) {
+    //     document.getElementById('searchleResult').innerHTML = String(error)
+    //     activeTab('Results')
+    // }
 }
 
 
