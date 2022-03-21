@@ -125,7 +125,7 @@ function parse(str) {
 
 function cleannums(nums) {
     let ans = []
-    for (const num of nums) {
+    for (let num of nums) {
         if (!Array.isArray(num)) { 
             if (num===null) { num===1 }
             num = [num,num]
