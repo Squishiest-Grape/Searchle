@@ -236,12 +236,16 @@ function pattern2regex(pattern, limits, loose=false) {
     r = `(?=^${r}$)`
     for (const L in limits) {
         let [min, max] = limits[L]
-        min = String(min)
-        max = (max===Infinity || isNaN(max) || max===null) ? '' : String(max)
-        if (L.length <= 1) {
-            r += `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)`
+        if (isNaN(max) || max===null) { max = Infinity }
+        if (max===0 && L.length<=1) {
+            r += `(?=^[^${L}]*$)`
+        } else if (max===Infinity) {
+            if (min!==0) { r += '(?=(?:'+L+'.*){'+String(min)+'})' }
         } else {
-            r += `(?=^(?:(?!${L}).)*(?:${L}(?:(?!${L}).)*){${min},${max}}$)`
+            min = String(min)
+            max = String(max)
+            if (L.length <= 1) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
+            else { r += `(?=^(?:(?!${L}).)*(?:${L}(?:(?!${L}).)*){${min},${max}}$)` }
         }
     }
     console.log(r)
