@@ -184,14 +184,10 @@ function val2regex(val, num, inv, loose) {
             return val2regex(v,mulnums([num,n]),!(num^n))
         } else {
             if (val.every(([v,n,i]) => {
-                return (!Array.isArray(v) 
-                        && v.length===1
-                        && !i
-                        && (n===null 
-                            || n===1 
-                            || (Array.isArray(n) && n[0]===1 && n[1]===1)
-                            )
-                        )
+                if (!Array.isArray(v) && v.length===1 && !i) {
+                    if (cleannum(n)===null) { return true }
+                }
+                return false
             })) {
                 r += '['
                 if (inv) { r += '^' }
