@@ -181,7 +181,7 @@ function val2regex(val, num, inv, loose) {
     if (Array.isArray(val)) {
         if (val.length===1) {
             const [v,n,i] = val[0]
-            return val2regex(v,mulnums([num,n]),!(num^n))
+            return val2regex(v,mulnums([num,n]),!(inv^i))
         } else {
             if (val.every(([v,n,i]) => {
                 if (!Array.isArray(v) && v.length===1 && !i) {
