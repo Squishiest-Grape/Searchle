@@ -327,6 +327,12 @@ function getCriteria() {
     }
     let pattern = document.getElementById('searchlePattern').value
     pattern = parse(pattern)
+    if (pattern.length===1) {
+        const [val,num,inv] = pattern[0]
+        if (val===null && num===null && !inv) {
+            return [[[null,[0,null],false]],limits]
+        }
+    }
     return [pattern,limits]
 }
 
