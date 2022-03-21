@@ -299,9 +299,9 @@ function getCriteria() {
     const requires = parse(document.getElementById('searchleRequires').value)
     for (let i=0; i<requires.length; i++) {
         let [val,num,inv] = requires[i]
-        if (Array.isArray(val)) { throw 'Groupings not implimented in requires' }
-        if (inv) { throw 'Inverse not implimented in requires' }
-        if (val === null) { throw 'Wildcards not implimented in requires' }
+        if (Array.isArray(val)) { throw new fError('Groupings not implimented in requires') }
+        if (inv) { throw new fError('Inverse not implimented in requires') }
+        if (val === null) { throw new fError('Wildcards not implimented in requires') }
         if (num === null) { num = 1 }
         if (!Array.isArray(num)) { num = [num,Infinity] }
         if (val in limits) { limits[val] = addRange(limits[val],num) }
@@ -310,12 +310,12 @@ function getCriteria() {
     const avoids = parse(document.getElementById('searchleAvoids').value)
     for (let i=0; i<avoids.length; i++) {
         let [val,num,inv] = avoids[i]
-        if (Array.isArray(val)) { throw 'Groupings not implimented in avoids' }
-        if (inv) { throw 'Inverse not implimented in avoids' }
-        if (val === null) { throw 'Wildcards not implimented in avoids' }
+        if (Array.isArray(val)) { throw new fError('Groupings not implimented in avoids') }
+        if (inv) { throw new fError('Inverse not implimented in avoids') }
+        if (val === null) { throw new fError('Wildcards not implimented in avoids') }
         if (num === null) { num = [0,0] }
         else if (Array.isArray(num)) {
-            if (num[1] !== Infinity) { throw 'Multi-range not implimented' }
+            if (num[1] !== Infinity) { throw new fError('Multi-range not implimented') }
             num = [0,num[0]-1]
         }
         else {
@@ -374,8 +374,8 @@ function getInds(list='') {
                     if ('f freq frequency'.split(' ').includes(k)) {
                         const fun = eval('k => k' + e + String(v))
                         ans = ans.filter(i=>fun(wordlist.freq[i]))
-                    } else { throw `Unknown requirement key ${k}` }
-                } else { throw `Unknown requirement ${req}` }
+                    } else { throw new fError(`Unknown requirement key ${k}`) }
+                } else { throw new fError(`Unknown requirement ${req}`) }
             }
         }
         ans.sort((a,b)=>a-b)
@@ -541,7 +541,7 @@ function createOption(option, keys, parent) {
                 element.value = option.value
                 element.onchange = (e) => changeOption(id, e.target.value)  
             } else {
-                throw `Unable to parse option wtih type ${option.type}`
+                throw new fError(`Unable to parse option wtih type ${option.type}`)
             }
         } else {
             if (typeof option.value === 'boolean') {
@@ -560,7 +560,7 @@ function createOption(option, keys, parent) {
                 element.value = option.value
                 element.onchange = (e) => changeOption(id, e.target.value)  
             } else {
-                throw `Unable to parse option wtih value ${option.value}`
+                throw new fError(`Unable to parse option wtih value ${option.value}`)
             }
         }
         const L = document.createElement('label')
@@ -661,7 +661,7 @@ function searchle() {
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
         let scores
         if (getOption('sort.score.deep')) { 
-            throw 'Deep search not implemented'
+            throw new fError('Deep search not implemented')
             // scores = getScores(G, A, m) 
             scores = A.map((w,i)=>i)
         } else { 
@@ -675,15 +675,21 @@ function searchle() {
 } 
 
 function searchleClick() {
-    const ans = searchle()
-    dispResult(ans)
-    // try {
-    //     const ans = searchle()
-    //     dispResult(ans)
-    // } catch (error) {
-    //     document.getElementById('searchleResult').innerHTML = String(error)
-    //     activeTab('Results')
-    // }
+    // const ans = searchle()
+    // dispResult(ans)
+    try {
+        const ans = searchle()
+        dispResult(ans)
+    } catch (error) {
+        if (error.name==='fError') {
+            document.getElementById('searchleResult').innerHTML = String(error)
+            activeTab('Results')
+        } else {
+            console.log(error)
+            document.getElementById('searchleResult').innerHTML = 'Error with searchle function.  See console ouput.'
+            activeTab('Results')
+        }
+    }
 }
 
 
@@ -810,3 +816,7 @@ function getCookies() {
     return cookies
 }
 
+function fError(msg) {
+    this.msg = msg
+    this.name = 'fError'
+}
