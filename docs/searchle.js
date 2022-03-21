@@ -331,7 +331,7 @@ function getCriteria() {
     }
     let pattern = document.getElementById('searchlePattern').value
     pattern = parse(pattern)
-    if (pattern.length===0) { pattern = [[null,[0,null],false]] }
+    if (pattern.length===0 && Object.keys(limits).length>0) { pattern = [[null,[0,null],false]] }
     return [pattern,limits]
 }
 
@@ -635,6 +635,7 @@ function dispResult(ans) {
 function searchle() {
     const [pattern, limits] = getCriteria()
     console.log([pattern,limits])
+    if (pattern.length===0 && Object.keys(limits).length===0) { return [[]] }
     const r = pattern2regex(pattern, limits)
     let ans = []
     const sort = getOption('sort.order')
