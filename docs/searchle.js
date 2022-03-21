@@ -680,7 +680,7 @@ function searchleClick() {
         dispResult(ans)
     } catch (error) {
         if (error.name==='fError') {
-            document.getElementById('searchleResult').innerHTML = String(error)
+            document.getElementById('searchleResult').innerHTML = String(error.msg)
             activeTab('Results')
         } else {
             console.log(error)
