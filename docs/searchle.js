@@ -144,8 +144,13 @@ function cleannum(num) {
 }
 
 function mulnums(nums) {
+    console.log('mulnums:')
+    console.log(nums)
     let ans = cleannums(nums)
+    console.log(ans)
     ans = ans.reduce((a,b)=>[a[0]*b[0],a[1]*b[1]])
+    console.log(nums)
+    console.log(cleannum(ans))
     return cleannum(ans)
 }
 
