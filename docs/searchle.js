@@ -124,14 +124,16 @@ function parse(str) {
 }
 
 function cleannums(nums) {
-    return nums.map(num => {
+    let ans = []
+    for (const num of nums) {
         if (!Array.isArray(num)) { 
             if (num===null) { num===1 }
             num = [num,num]
         }
         num = num.map(n => (isNaN(n) || n===null)? Infinity : n)
-        return num
-    })
+        ans.push(num)
+    }
+    return ans
 }
 
 function cleannum(num) {
