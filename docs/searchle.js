@@ -2,7 +2,7 @@
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.2.8'
+const version = 'v0.2.9 (22/03/21)'
 
 let options = {
     sort: {
@@ -176,6 +176,56 @@ function num2regex(num) {
     }
     return r
 }
+
+// function re_cloth(val) {
+//     if (val.length!==1 && !'])'.includes(val.charAt(val.length-1))) {
+//         val = `(?:${val})`
+//     } 
+//     return val
+// }
+
+// function re_inv(val, inv=true) {
+//     if (inv) {
+//         if (val==='.') {
+//             val = '[]'
+//         } else if (val.length===1) {
+//             val = `[^${val}]`
+//         } else {
+//             if (val.charAt(val.length-1)===']') { val = '[^' + val.slice(2) }
+//             else { val = re_num(`(?!${val}).`,cleannum(val.length)) }
+//         }
+//     }
+//     return val
+// }
+
+// function re_num(val, num=null) {
+//     if (num!==null) { val = re_cloth(val) } 
+//     return val + num2regex(num)
+// }
+
+// function re_or(vals) {
+//     if (vals.some(val => val.length>1)) { return re_cloth(vals.join('|')) }
+//     else { return `[${vals.join('')}]` }
+// }
+
+// function re_and(vals) {
+//     vals = vals.map(val => (val.length>0)? `(?=${val})` : '')
+//     return vals.join('')
+// }
+
+// function re_count(val, num) {
+//     const [min, max] = num
+//     if (max===0 && val.length<=1) {
+//         val = `^[^${val}]*$`
+//     } else if (max===Infinity) {
+//         if (min===0) { val = ''}
+//         else { val = `.*(?:${val}.*){${min}}` }
+//     } else {
+//         const inv = cloth(re_inv(val))
+//         val = `^${inv}*(?:${val}${inv}*)${num2regex(num)}$`        
+//     }
+//     return val
+// }
 
 function val2regex(val, num, inv, loose) {
     let r = ''
@@ -604,6 +654,7 @@ function createOptions(options, keys=null, parent=null) {
     for (const [key,option] of Object.entries(options)) {
         createOption(option, keys.concat(key), parent)
     }
+    parent.appendChild(document.createTextNode(`<br>${version}`))
 }
 
 function startOptions() {
