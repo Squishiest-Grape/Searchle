@@ -654,12 +654,16 @@ function createOptions(options, keys=null, parent=null) {
     for (const [key,option] of Object.entries(options)) {
         createOption(option, keys.concat(key), parent)
     }
-    parent.appendChild(document.createTextNode(`<br>${version}`))
 }
 
 function startOptions() {
     createOptions(options)
     for (const [k, e] of Object.entries(changeEvents)) { changeOption(k, getOption(k)) }
+    const L = document.createElement('label')
+    L.appendChild(document.createTextNode(`${version}`))
+    const P = document.getElementById('boxOptions')
+    P.appendChild(document.createElement('br'))
+    P.appendChild(L)
 }
     
 function showPercent(p) {
