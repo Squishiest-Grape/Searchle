@@ -449,7 +449,6 @@ function getShallowScores(G, A) {
                 const r = guess2regex(g,a)
                 s += A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0) 
             }
-            s += 1
         }
         S.push(s/A.length)
     }
