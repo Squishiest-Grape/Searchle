@@ -5,10 +5,12 @@ const cacheName = 'searchle-cache'
 const filesToCache = [
   '.',
   'index.html',
-  'favicon.ico',
   'help.txt',  
   'searchle.js',
   'wordlist.json',
+  'images/favicon.ico',
+  'images/Searchle512.png',
+  'images/Searchle192.png',
 ]
 
 // the event handler for the activate event
