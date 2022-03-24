@@ -1,0 +1,20 @@
+{
+  "short_name": "Searchle",
+  "name": "Searchle: Word Search Tool",
+  "icons": [
+    {
+      "src": "images/Searchle512.png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "images/Searchle192.png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/Searchle/",
+  "background_color": "#3367D6",
+  "display": "standalone",
+  "scope": "/Searchle/",
+  "theme_color": "#3367D6",
+  "description": "Searchle: Word Search Tool",
+}
