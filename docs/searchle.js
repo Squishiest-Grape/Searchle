@@ -717,8 +717,11 @@ function dispStatus(msg) {
 
 function dispResult(ans) {
     if (getOption('sort.show') && ans.length>1) {
-        const A = [...ans.keys()].slice(1)
-        ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('  -  '))
+        ans = ans.map(A => {
+            if (arrayType(A)==='float') { return A.map(v=>v.toFixed(3)) }
+            else { return A.map(v=>String(v)) }
+        })
+        ans = transpose(ans).map(a=>a.join(' - '))
     } else { ans = ans[0] }
     dispStatus(ans.join('\n'))
 }
@@ -766,7 +769,7 @@ function searchle() {
         const scores = getRemaining(G, A, criteria)
         let wordsNscores = [G, scores]
         wordsNscores = sortByCol(wordsNscores, 1)
-        ans.push(wordsNscores[0],wordsNscores[1].map(s=>s.toFixed(3)))
+        ans.push(...wordsNscores)
     } else if (sort === 'Score') {
         throw new fError('Score search not implemented')
     }
@@ -888,6 +891,16 @@ function mean(args) { return args.reduce((s,a)=>s+a,0)/args.length }
 function min(args) { return Math.min(...args) }
 
 function max(args) { return Math.max(...args) }
+
+function arrayType(args) {
+    const t = typeof args[0]
+    if (t === 'number') {
+        if (args.some(arg => arg % 1 !== 0) { return 'float' }
+        else { return 'integer' }        
+    } else { return t }
+}
+
+function transpose(A) { return A.map((_,c) => A.map(R => R[c])) }
 
 function setCookie(key,val,days=30) {
     const d = new Date()
