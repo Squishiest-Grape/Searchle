@@ -753,7 +753,7 @@ function searchle() {
         }
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
         const criteria = getOption('sort.score.criteria')
-        const scores = getRemaining(G, A)
+        const scores = getRemaining(G, A, criteria)
         let wrdscrs = [G, scores]
         wrdscrs = sortByCol(wrdscrs, 1)
         ans.push(...wrdscrs)
