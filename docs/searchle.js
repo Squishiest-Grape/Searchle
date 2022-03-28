@@ -717,7 +717,6 @@ function startOptions() {
 
 function dispStatus(msg) {
     document.getElementById('searchleResult').innerHTML = msg
-    activeTab('Results')
 }
 
 function dispResult(ans) {
@@ -728,6 +727,7 @@ function dispResult(ans) {
         })
         ans = transpose(ans).map(a=>a.join(' - '))
     } else { ans = ans[0] }
+    activeTab('Results')
     dispStatus(ans.join('\n'))
 }
 
@@ -786,9 +786,11 @@ function searchle() {
 
 function searchleClick() {
     try {
+        activeTab('Results')
         dispStatus('Begining Search')
         searchle()
     } catch (error) {
+        activeTab('Results')
         if (error.name==='fError') { dispStatus(String(error.msessage)) }
         else { console.log(error);  dispStatus(`Error with searchle function:\n${error.message}`) }
     }
