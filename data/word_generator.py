@@ -47,7 +47,8 @@ class Words():
                 lists[L].append(i)
             if info['upper'] and not info['lower']:
                 lists['Proper Nouns'].append(i)
-            freq.append(info['freq'])
+            f = info['freq']
+            if f < math.inf: freq.append(f)
         words = list(self.words.keys())
         self.saved = dict(words=words,freq=freq,lists=lists)
         print(f'Saving words to {file}')
@@ -78,4 +79,4 @@ if __name__ == '__main__':
         words.add_list('Wordle', words_s + words_g)   
 
     # clean up
-    words.save('wordlist.json')
+    words.save('../docs/wordlist.json')

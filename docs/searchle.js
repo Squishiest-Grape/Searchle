@@ -436,10 +436,14 @@ function getInds(list='') {
                     if (e==='~=') { e = '!=' }
                     if (e==='=') { e = '==' }
                     v = eval(v)
-                    if ('percent percentile'.split(' ').includes(k)) { k='c'; v = wordlist.words.length * v / 100 }
-                    if ('count'.split(' ').includes(k)) { k='f'; v = wordlist.freq[Math.round(v)] }
+                    if ('percent percentile'.split(' ').includes(k)) { k='count'; v = wordlist.words.length * v / 100 }
+                    if ('count'.split(' ').includes(k)) {
+                        k='freq'
+                        v = Math.round(v)
+                        v = (v >= wordlist.freq.length)? Infinity : wordlist.freq[v]
+                    }
                     if ('freq frequency popularity pop'.split(' ').includes(k)) {
-                        v = Math.round(1/v)
+                        if (v < 1) { v = Math.round(1/v) }
                         const fun = eval('k => ' + String(v) + e + 'k')
                         ans = ans.filter(i=>fun(wordlist.freq[i]))
                     } else { throw new fError(`Unknown requirement key ${k}`) }
@@ -486,7 +490,7 @@ function getScores(G, A, m, method) {
     let S = []
     for (const g of G) {
         let s = 0
-        for (const a of A) { s += getScore(g, a, G, A, m) }
+        for (const a of A) { s += getScore(g, a, G, A, m, method) }
         S.push(s/A.length)
     }
     return S
@@ -507,10 +511,10 @@ function getScore(g, a, G, A, m, method) {
         } else {
             G_ = [...G]
         }
-        const S = getScores(G_, A_, m)
+        const S = getScores(G_, A_, m, method)
         const i_min = S.reduce((Li,N,i) => S[Li]>=N ? Li : i, 0)
         const g_ = G_[i_min]
-        return getScore(g_, a, G_, A_, m) + 1
+        return getScore(g_, a, G_, A_, m, method) + 1
     }
 }
 
@@ -731,8 +735,9 @@ function searchle() {
         const words = inds.map(i=>wordlist.words[i])
         ans.push(words)
         if (getOption('sort.show')) {
-            const max_count = wordlist.freq.reduce((m,f) => (f<Infinity && f>m)? f : m, 1) + 1
-            const freq = inds.map(i=>wordlist.freq[i]).map(f => (f<Infinity) ? `1 / ${f}` : `1 / ${max_count}+`)
+            const N = wordlist.freq.length
+            const max_count = wordlist.freq[N-1]
+            const freq = inds.map(i => (i<N)? `1 / ${wordlist.freq[i]}` : `1 / ${max_count}+`)
             ans.push(freq)
         }
     } else if (sort === 'Remaining Words') {
