@@ -491,10 +491,11 @@ function getRemaining(G, A, method='Average') {
         }
         S[i] = fun(s)
         i++
-        if (i>=N) { clearInterval(run) }
+        if (i>=N) {
+            clearInterval(run)
+            showScore(G,S)
+        }
     }, 1)
-    console.log('done')
-    return S
 }
 
 function getScores(G, A, m, method) {
@@ -739,6 +740,12 @@ function showPercent(p) {
     }    
 }
 
+function showScore(W,S) {
+    let WS = [W, S]
+    WS = sortByCol(WS, 1)
+    displayResult(WS)
+}
+
     
 /*===================================================================================================================\\
 |                                                 Main Function
@@ -749,13 +756,13 @@ function searchle() {
     console.log([pattern,limits])
     if (pattern.length===0 && Object.keys(limits).length===0) { return [[]] }
     const r = pattern2regex(pattern, limits)
-    let ans = []
     const sort = getOption('sort.order')
     if (sort === 'Alphabetical') {
         const words = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
         words.sort()
-        ans.push(words)
+        dispResult(words)
     } else if (sort === 'Popularity') {
+        let ans = []
         const inds = getInds().filter(i=>r.test(wordlist.words[i]))
         const words = inds.map(i=>wordlist.words[i])
         ans.push(words)
@@ -765,26 +772,22 @@ function searchle() {
             const freq = inds.map(i => (i<N)? `1 / ${wordlist.freq[i]}` : `1 / ${max_count}+`)
             ans.push(freq)
         }
+        dispResult(ans)
     } else if (sort === 'Remaining Words') {
         const m = getOption('sort.score.match')
         const G = getLooseInds(pattern, limits, r, m)
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
         const criteria = getOption('sort.score.criteria')
-        const scores = getRemaining(G, A, criteria)
-        let wordsNscores = [G, scores]
-        wordsNscores = sortByCol(wordsNscores, 1)
-        ans.push(...wordsNscores)
+        getRemaining(G, A, criteria)
     } else if (sort === 'Score') {
         throw new fError('Score search not implemented')
     }
-    return ans
 } 
 
 function searchleClick() {
     try {
         dispStatus('Begining Search')
-        const ans = searchle()
-        dispResult(ans)
+        searchle()
     } catch (error) {
         if (error.name==='fError') { dispStatus(String(error.msessage)) }
         else { console.log(error);  dispStatus(`Error with searchle function:\n${error.message}`) }
