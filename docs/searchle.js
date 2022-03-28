@@ -763,10 +763,9 @@ function searchle() {
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
         const criteria = getOption('sort.score.criteria')
         const scores = getRemaining(G, A, criteria)
-        let temp = [G, scores]
-        temp = sortByCol(temp, 1)
-        ans.psuh(temp[0],temp[1].map(s=>s.toFixed(3))
-        ans.push(...wrdscrs)
+        let wordsNscores = [G, scores]
+        wordsNscores = sortByCol(wordsNscores, 1)
+        ans.push(wordsNscores[0],wordsNscores[1].map(s=>s.toFixed(3)))
     } else if (sort === 'Score') {
         throw new fError('Score search not implemented')
     }
