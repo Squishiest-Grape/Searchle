@@ -493,6 +493,7 @@ function getRemaining(G, A, method='Average') {
         i++
         if (i>=N) { clearInterval(run) }
     }, 1)
+    console.log('done')
     return S
 }
 
