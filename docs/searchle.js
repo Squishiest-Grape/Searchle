@@ -715,7 +715,10 @@ function dispResult(ans) {
 let last_p = NaN
 function showPercent(p) {
     p = Math.round(p*1000)/10
-    if (p !== last_p) { dispStatus(`Searchling ${p}%`) }    
+    if (p !== last_p) {
+        dispStatus(`Searchling ${p}%`)
+        last_p = p
+    }    
 }
 
     
