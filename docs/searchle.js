@@ -580,12 +580,17 @@ function applyOptions(oldOptions,newOptions) {
     
 function hitKey(e) { if (e.keyCode == 13) { searchleClick() } }
 
+let active_tab = null
+
 function activeTab(name) {
-    for (let e of document.getElementsByClassName('box')) { e.style.display = 'none' }
-    for (let e of document.getElementsByClassName('tabBtn')) { e.className = e.className.replace(' active','') }
-    document.getElementById('box'+name).style.display = 'block'
-    for (let e of document.getElementsByClassName('tabBtn')) {
-        if (e.innerHTML == name) { e.className += ' active' }
+    if (name !== active_tab) {
+        active_tab = name
+        for (let e of document.getElementsByClassName('box')) { e.style.display = 'none' }
+        for (let e of document.getElementsByClassName('tabBtn')) { e.className = e.className.replace(' active','') }
+        document.getElementById('box'+name).style.display = 'block'
+        for (let e of document.getElementsByClassName('tabBtn')) {
+            if (e.innerHTML == name) { e.className += ' active' }
+        }
     }
 }
 
