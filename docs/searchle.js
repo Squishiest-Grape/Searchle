@@ -743,7 +743,7 @@ function showPercent(p) {
 function showScore(W,S) {
     let WS = [W, S]
     WS = sortByCol(WS, 1)
-    displayResult(WS)
+    dispResult(WS)
 }
 
     
