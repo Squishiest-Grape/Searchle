@@ -481,6 +481,8 @@ function getRemaining(G, A, method='Average') {
     let run = setInterval(() => {
         showPercent(i/N)
         const g = G[i]
+        console.log(i)
+        console.log(g)
         const s = new Int32Array(M)
         for (let j=0; j<M; j++) {
             const a = A[j]
