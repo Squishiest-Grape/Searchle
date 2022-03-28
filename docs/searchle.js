@@ -477,7 +477,8 @@ function getRemaining(G, A, method='Average') {
     if (method==='Average') { S = new Float32Array(N); fun = mean }
     else if (method==='Worst Case') { S = new Int32Array(N); fun = max }
     else { throw fError(`Uknown method ${method}`) }
-    for (let i=0; i<N; i++) {
+    let i = 0
+    let run = setInterval(() => {
         showPercent(i/N)
         const g = G[i]
         const s = new Int32Array(M)
@@ -489,7 +490,9 @@ function getRemaining(G, A, method='Average') {
             }
         }
         S[i] = fun(s)
-    }
+        if (i>=N) { clearInterval(run) }
+        i++
+    }, 1)
     return S
 }
 
