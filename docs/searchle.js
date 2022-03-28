@@ -475,7 +475,8 @@ function getRemaining(G, A, method='Average') {
     const M = A.length
     let S, fun
     if (method==='Average') { S = new Float32Array(N); fun = mean }
-    else if (method==='Worse Case') { S = new Int32Array(N); fun = max }
+    else if (method==='Worst Case') { S = new Int32Array(N); fun = max }
+    else { throw fError(`Uknown method ${method}`) }
     for (let i=0; i<N; i++) {
         showPercent(i/N)
         const g = G[i]
@@ -779,7 +780,7 @@ function searchleClick() {
         dispResult(ans)
     } catch (error) {
         if (error.name==='fError') { dispStatus(String(error.msessage)) }
-        else { console.log(error);  dispStatus('Error with searchle function:\n${error.message}') }
+        else { console.log(error);  dispStatus(`Error with searchle function:\n${error.message}`) }
     }
 }
 
