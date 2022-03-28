@@ -2,30 +2,42 @@
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.3.0 (24/03/21)'
+const version = 'v0.3.1 (28/03/22)'
 
 let options = {
     sort: {
         label: 'Sorting Options:',
         subops: {
             show: { label: 'Show Value', value: false, },
-            order: { label: 'Order', value: 'Frequency', type: ['Frequency', 'Alphabetical', 'Score'], },     
+            order: { label: 'Order', value: 'Popularity', type: ['Popularity', 'Alphabetical', 'Remaining Words', 'Score'], },     
             score: { 
                 label: '',
-                require: ['sort.order','Score'],
+                require: ['sort.order',['Remaining Words','Score']],
                 subops: {
-                    deep: { label: 'Deep Search', value: true, require: ['sort.order', 'Score'],},
-                    match: { label: 'Req Match', value: 'Full', type: ['Full', 'Partial', 'None'], require: ['sort.order', 'Score'],},
-                    list: { label: 'Alt List', value: '', type: [''], require: ['sort.order', 'Score'],},
+                    criteria: {
+                        label: 'Criteria', 
+                        value: 'Average',
+                        type: ['Average', 'Worst Case'],
+                        require: ['sort.order', ['Remaining Words','Score']],
+                    },
+                    match: {
+                        label: 'Req Match', 
+                        value: 'Full', 
+                        type: ['Full', 'Partial', 'None'], 
+                        require: ['sort.order', ['Remaining Words','Score']],
+                    },
+                    list: {     
+                        label: 'Alt List',
+                        value: '', 
+                        type: [''],
+                        require: ['sort.order', ['Remaining Words','Score']],
+                    },
                 },
             },
         },
     },
     lists: {
-        label: 'Word Lists:',
-        subops: {
-            other_req: { label: 'Other Req', value: '' },
-        },
+        label: 'Filter Word Lists:',
     },
 }
 
@@ -416,7 +428,7 @@ function getInds(list='') {
                 const ereq = ordsplit(req,['==','!=','~=','>=','<=','>','<','='])
                 if (ereq.length == 3) {
                     let [k,e,v] = ereq.map(s=>s.trim().toLowerCase())
-                    if ('f p c freq frequency perecent percentile count'.split(' ').includes(v)) {
+                    if ('freq frequency popularity pop perecent percentile count'.split(' ').includes(v)) {
                         [k,v] = [v,k]
                         if (e.includes('>')) { e = e.replace('>','<') }
                         else { e = e.replace('<','>') }
@@ -424,10 +436,11 @@ function getInds(list='') {
                     if (e==='~=') { e = '!=' }
                     if (e==='=') { e = '==' }
                     v = eval(v)
-                    if ('p percent percentile'.split(' ').includes(k)) { k='c'; v = wordlist.words.length * v / 100 }
-                    if ('c count'.split(' ').includes(k)) { k='f'; v = wordlist.freq[Math.round(v)] }
-                    if ('f freq frequency'.split(' ').includes(k)) {
-                        const fun = eval('k => k' + e + String(v))
+                    if ('percent percentile'.split(' ').includes(k)) { k='c'; v = wordlist.words.length * v / 100 }
+                    if ('count'.split(' ').includes(k)) { k='f'; v = wordlist.freq[Math.round(v)] }
+                    if ('freq frequency popularity pop'.split(' ').includes(k)) {
+                        v = Math.round(1/v)
+                        const fun = eval('k => ' + String(v) + e + 'k')
                         ans = ans.filter(i=>fun(wordlist.freq[i]))
                     } else { throw new fError(`Unknown requirement key ${k}`) }
                 } else { throw new fError(`Unknown requirement ${req}`) }
@@ -440,22 +453,36 @@ function getInds(list='') {
     }
 }
 
-function getShallowScores(G, A) {
+function getRemaining(G, A, method='Average') {
     let S = []
-    for (const g of G) {
-        let s = 0
-        for (const a of A) {
-            if (g !== a) {
-                const r = guess2regex(g,a)
-                s += A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0) 
+    if (method==='Average') {
+        for (const g of G) {
+            let s = 0
+            for (const a of A) {
+                if (g !== a) {
+                    const r = guess2regex(g,a)
+                    s += A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0) 
+                }
             }
+            S.push(s/A.length)
         }
-        S.push(s/A.length)
+    } else if (method==='Worst Case') {
+        for (const g of G) {
+            let s = 0
+            for (const a of A) {
+                if (g !== a) {
+                    const r = guess2regex(g,a)
+                    s_ = A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0)
+                    if (s_ > s) { s = s_ }
+                }
+            }
+            S.push(s)
+        }
     }
     return S
 }
 
-function getScores(G, A, m) {
+function getScores(G, A, m, method) {
     let S = []
     for (const g of G) {
         let s = 0
@@ -465,7 +492,7 @@ function getScores(G, A, m) {
     return S
 }
 
-function getScore(g, a, G, A, m) {
+function getScore(g, a, G, A, m, method) {
     if (g===a) { return 1 }
     else {
         const r = guess2regex(g,a)
@@ -570,7 +597,9 @@ function changeOption(keys,val) {
     if (Array.isArray(keys)) { keys = keys.join('.') }
     if (keys in changeEvents) {
         let [value,frame] = changeEvents[keys]
-        if (val == value) { frame.style.display = 'block' }
+        if ((Array.isArray(value) && value.includes(val)) || val === value) {
+            frame.style.display = 'block'
+        }
         else { frame.style.display = 'none' }
     }
 }
@@ -697,17 +726,16 @@ function searchle() {
         const words = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
         words.sort()
         ans.push(words)
-    } else if (sort === 'Frequency') {
+    } else if (sort === 'Popularity') {
         const inds = getInds().filter(i=>r.test(wordlist.words[i]))
         const words = inds.map(i=>wordlist.words[i])
         ans.push(words)
         if (getOption('sort.show')) {
-            const min_freq = wordlist.freq.reduce((m,f) => (f>0 && f<m)?f:m, 1)
-            const max_den = parseInt(1/min_freq) + 1
-            const freq = inds.map(i=>wordlist.freq[i]).map(f => (f>0) ? `1/${Math.round(1/f)}` : `1/${max_den}+`)
+            const max_count = wordlist.freq.reduce((m,f) => (f<Infinity && f>m)? f : m, 1) + 1
+            const freq = inds.map(i=>wordlist.freq[i]).map(f => (f<Infinity) ? `1 / ${f}` : `1 / ${max_count}+`)
             ans.push(freq)
         }
-    } else if (sort === 'Score') {
+    } else if (sort === 'Remaining Words') {
         const m = getOption('sort.score.match')
         let G 
         if (m==='Full') { 
@@ -719,17 +747,13 @@ function searchle() {
             G = getInds().map(i=>wordlist.words[i])
         }
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
-        let scores
-        if (getOption('sort.score.deep')) { 
-            throw new fError('Deep search not implemented')
-            // scores = getScores(G, A, m) 
-            scores = A.map((w,i)=>i)
-        } else { 
-            scores = getShallowScores(G, A)
-        }
+        const criteria = getOption('sort.score.criteria')
+        const scores = getRemaining(G, A)
         let wrdscrs = [G, scores]
         wrdscrs = sortByCol(wrdscrs, 1)
         ans.push(...wrdscrs)
+    } else if (sort === 'Score') {
+        throw new fError('Score search not implemented')
     }
     return ans
 } 
@@ -775,6 +799,7 @@ async function searchleStart() {
         setFullOption(['lists', list], {value: 'Include', type: ['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left'})
         getFullOption('sort.score.list').type.push(list)
     }
+    setFullOption(['lists', 'other_req'], { label: 'Adv Req', value: '' })
     if ('options' in cookies) { applyOptions(options, cookies.options) }
     setCookie('options', options)
     startOptions(options)
