@@ -748,8 +748,8 @@ function searchle() {
         ans.push(words)
         if (getOption('sort.show')) {
             const N = wordlist.freq.length
-            const max_count = wordlist.freq[N-1]
-            const freq = inds.map(i => (i<N)? `1 / ${wordlist.freq[i]}` : `1 / ${max_count}+`)
+            const max_count = wordlist.freq[N-1].toLocaleString()
+            const freq = inds.map(i => (i<N)? `1 / ${wordlist.freq[i].toLocaleString()}` : `1 / ${max_count}+`)
             ans.push(freq)
         }
     } else if (sort === 'Remaining Words') {
