@@ -2,7 +2,7 @@
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.3.7 (28/03/22)'
+const version = 'v0.3.8'
 
 let options = {
     sort: {
@@ -457,12 +457,25 @@ function getInds(list='') {
     }
 }
 
+function getLooseInds(pattern, limits, r, m) {
+    let ans 
+    if (m==='Full') { 
+        ans = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
+    } else if (m==='Partial') {
+        const r_ = pattern2regex(pattern, limits, true)
+        ans = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
+    } else { 
+        ans = getInds().map(i=>wordlist.words[i])
+    }
+    return ans
+}
+
 function getRemaining(G, A, method='Average') {
     const N = G.length
     const M = A.length
     let S, fun
-    if (method==='Average') { S = new Int32Array(N); fun = mean }
-    else if (method==='Worse Case') { S = new Float32Array(N); fun = max }
+    if (method==='Average') { S = new Float32Array(N); fun = mean }
+    else if (method==='Worse Case') { S = new Int32Array(N); fun = max }
     for (let i=0; i<N; i++) {
         showPercent(i/N)
         const g = G[i]
@@ -740,26 +753,19 @@ function searchle() {
         ans.push(words)
         if (getOption('sort.show')) {
             const N = wordlist.freq.length
-            const max_count = wordlist.freq[N-1].toLocaleString()
-            const freq = inds.map(i => (i<N)? `1 / ${wordlist.freq[i].toLocaleString()}` : `1 / ${max_count}+`)
+            const max_count = wordlist.freq[N-1]
+            const freq = inds.map(i => (i<N)? `1 / ${wordlist.freq[i]}` : `1 / ${max_count}+`)
             ans.push(freq)
         }
     } else if (sort === 'Remaining Words') {
         const m = getOption('sort.score.match')
-        let G 
-        if (m==='Full') { 
-            G = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
-        } else if (m==='Partial') {
-            const r_ = pattern2regex(pattern, limits, true)
-            G = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
-        } else { 
-            G = getInds().map(i=>wordlist.words[i])
-        }
+        const G = getLooseInds(pattern, limits, r, m)
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
         const criteria = getOption('sort.score.criteria')
         const scores = getRemaining(G, A, criteria)
-        let wrdscrs = [G, scores]
-        wrdscrs = sortByCol(wrdscrs, 1)
+        let temp = [G, scores]
+        temp = sortByCol(temp, 1)
+        ans.psuh(temp[0],temp[1].map(s=>s.toFixed(3))
         ans.push(...wrdscrs)
     } else if (sort === 'Score') {
         throw new fError('Score search not implemented')
