@@ -900,7 +900,7 @@ function arrayType(args) {
     } else { return t }
 }
 
-function transpose(A) { return A.map((_,c) => A.map(R => R[c])) }
+function transpose(A) { return A[0].map((_,c) => A.map(R => R[c])) }
 
 function setCookie(key,val,days=30) {
     const d = new Date()
