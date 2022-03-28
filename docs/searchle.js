@@ -346,7 +346,7 @@ function guess2looseregex(guess, sol) {
     for (const L of c) {
         const c_guess = countStr(guess,L)
         const c_sol = countStr(sol,L)
-        if (c_guess <= c_sol) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${c_guess},}$)` }
+        if (c_sol > 0) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${Math.min(c_guess,c_sol)},}$)` }
     }
     return new RegExp(r)
 }
@@ -459,30 +459,22 @@ function getInds(list='') {
 
 function getRemaining(G, A, method='Average') {
     const N = G.length
-    let S = []    
+    const M = A.length
+    let S, fun
+    if (method==='Average') { S = new Int32Array(N); fun = mean }
+    else if (method==='Worse Case') { S = new Float32Array(N); fun = max }
     for (let i=0; i<N; i++) {
         showPercent(i/N)
         const g = G[i]
-        let s = 0  
-        if (method==='Average') {
-            for (const a of A) {
-                if (g !== a) {
-                    const r = guess2regex(g,a)
-                    s += A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0) 
-                }
-            }
-            s /= A.length
-        } else if (method==='Worst Case') {
-            let s = 0
-            for (const a of A) {
-                if (g !== a) {
-                    const r = guess2regex(g,a)
-                    s_ = A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0)
-                    if (s_ > s) { s = s_ }
-                }
+        const s = new Int32Array(M)
+        for (let j=0; j<M; j++) {
+            const a = A[j]
+            if (g !== a) {
+                const r = guess2regex(g,a)
+                s[j] = A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0) )
             }
         }
-        S.push(s)
+        S[i] = fun(s)
     }
     return S
 }
@@ -884,6 +876,12 @@ function sortByCol(arrays, ind, reverse=false) {
     else { inds.sort((a,b) => arrays[ind][a] > arrays[ind][b] ? 1 : -1) }
     return arrays.map(A=>inds.map(i=>A[i]))
 }
+
+function mean(args) { return args.reduce((s,a)=>s+a,0)/args.length }
+
+function min(args) { return Math.min(...args) }
+
+function max(args) { return Math.max(...args) }
 
 function setCookie(key,val,days=30) {
     const d = new Date()
