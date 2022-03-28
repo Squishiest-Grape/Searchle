@@ -2,7 +2,7 @@
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.3.5 (28/03/22)'
+const version = 'v0.3.6 (28/03/22)'
 
 let options = {
     sort: {
@@ -777,7 +777,7 @@ function searchleClick() {
         dispResult(ans)
     } catch (error) {
         if (error.name==='fError') { dispStatus(String(error.msessage)) }
-        else { console.log(error);  dispStatus('Error with searchle function:\n ${error.message}') }
+        else { console.log(error);  dispStatus('Error with searchle function:\n${error.message}') }
     }
 }
 
