@@ -471,7 +471,7 @@ function getRemaining(G, A, method='Average') {
             const a = A[j]
             if (g !== a) {
                 const r = guess2regex(g,a)
-                s[j] = A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0) )
+                s[j] = A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0)
             }
         }
         S[i] = fun(s)
