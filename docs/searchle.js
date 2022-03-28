@@ -2,7 +2,7 @@
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.3.4 (28/03/22)'
+const version = 'v0.3.5 (28/03/22)'
 
 let options = {
     sort: {
@@ -458,20 +458,21 @@ function getInds(list='') {
 }
 
 function getRemaining(G, A, method='Average') {
-    let S = []
-    if (method==='Average') {
-        for (const g of G) {
-            let s = 0
+    const N = G.length
+    let S = []    
+    for (let i=0; i<N; i++) {
+        showPercent(i/N)
+        const g = G[i]
+        let s = 0  
+        if (method==='Average') {
             for (const a of A) {
                 if (g !== a) {
                     const r = guess2regex(g,a)
                     s += A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0) 
                 }
             }
-            S.push(s/A.length)
-        }
-    } else if (method==='Worst Case') {
-        for (const g of G) {
+            s /= A.length
+        } else if (method==='Worst Case') {
             let s = 0
             for (const a of A) {
                 if (g !== a) {
@@ -480,8 +481,8 @@ function getRemaining(G, A, method='Average') {
                     if (s_ > s) { s = s_ }
                 }
             }
-            S.push(s)
         }
+        S.push(s)
     }
     return S
 }
@@ -697,21 +698,24 @@ function startOptions() {
     P.appendChild(document.createElement('br'))
     P.appendChild(L)
 }
-    
-function showPercent(p) {
-    p = Math.round(p)
-    document.getElementById('searchleResult').innerHTML = '█'.repeat(p) + '░'.repeat(100-p)
+
+function dispStatus(msg) {
+    document.getElementById('searchleResult').innerHTML = msg
+    activeTab('Results')
 }
 
 function dispResult(ans) {
     if (getOption('sort.show') && ans.length>1) {
         const A = [...ans.keys()].slice(1)
         ans = ans[0].map((w,i)=>[w,...A.map(a=>ans[a][i])].join('  -  '))
-    } else {
-        ans = ans[0]
-    }
-    document.getElementById('searchleResult').innerHTML = ans.join('\n')
-    activeTab('Results')
+    } else { ans = ans[0] }
+    dispStatus(ans.join('\n'))
+}
+
+let last_p = NaN
+function showPercent(p) {
+    p = Math.round(p*1000)/10
+    if (p !== last_p) { dispStatus(`Searchling ${p}%`) }    
 }
 
     
@@ -765,17 +769,12 @@ function searchle() {
 
 function searchleClick() {
     try {
+        dispStatus('Begining Search')
         const ans = searchle()
         dispResult(ans)
     } catch (error) {
-        if (error.name==='fError') {
-            document.getElementById('searchleResult').innerHTML = String(error.msg)
-            activeTab('Results')
-        } else {
-            console.log(error)
-            document.getElementById('searchleResult').innerHTML = 'Error with searchle function.  See console ouput.'
-            activeTab('Results')
-        }
+        if (error.name==='fError') { dispStatus(String(error.msessage)) }
+        else { console.log(error);  dispStatus('Error with searchle function:\n ${error.message}') }
     }
 }
 
@@ -905,6 +904,6 @@ function getCookies() {
 }
 
 function fError(msg) {
-    this.msg = msg
+    this.message = msg
     this.name = 'fError'
 }
