@@ -895,7 +895,7 @@ function max(args) { return Math.max(...args) }
 function arrayType(args) {
     const t = typeof args[0]
     if (t === 'number') {
-        if (args.some(arg => arg % 1 !== 0) { return 'float' }
+        if (args.some(arg => arg % 1 !== 0)) { return 'float' }
         else { return 'integer' }        
     } else { return t }
 }
