@@ -14,28 +14,33 @@ let options = {
                 label: '',
                 require: ['sort.order',['Remaining Words','Score']],
                 subops: {
+                    warning: {
+                        label: 'Warning: score search is still in beta and may crash searchle',
+                        require: ['sort.order', 'Score'],
+                    },
                     criteria: {
                         label: 'Criteria', 
                         value: 'Average',
                         type: ['Average', 'Worst Case'],
-                        require: ['sort.order', ['Remaining Words','Score']],
+                        //require: ['sort.order', ['Remaining Words','Score']],
                     },
                     match: {
                         label: 'Req Match', 
                         value: 'Full', 
                         type: ['Full', 'Partial', 'None'], 
-                        require: ['sort.order', ['Remaining Words','Score']],
+                        //require: ['sort.order', ['Remaining Words','Score']],
                     },
                     list: {     
                         label: 'Alt List',
                         value: '', 
                         type: [''],
-                        require: ['sort.order', ['Remaining Words','Score']],
+                        //require: ['sort.order', ['Remaining Words','Score']],
                     },
                 },
             },
         },
     },
+    _: {label:' '},
     lists: {
         label: 'Filter Word Lists:',
     },
@@ -731,12 +736,13 @@ function createOptions(options, keys=null, parent=null) {
 }
 
 function startOptions() {
+    const P = document.getElementById('boxOptions')
+    P.appendChild(document.createElement('br'))
     createOptions(options)
     for (const [k, e] of Object.entries(changeEvents)) { changeOption(k, getOption(k)) }
     const L = document.createElement('label')
-    L.appendChild(document.createTextNode(`${version}`))
-    const P = document.getElementById('boxOptions')
     P.appendChild(document.createElement('br'))
+    L.appendChild(document.createTextNode(`${version}`))
     P.appendChild(L)
 }
 
