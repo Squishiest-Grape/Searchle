@@ -473,9 +473,9 @@ function getLooseInds(pattern, limits, r, m) {
 function getRemaining(G, A, method='Average') {
     const N = G.length
     const M = A.length
-    let S, fun
-    if (method==='Average') { S = new Float32Array(N); fun = mean }
-    else if (method==='Worst Case') { S = new Int32Array(N); fun = max }
+    let S
+    if (method==='Average') { S = new Float32Array(N); method = mean }
+    else if (method==='Worst Case') { S = new Int32Array(N); method = max }
     else { throw fError(`Uknown method ${method}`) }
     let i = 0
     let run = setInterval(() => {
@@ -489,7 +489,7 @@ function getRemaining(G, A, method='Average') {
                 s[j] = A.reduce((c,w) => (r.test(w)) ? c+1 : c, 0)
             }
         }
-        S[i] = fun(s)
+        S[i] = method(s)
         i++
         if (i>=N) {
             clearInterval(run)
@@ -498,35 +498,60 @@ function getRemaining(G, A, method='Average') {
     }, 1)
 }
 
-function getScores(G, A, m, method) {
-    let S = []
-    for (const g of G) {
-        let s = 0
-        for (const a of A) { s += getScore(g, a, G, A, m, method) }
-        S.push(s/A.length)
-    }
-    return S
+function getScores(G, A, match, method) {
+    // get limit function
+    if (match==='Full') { match = (G,r,g,a)=>G.filter(w=>r.test(w)) }
+    else if (match==='Partial') { match = (G,r,g,a)=>{
+        const r=guess2looseregex(g,a)
+        return G.filter(w=>r.test(w))
+    }}
+    else if (match==='None') { match = (G,r,g,a)=> [...G] }
+    else { throw fError(`Uknown matching criteria ${match}`) }
+    // get search critera
+    const N = G.length
+    const M = A.length
+    let S
+    if (method==='Average') { S = new Float32Array(N); method = mean }
+    else if (method==='Worst Case') { S = new Int32Array(N); method = max }
+    // search
+    let i = 0
+    let run = setInterval(() => {
+        showPercent(i/N)
+        const g = G[i]
+        S[i] = getScore0(g, G, A, match, method)
+        i++
+        if (i>=N) {
+            clearInterval(run)
+            showScore(G,S)
+        }
+    }, 1)
 }
 
-function getScore(g, a, G, A, m, method) {
+function getScore0(g, G, A, match, method) {
+    const M = A.length
+    const s = new Float32Array(M)
+    for (let j=0; j<M; j++) {
+        const a = A[j]
+        s[j] = getScore1(g, G, A, match, method, a)
+    }
+    return method(s)
+}
+
+function getScore1(g, G, A, match, method, a) {
     if (g===a) { return 1 }
     else {
         const r = guess2regex(g,a)
         const A_ = A.filter(w=>r.test(w))
-        if (A_.length === A.length) { return NaN }
-        let G_
-        if (m==='Full') {
-            G_ = G.filter(w=>r.test(w))
-        } else if (m==='Partial') {
-            const r_ = guess2looseregex(g,a)
-            G_ = G.filter(w=>r_.test(w))
-        } else {
-            G_ = [...G]
+        if (A_.length === A.length) { return Infinity }
+        const G_ = match(G, r ,g, a)
+        const N_ = G_.length
+        const M_ = A_.length
+        const S_ = new Float32Array(G_)
+        for (let i=0; i<N_; i++) {
+            const g_ = G_[i]
+            S_[i] = getScore0(g_, G_, A_, match, method)
         }
-        const S = getScores(G_, A_, m, method)
-        const i_min = S.reduce((Li,N,i) => S[Li]>=N ? Li : i, 0)
-        const g_ = G_[i_min]
-        return getScore(g_, a, G_, A_, m, method) + 1
+        return min(S_) + 1
     }
 }
 
@@ -780,7 +805,11 @@ function searchle() {
         const criteria = getOption('sort.score.criteria')
         getRemaining(G, A, criteria)
     } else if (sort === 'Score') {
-        throw new fError('Score search not implemented')
+        const m = getOption('sort.score.match')
+        const G = getLooseInds(pattern, limits, r, m)
+        const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
+        const criteria = getOption('sort.score.criteria')
+        getScores(G, A, m, criteria)
     }
 } 
 
@@ -791,7 +820,7 @@ function searchleClick() {
         searchle()
     } catch (error) {
         activeTab('Results')
-        if (error.name==='fError') { dispStatus(String(error.msessage)) }
+        if (error.name==='fError') { dispStatus(String(error.message)) }
         else { console.log(error);  dispStatus(`Error with searchle function:\n${error.message}`) }
     }
 }
