@@ -753,11 +753,12 @@ function dispStatus(msg) {
 }
 
 function dispResult(ans) {
-    if (getOption('sort.show') && ans.length>1) {
-        ans = ans.map(A => {
-            if (arrayType(A)==='float') { return A.map(v=>v.toFixed(3)) }
-            else { return A.map(v=>String(v)) }
-        })
+    if (getOption('sort.show') && ans.length>1 && ans[0].length>0) {
+        for (let a=0; a<ans.length; a++) {
+            if (typeof ans[a][0] !== 'string') {
+                ans[a] = ans[a].map(v => String(Math.round(v)))    
+            }
+        }
         ans = transpose(ans).map(a=>a.join(' - '))
     } else { ans = ans[0] }
     activeTab('Results')
@@ -810,14 +811,12 @@ function searchle() {
         const m = getOption('sort.score.match')
         const G = getLooseInds(pattern, limits, r, m)
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
-        const criteria = getOption('sort.score.criteria')
-        getRemaining(G, A, criteria)
+        getRemaining(G, A, getOption('sort.score.criteria'))
     } else if (sort === 'Score') {
         const m = getOption('sort.score.match')
         const G = getLooseInds(pattern, limits, r, m)
         const A = getInds(getOption('sort.score.list')).map(i=>wordlist.words[i]).filter(w=>r.test(w))
-        const criteria = getOption('sort.score.criteria')
-        getScores(G, A, m, criteria)
+        getScores(G, A, m, getOption('sort.score.criteria'))
     }
 } 
 
@@ -829,7 +828,7 @@ function searchleClick() {
     } catch (error) {
         activeTab('Results')
         if (error.name==='fError') { dispStatus(String(error.message)) }
-        else { console.log(error);  dispStatus(`Error with searchle function:\n${error.message}`) }
+        else { console.log(error);  dispStatus(`Error with searchle function: See console for info`) }
     }
 }
 
