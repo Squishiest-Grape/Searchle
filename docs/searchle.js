@@ -38,7 +38,7 @@ let options = {
         },
     },
     lists: {
-        label: '\nFilter Word Lists:',
+        label: 'Filter Word Lists:',
     },
 }
 
@@ -718,7 +718,7 @@ function createOption(option, keys, parent) {
     if ('subops' in option) {
         let subframe = document.createElement('div')    
         subframe.style.marginLeft = '5%'
-        createOptions(option.subops,keys,subframe)
+        createOptions(option.subops,keys,subframe,false)
         frame.appendChild(subframe)
     }
     if ('require' in option) {
@@ -729,11 +729,12 @@ function createOption(option, keys, parent) {
     parent.appendChild(frame)
 }
 
-function createOptions(options, keys=null, parent=null) {
+function createOptions(options, keys=null, parent=null, toplevel=true) {
     if (keys === null) { keys = [] }
     if (parent === null) { parent = document.getElementById('boxOptions') }
     for (const [key,option] of Object.entries(options)) {
         createOption(option, keys.concat(key), parent)
+        if (toplevel) { parent.appendChild(document.createElement('br')) }
     }
 }
 
@@ -743,7 +744,6 @@ function startOptions() {
     createOptions(options)
     for (const [k, e] of Object.entries(changeEvents)) { changeOption(k, getOption(k)) }
     const L = document.createElement('label')
-    P.appendChild(document.createElement('br'))
     L.appendChild(document.createTextNode(`${version}`))
     P.appendChild(L)
 }
