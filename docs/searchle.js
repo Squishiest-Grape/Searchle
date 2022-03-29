@@ -511,12 +511,13 @@ function getScores(G, A, match, method) {
     // get search critera
     const N = G.length
     const M = A.length
-    let S
-    if (method==='Average') { S = new Float32Array(N); method = mean }
-    else if (method==='Worst Case') { S = new Int32Array(N); method = max }
+    let S = new Float32Array(N)
+    if (method==='Average') { method = mean }
+    else if (method==='Worst Case') { method = max }
     // search
     let i = 0
     let run = setInterval(() => {
+        console.log('tic')
         showPercent(i/N)
         const g = G[i]
         S[i] = getScore0(g, G, A, match, method)
@@ -528,32 +529,31 @@ function getScores(G, A, match, method) {
     }, 1)
 }
 
+function getScores0(G, A, match, method) {
+    const N = G.length
+    const S = new Float32Array(N)
+    for (let i=0; i<N; i++) {
+        S[i] = getScore0(G[i], G, A, match, method)
+    }
+    return S
+}
+
 function getScore0(g, G, A, match, method) {
     const M = A.length
     const s = new Float32Array(M)
     for (let j=0; j<M; j++) {
         const a = A[j]
-        s[j] = getScore1(g, G, A, match, method, a)
-    }
-    return method(s)
-}
-
-function getScore1(g, G, A, match, method, a) {
-    if (g===a) { return 1 }
-    else {
-        const r = guess2regex(g,a)
-        const A_ = A.filter(w=>r.test(w))
-        if (A_.length === A.length) { return Infinity }
-        const G_ = match(G, r ,g, a)
-        const N_ = G_.length
-        const M_ = A_.length
-        const S_ = new Float32Array(G_)
-        for (let i=0; i<N_; i++) {
-            const g_ = G_[i]
-            S_[i] = getScore0(g_, G_, A_, match, method)
+        if (g !== a) {
+            const r = guess2regex(g, a)
+            const A_ = A.filter(w=>r.test(w))
+            if (A_.length === A.length) { s[j] = Infinity }
+            else {
+                const G_ = match(G, r, g, a)
+                s[j] = min(getScores0(G_, A_, match, method))
+            }
         }
-        return min(S_) + 1
     }
+    return method(s) + 1
 }
 
     
