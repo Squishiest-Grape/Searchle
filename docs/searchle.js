@@ -2,7 +2,7 @@
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.4.0'
+const version = 'v0.4.1'
 
 let options = {
     sort: {
@@ -15,34 +15,30 @@ let options = {
                 require: ['sort.order',['Remaining Words','Score']],
                 subops: {
                     warning: {
-                        label: 'Warning: score search is still in beta and may crash searchle',
+                        label: 'Warning: Score search is still in beta and may crash searchle',
                         require: ['sort.order', 'Score'],
                     },
                     criteria: {
                         label: 'Criteria', 
                         value: 'Average',
                         type: ['Average', 'Worst Case'],
-                        //require: ['sort.order', ['Remaining Words','Score']],
                     },
                     match: {
                         label: 'Req Match', 
                         value: 'Full', 
                         type: ['Full', 'Partial', 'None'], 
-                        //require: ['sort.order', ['Remaining Words','Score']],
                     },
                     list: {     
                         label: 'Alt List',
                         value: '', 
                         type: [''],
-                        //require: ['sort.order', ['Remaining Words','Score']],
                     },
                 },
             },
         },
     },
-    _: {label:' '},
     lists: {
-        label: 'Filter Word Lists:',
+        label: '\nFilter Word Lists:',
     },
 }
 
@@ -641,17 +637,23 @@ function tabClick(event) {
 }
 
 let changeEvents = {}
+
+function addChangeEvent(id,val,frame) {
+    if (id in changeEvents) { changeEvents[id].push([val,frame]) }
+    else { changeEvents[id] = [[val,frame]] }
+}
     
 function changeOption(keys,val) {
     setOption(keys,val)
     setCookie('options',options)
     if (Array.isArray(keys)) { keys = keys.join('.') }
     if (keys in changeEvents) {
-        let [value,frame] = changeEvents[keys]
-        if ((Array.isArray(value) && value.includes(val)) || val === value) {
-            frame.style.display = 'block'
+        for (const [value,frame] of changeEvents[keys]) {
+            if ((Array.isArray(value) && value.includes(val)) || val === value) {
+                frame.style.display = 'block'
+            }
+            else { frame.style.display = 'none' }
         }
-        else { frame.style.display = 'none' }
     }
 }
     
@@ -722,7 +724,7 @@ function createOption(option, keys, parent) {
     if ('require' in option) {
         let [src_id,val] = option.require
         if (Array.isArray(src_id)) { src_id = src_id.join('.') }
-        changeEvents[src_id] = [val,frame]
+        addChangeEvent(src_id,val,frame)
     }
     parent.appendChild(frame)
 }
