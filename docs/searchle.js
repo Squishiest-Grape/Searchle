@@ -502,7 +502,7 @@ function getScores(G, A, match, method) {
     // get limit function
     if (match==='Full') { match = (G,r,g,a)=>G.filter(w=>r.test(w)) }
     else if (match==='Partial') { match = (G,r,g,a)=>{
-        const r=guess2looseregex(g,a)
+        r=guess2looseregex(g,a)
         return G.filter(w=>r.test(w))
     }}
     else if (match==='None') { match = (G,r,g,a)=> [...G] }
