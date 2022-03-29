@@ -1,3 +1,3 @@
 # [Searchle](https://squishiest-grape.github.io/Searchle)
 
-A pattern search tool for the english language.  Returns potential words sorted by frequency.
+A flexible pattern search tool for the english language.  Returns potential words sorted by frequency or score.
