@@ -794,7 +794,7 @@ function searchle() {
     if (sort === 'Alphabetical') {
         const words = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
         words.sort()
-        dispResult(words)
+        dispResult([words])
     } else if (sort === 'Popularity') {
         let ans = []
         const inds = getInds().filter(i=>r.test(wordlist.words[i]))
