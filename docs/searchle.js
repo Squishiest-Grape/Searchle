@@ -755,7 +755,7 @@ function dispStatus(msg) {
 function dispResult(ans) {
     if (getOption('sort.show') && ans.length>1 && ans[0].length>0) {
         for (let a=0; a<ans.length; a++) {
-            if (typeof ans[a][0] !== 'number') {
+            if (typeof ans[a][0] === 'number') {
                 ans[a] = ans[a].map( v => 0 + v.toFixed(3) )
             }
         }
