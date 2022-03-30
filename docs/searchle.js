@@ -853,7 +853,7 @@ async function searchleStart() {
 
     // add list options options
     cookies = getCookies()
-    for (const list of wordlist['listsnames']) {
+    for (const list of wordlist['listnames']) {
         setFullOption(['lists', list], {value: 'Include', type: ['Require', 'Include', 'Nothing', 'Avoid'], pos: 'left'})
         getFullOption('sort.score.list').type.push(list)
     }
