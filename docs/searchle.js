@@ -477,7 +477,7 @@ function getRemaining(G, A, method='Average') {
     let S
     if (method==='Average') { S = new Float32Array(N); method = mean }
     else if (method==='Worst Case') { S = new Int32Array(N); method = max }
-    else { throw fError(`Uknown method ${method}`) }
+    else { throw new fError(`Uknown method ${method}`) }
     let i = 0
     let run = setInterval(() => {
         showPercent(i/N)
@@ -507,7 +507,7 @@ function getScores(G, A, match, method) {
         return G.filter(w=>r.test(w))
     }}
     else if (match==='None') { match = (G,r,g,a)=> [...G] }
-    else { throw fError(`Uknown matching criteria ${match}`) }
+    else { throw new fError(`Uknown matching criteria ${match}`) }
     // get search critera
     const N = G.length
     const M = A.length
@@ -973,7 +973,9 @@ function getCookies() {
     return cookies
 }
 
-function fError(msg) {
-    this.message = msg
-    this.name = 'fError'
+class fError {
+    constructor (msg) {
+        this.message = msg
+        this.name = 'fError'
+    }
 }
