@@ -2,14 +2,14 @@
 |                                                 Settings
 \\===================================================================================================================*/
 
-const version = 'v0.4.1'
+const version = 'v0.5.0'
 
 let options = {
     sort: {
         label: 'Sorting Options:',
         subops: {
-            show: { label: 'Show Value', value: false, },
-            order: { label: 'Order', value: 'Popularity', type: ['Popularity', 'Alphabetical', 'Remaining Words', 'Score'], },     
+            order: { label: 'Order', value: 'Popularity', type: ['Popularity', 'Alphabetical', 'Length', 'Remaining Words', 'Score'], },
+            reverse: {label: 'Reverse', value: false, },  
             score: { 
                 label: '',
                 require: ['sort.order',['Remaining Words','Score']],
@@ -34,6 +34,9 @@ let options = {
                         type: [''],
                     },
                 },
+            },
+            show: { label: 'Show Value', value: false, 
+                require: ['sort.order',['Popularity','Remaining Words','Score']], 
             },
         },
     },
@@ -297,17 +300,21 @@ function pattern2regex(pattern, limits, loose=false) {
     let r = ''
     for (const [num, val, inv] of pattern) { r += val2regex(num, val, inv, loose) }
     r = `(?=^${r}$)`
-    for (const L in limits) {
-        let [min, max] = limits[L]
+    for (let [L,num] of limits) {
+        let [min, max] = num
         if (isNaN(max) || max===null) { max = Infinity }
-        if (max===0 && L.length<=1) {
+        if (!Array.isArray(L) && max===0 && L.length<=1) {
             r += `(?=^[^${L}]*$)`
-        } else if (max===Infinity) {
+        } else if (!Array.isArray(L) && max===Infinity) {
             if (min!==0) { r += '(?=.*(?:'+L+'.*){'+String(min)+'})' }
         } else {
             min = String(min)
             max = String(max)
-            if (L.length <= 1) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
+            if (Array.isArray(L)) {
+                L = L.join('')
+                r += `(?=^[^${L}]*(?:[${L}][^${L}]*){${min},${max}}$)`
+            }
+            else if (L.length <= 1) { r += `(?=^[^${L}]*(?:${L}[^${L}]*){${min},${max}}$)` }
             else { r += `(?=^(?:(?!${L}).)*(?:${L}(?:(?!${L}).)*){${min},${max}}$)` }
         }
     }
@@ -363,12 +370,13 @@ function addRange(r1,r2) { return [r1[0]+r2[0],r1[1]+r2[1]] }
 
 function getCriteria() {
     let limits = {}
+    let limit_list = []
     const requires = parse(document.getElementById('searchleRequires').value)
     for (let i=0; i<requires.length; i++) {
         let [val,num,inv] = requires[i]
-        if (Array.isArray(val)) { throw new fError('Groupings not implimented in requires') }
-        if (inv) { throw new fError('Inverse not implimented in requires') }
-        if (val === null) { throw new fError('Wildcards not implimented in requires') }
+        if (Array.isArray(val)) { throw new fError('Groupings not implimented in Requires') }
+        if (inv) { throw new fError('Inverse not implimented in Requires') }
+        if (val === null) { throw new fError('Wildcards not implimented in Requires') }
         if (num === null) { num = 1 }
         if (!Array.isArray(num)) { num = [num,Infinity] }
         if (val in limits) { limits[val] = addRange(limits[val],num) }
@@ -377,9 +385,9 @@ function getCriteria() {
     const avoids = parse(document.getElementById('searchleAvoids').value)
     for (let i=0; i<avoids.length; i++) {
         let [val,num,inv] = avoids[i]
-        if (Array.isArray(val)) { throw new fError('Groupings not implimented in avoids') }
-        if (inv) { throw new fError('Inverse not implimented in avoids') }
-        if (val === null) { throw new fError('Wildcards not implimented in avoids') }
+        if (Array.isArray(val)) { throw new fError('Groupings not implimented in Avoids') }
+        if (inv) { throw new fError('Inverse not implimented in Avoids') }
+        if (val === null) { throw new fError('Wildcards not implimented in Avoids') }
         if (num === null) { num = [0,0] }
         else if (Array.isArray(num)) {
             if (num[1] !== Infinity) { throw new fError('Multi-range not implimented') }
@@ -392,10 +400,41 @@ function getCriteria() {
         if (val in limits) { limits[val] = minRange(limits[val],num) }
         else { limits[val] = num }
     }
+    const useOnly = parse(document.getElementById('searchleUseOnly').value)
+    if (useOnly.length > 0) {
+        const seen = {}
+        for (let i=0; i<useOnly.length; i++) {
+            let [val,num,inv] = useOnly[i]
+            if (Array.isArray(val)) { throw new fError('Groupings not implimented in Use Only') }
+            if (inv) { throw new fError('Inverse not implimented in Use Only') }
+            if (val.length > 1) { throw new fError('Strings not implimented in Use Only') }
+            if (num === null) { num = 1 }
+            if (Array.isArray(num)) { 
+                if (num[0] !== 0) { throw new fError('Number ranges not implimented in Use Only') }
+                num = num[1]
+            }
+            seen[val] = seen[val] ?? 0 + num
+        }
+        wild = seen[null] ?? 0;
+        total = 0
+        delete seen[null]
+        for (let [val,num] of Object.entries(seen)) {
+            total += num
+            num += wild
+            limits[val] = minRange(limits[val] ?? [0,Infinity],[0,num])
+        }
+        az = 'abcdefghijklmnopqrstuvwxyz'.split('');
+        rem = [...setD(az,Object.keys(seen))];
+        limit_list.push(['.',[0,total + wild]]);
+        limit_list.push([rem,[0,wild]]);
+    }
     let pattern = document.getElementById('searchlePattern').value
     pattern = parse(pattern)
     if (pattern.length===0 && Object.keys(limits).length>0) { pattern = [[null,[0,null],false]] }
-    return [pattern,limits]
+    for (let [l,n] of Object.entries(limits)) {
+        limit_list.push([l,n])
+    }
+    return [pattern,limit_list]
 }
 
 function getInds(list='') {
@@ -759,8 +798,14 @@ function dispResult(ans) {
                 ans[a] = ans[a].map( v => parseFloat(v.toFixed(3)) )
             }
         }
-        ans = transpose(ans).map(a=>a.join(' - '))
+        for (let a=0; a<ans.length-1; a++) {
+            ans[a] = ans[a].map(v=>String(v))
+            m = ans[a].reduce((m,v)=>Math.max(v.length,m),0)
+            ans[a] = ans[a].map(v=>v+' '.repeat(m-v.length))
+        }
+        ans = transpose(ans).map(a=>a.join(' | '))
     } else { ans = ans[0] }
+    if (getOption('sort.reverse')) {  ans = ans.reverse(); }
     activeTab('Results')
     dispStatus(ans.join('\n'))
 }
@@ -788,12 +833,15 @@ function showScore(W,S) {
 function searchle() {
     const [pattern, limits] = getCriteria()
     console.log([pattern,limits])
-    if (pattern.length===0 && Object.keys(limits).length===0) { return [[]] }
+    if (pattern.length===0 && limits.length===0) { return [[]] }
     const r = pattern2regex(pattern, limits)
     const sort = getOption('sort.order')
-    if (sort === 'Alphabetical') {
+    if (sort === 'Alphabetical' || sort === 'Length') {
         const words = getInds().map(i=>wordlist.words[i]).filter(w=>r.test(w))
         words.sort()
+        if (sort === 'Length') {
+             words.sort((a,b)=>b.length-a.length)
+        }
         dispResult([words])
     } else if (sort === 'Popularity') {
         let ans = []
@@ -979,3 +1027,5 @@ class fError {
         this.name = 'fError'
     }
 }
+
+console.log(val2regex(['a','b'], 3, false, false))
