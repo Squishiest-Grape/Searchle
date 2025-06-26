@@ -40,7 +40,7 @@ Letters in the Require box specify the allowable count of that letter in the fin
 
 Letters in the Avoid box specify that the allowable count is less than the number given
 
-Letters in the Use Only box combine to require and avoid rule like an anagram search
+Letters in the Use Only box work like an anagram search
 
 You can simply use a number or range in the pattern tool instead of a full pattern
 
